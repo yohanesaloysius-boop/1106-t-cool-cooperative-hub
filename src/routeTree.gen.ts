@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
+import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
@@ -54,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   id: '/simpanan',
   path: '/simpanan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRiwayatRoute = AuthenticatedRiwayatRouteImport.update({
+  id: '/riwayat',
+  path: '/riwayat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/riwayat': typeof AuthenticatedRiwayatRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/riwayat': typeof AuthenticatedRiwayatRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/kalkulator'
     | '/pinjaman'
     | '/profil'
+    | '/riwayat'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/kalkulator'
     | '/pinjaman'
     | '/profil'
+    | '/riwayat'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kalkulator'
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
+    | '/_authenticated/riwayat'
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/pinjaman'
@@ -277,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/simpanan'
       fullPath: '/simpanan'
       preLoaderRoute: typeof AuthenticatedSimpananRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/riwayat': {
+      id: '/_authenticated/riwayat'
+      path: '/riwayat'
+      fullPath: '/riwayat'
+      preLoaderRoute: typeof AuthenticatedRiwayatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/profil': {
@@ -384,6 +403,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
 }
 
@@ -395,6 +415,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
 }
 
