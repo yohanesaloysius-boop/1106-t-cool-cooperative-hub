@@ -29,19 +29,20 @@ export function ApprovalQueue() {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    const { data } = await supabase
+    const { data: raw } = await supabase
       .from("pinjaman")
-      .select("id,user_id,nominal,status,created_at,tenor_bulan,profile:profiles!pinjaman_user_id_fkey(nama_lengkap,nomor_anggota)")
+      .select("id,user_id,nominal,status,created_at,tenor_bulan")
       .in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"])
       .order("created_at", { ascending: false })
       .limit(6);
-    // Fallback if FK not present in PostgREST: do a second pass
-    if (!data) {
-      const { data: raw } = await supabase.from("pinjaman").select("id,user_id,nominal,status,created_at,tenor_bulan").in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"]).order("created_at", { ascending: false }).limit(6);
-      setItems((raw ?? []) as Item[]);
-    } else {
-      setItems(data as unknown as Item[]);
+    const rows = (raw ?? []) as Item[];
+    const ids = Array.from(new Set(rows.map((r) => r.user_id)));
+    if (ids.length) {
+      const { data: profs } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota").in("id", ids);
+      const map = new Map((profs ?? []).map((p) => [p.id, p]));
+      rows.forEach((r) => { r.profile = map.get(r.user_id) as Item["profile"] ?? null; });
     }
+    setItems(rows);
     setLoading(false);
   };
 
