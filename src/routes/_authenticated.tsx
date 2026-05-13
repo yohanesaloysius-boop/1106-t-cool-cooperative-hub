@@ -3,8 +3,9 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, Bell, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationCenter } from "@/components/dashboard/notification-center";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
@@ -97,7 +98,7 @@ function AuthLayout() {
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon"><Bell className="h-4 w-4" /></Button>
+            <NotificationCenter />
             <Avatar className="h-8 w-8 lg:hidden"><AvatarFallback>{initials}</AvatarFallback></Avatar>
           </div>
         </header>
