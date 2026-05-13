@@ -43,11 +43,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
         setTimeout(() => void loadProfile(s.user.id), 0);
+        if (event === "SIGNED_IN") {
+          setTimeout(() => {
+            void supabase.from("audit_logs").insert({
+              actor_id: s.user.id,
+              action: "auth.login",
+              entity: "auth",
+              entity_id: s.user.id,
+              user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+              new_data: { email: s.user.email, at: new Date().toISOString() },
+            });
+          }, 0);
+        }
       } else {
         setProfile(null);
         setRoles([]);
