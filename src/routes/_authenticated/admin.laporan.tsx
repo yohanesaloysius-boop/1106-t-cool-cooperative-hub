@@ -11,11 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Legend } from "recharts";
-import { FileBarChart2, Download, FileSpreadsheet, FileText, TrendingUp, TrendingDown } from "lucide-react";
+import { FileBarChart2, FileSpreadsheet, FileText, TrendingUp, TrendingDown, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SignaturePadDialog, type SignatureResult } from "@/components/signature-pad";
+import { buildSignedReportPdf } from "@/lib/report-pdf";
+import { supabase as sb } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/laporan")({
   head: () => ({ meta: [{ title: "Laporan Keuangan — Admin" }] }),
@@ -26,8 +28,9 @@ const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", c
 const monthLabel = (k: string) => new Date(k + "-01").toLocaleDateString("id-ID", { month: "short", year: "2-digit" });
 
 function AdminLaporan() {
-  const { roles } = useAuth();
+  const { user, roles, profile } = useAuth();
   const isPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const isKetua = roles.some((r) => ["super_admin", "ketua"].includes(r));
 
   const today = new Date();
   const defaultStart = new Date(today.getFullYear(), today.getMonth() - 11, 1).toISOString().slice(0, 10);
@@ -79,6 +82,28 @@ function AdminLaporan() {
   const summary = data?.totals;
   const cashflow = useMemo(() => (summary ? (summary.kasMasuk - summary.kasKeluar) : 0), [summary]);
 
+  // Neraca & Laba Rugi derivation
+  const neraca = useMemo(() => {
+    if (!summary) return null;
+    const kasBank = summary.kasMasuk - summary.kasKeluar;
+    const pinjamanBeredar = Math.max(0, summary.totalPinjaman - summary.totalAngsuran);
+    const totalAset = kasBank + pinjamanBeredar;
+    const simpananAnggota = summary.totalSimpanan;
+    const labaBerjalan = summary.bunga - summary.totalShu;
+    const totalKewajibanEkuitas = simpananAnggota + labaBerjalan;
+    return { kasBank, pinjamanBeredar, totalAset, simpananAnggota, labaBerjalan, totalKewajibanEkuitas };
+  }, [summary]);
+
+  const labaRugi = useMemo(() => {
+    if (!summary) return null;
+    const pendapatanBunga = summary.bunga;
+    const totalPendapatan = pendapatanBunga;
+    const bebanShu = summary.totalShu;
+    const totalBeban = bebanShu;
+    const labaBersih = totalPendapatan - totalBeban;
+    return { pendapatanBunga, totalPendapatan, bebanShu, totalBeban, labaBersih };
+  }, [summary]);
+
   const exportExcel = () => {
     if (!data) return;
     const wb = XLSX.utils.book_new();
@@ -96,43 +121,68 @@ function AdminLaporan() {
     XLSX.utils.book_append_sheet(wb, summarySheet, "Ringkasan");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.monthList.map((m) => ({ Bulan: m.label, Simpanan: m.simpanan, Pinjaman: m.pinjaman, Angsuran: m.angsuran, SHU: m.shu }))), "Per Bulan");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.jenisList.map((j) => ({ Jenis: j.jenis, Total: j.total }))), "Simpanan per Jenis");
+    if (neraca) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+      { Pos: "ASET", Sub: "Kas & Bank", Nilai: neraca.kasBank },
+      { Pos: "ASET", Sub: "Pinjaman Beredar", Nilai: neraca.pinjamanBeredar },
+      { Pos: "ASET", Sub: "Total Aset", Nilai: neraca.totalAset },
+      { Pos: "KEWAJIBAN", Sub: "Simpanan Anggota", Nilai: neraca.simpananAnggota },
+      { Pos: "EKUITAS", Sub: "Laba Berjalan", Nilai: neraca.labaBerjalan },
+      { Pos: "TOTAL", Sub: "Kewajiban + Ekuitas", Nilai: neraca.totalKewajibanEkuitas },
+    ]), "Neraca");
+    if (labaRugi) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+      { Item: "Pendapatan Bunga", Nilai: labaRugi.pendapatanBunga },
+      { Item: "Total Pendapatan", Nilai: labaRugi.totalPendapatan },
+      { Item: "Beban SHU", Nilai: labaRugi.bebanShu },
+      { Item: "Total Beban", Nilai: labaRugi.totalBeban },
+      { Item: "Laba Bersih", Nilai: labaRugi.labaBersih },
+    ]), "Laba Rugi");
     XLSX.writeFile(wb, `Laporan-Koperasi-${startDate}_${endDate}.xlsx`);
     toast.success("Laporan Excel berhasil diunduh");
   };
 
-  const exportPDF = () => {
-    if (!data) return;
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("T-COOL Koperasi — Laporan Keuangan", 14, 18);
-    doc.setFontSize(10);
-    doc.text(`Periode: ${startDate} s/d ${endDate}`, 14, 26);
-    doc.text(`Dicetak: ${new Date().toLocaleString("id-ID")}`, 14, 32);
+  const exportPDF = async (sig?: SignatureResult) => {
+    if (!data || !summary) return;
+    const verifyId = `LAP-${startDate}-${endDate}-${Date.now()}`;
+    const sections = [
+      { title: "Ringkasan Arus Kas", head: ["Item", "Nilai"], body: [
+        ["Total Simpanan Masuk", fmt(summary.totalSimpanan)],
+        ["Total Angsuran Masuk", fmt(summary.totalAngsuran)],
+        ["Total Pinjaman Disalurkan", fmt(summary.totalPinjaman)],
+        ["Total SHU Dibagikan", fmt(summary.totalShu)],
+        ["Pendapatan Bunga", fmt(summary.bunga)],
+        ["Kas Masuk", fmt(summary.kasMasuk)],
+        ["Kas Keluar", fmt(summary.kasKeluar)],
+        ["Saldo Bersih", fmt(summary.kasMasuk - summary.kasKeluar)],
+      ] },
+    ];
+    if (neraca) sections.push({ title: "Neraca", head: ["Pos", "Nilai"], body: [
+      ["Kas & Bank", fmt(neraca.kasBank)],
+      ["Pinjaman Beredar", fmt(neraca.pinjamanBeredar)],
+      ["TOTAL ASET", fmt(neraca.totalAset)],
+      ["Simpanan Anggota (Kewajiban)", fmt(neraca.simpananAnggota)],
+      ["Laba Berjalan (Ekuitas)", fmt(neraca.labaBerjalan)],
+      ["TOTAL KEWAJIBAN + EKUITAS", fmt(neraca.totalKewajibanEkuitas)],
+    ] });
+    if (labaRugi) sections.push({ title: "Laporan Laba Rugi", head: ["Item", "Nilai"], body: [
+      ["Pendapatan Bunga", fmt(labaRugi.pendapatanBunga)],
+      ["Total Pendapatan", fmt(labaRugi.totalPendapatan)],
+      ["Beban SHU", fmt(labaRugi.bebanShu)],
+      ["Total Beban", fmt(labaRugi.totalBeban)],
+      ["LABA BERSIH", fmt(labaRugi.labaBersih)],
+    ] });
+    sections.push({ title: "Detail per Bulan", head: ["Bulan", "Simpanan", "Pinjaman", "Angsuran", "SHU"], body: data.monthList.map((m) => [m.label, fmt(m.simpanan), fmt(m.pinjaman), fmt(m.angsuran), fmt(m.shu)]) });
 
-    autoTable(doc, {
-      startY: 40,
-      head: [["Ringkasan", "Nilai"]],
-      body: [
-        ["Total Simpanan Masuk", fmt(summary!.totalSimpanan)],
-        ["Total Angsuran Masuk", fmt(summary!.totalAngsuran)],
-        ["Total Pinjaman Disalurkan", fmt(summary!.totalPinjaman)],
-        ["Total SHU Dibagikan", fmt(summary!.totalShu)],
-        ["Pendapatan Bunga", fmt(summary!.bunga)],
-        ["Kas Masuk", fmt(summary!.kasMasuk)],
-        ["Kas Keluar", fmt(summary!.kasKeluar)],
-        ["Saldo Bersih", fmt(summary!.kasMasuk - summary!.kasKeluar)],
+    const doc = await buildSignedReportPdf({
+      title: "Laporan Keuangan Koperasi",
+      period: `${startDate} s/d ${endDate}`,
+      sections,
+      signatures: [
+        { role: "Bendahara", name: profile?.nama_lengkap ?? "—" },
+        { role: "Ketua", name: sig?.fullName ?? "—", dataUrl: sig?.dataUrl },
       ],
-      theme: "striped",
-      headStyles: { fillColor: [37, 99, 235] },
+      verifyId,
     });
-
-    autoTable(doc, {
-      head: [["Bulan", "Simpanan", "Pinjaman", "Angsuran", "SHU"]],
-      body: data.monthList.map((m) => [m.label, fmt(m.simpanan), fmt(m.pinjaman), fmt(m.angsuran), fmt(m.shu)]),
-      theme: "grid",
-      headStyles: { fillColor: [37, 99, 235] },
-    });
-
+    await sb.from("audit_logs").insert({ actor_id: user?.id ?? null, action: "laporan.exported", entity: "laporan", new_data: { verifyId, periode: `${startDate}/${endDate}`, signed: !!sig } });
     doc.save(`Laporan-Koperasi-${startDate}_${endDate}.pdf`);
     toast.success("Laporan PDF berhasil diunduh");
   };
@@ -156,7 +206,14 @@ function AdminLaporan() {
             <div><Label className="text-xs">Sampai Tanggal</Label><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-40" /></div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={exportPDF} disabled={!data || isLoading}><FileText className="mr-2 h-4 w-4" /> Export PDF</Button>
+            <Button variant="outline" onClick={() => exportPDF()} disabled={!data || isLoading}><FileText className="mr-2 h-4 w-4" /> Export PDF</Button>
+            {isKetua && (
+              <SignaturePadDialog
+                title="Tanda Tangani Laporan Keuangan"
+                onSign={(s) => exportPDF(s)}
+                trigger={<Button variant="secondary" disabled={!data || isLoading}><ShieldCheck className="mr-2 h-4 w-4" /> PDF + TTD Ketua</Button>}
+              />
+            )}
             <Button onClick={exportExcel} disabled={!data || isLoading}><FileSpreadsheet className="mr-2 h-4 w-4" /> Export Excel</Button>
           </div>
         </CardContent>
@@ -176,7 +233,15 @@ function AdminLaporan() {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <Tabs defaultValue="arus">
+        <TabsList>
+          <TabsTrigger value="arus">Arus Kas</TabsTrigger>
+          <TabsTrigger value="neraca">Neraca</TabsTrigger>
+          <TabsTrigger value="labarugi">Laba Rugi</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="arus" className="mt-4">
+          <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader><CardTitle className="text-base">Arus Kas per Bulan</CardTitle></CardHeader>
           <CardContent>
@@ -221,7 +286,54 @@ function AdminLaporan() {
             </div>
           </CardContent>
         </Card>
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="neraca" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle className="text-base">Neraca per {endDate}</CardTitle></CardHeader>
+            <CardContent>
+              {!neraca ? <Skeleton className="h-40 w-full" /> : (
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Aset</h3>
+                    <NeracaRow label="Kas & Bank" value={neraca.kasBank} />
+                    <NeracaRow label="Pinjaman Beredar" value={neraca.pinjamanBeredar} />
+                    <div className="border-t pt-2"><NeracaRow label="Total Aset" value={neraca.totalAset} bold /></div>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Kewajiban & Ekuitas</h3>
+                    <NeracaRow label="Simpanan Anggota" value={neraca.simpananAnggota} />
+                    <NeracaRow label="Laba Berjalan" value={neraca.labaBerjalan} />
+                    <div className="border-t pt-2"><NeracaRow label="Total Kewajiban + Ekuitas" value={neraca.totalKewajibanEkuitas} bold /></div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="labarugi" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle className="text-base">Laporan Laba Rugi · {startDate} s/d {endDate}</CardTitle></CardHeader>
+            <CardContent>
+              {!labaRugi ? <Skeleton className="h-40 w-full" /> : (
+                <div className="space-y-2 text-sm">
+                  <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Pendapatan</h3>
+                  <NeracaRow label="Pendapatan Bunga" value={labaRugi.pendapatanBunga} />
+                  <div className="border-t pt-2"><NeracaRow label="Total Pendapatan" value={labaRugi.totalPendapatan} bold /></div>
+                  <h3 className="mt-4 text-xs uppercase tracking-wider text-muted-foreground">Beban</h3>
+                  <NeracaRow label="Beban SHU Dibagikan" value={labaRugi.bebanShu} />
+                  <div className="border-t pt-2"><NeracaRow label="Total Beban" value={labaRugi.totalBeban} bold /></div>
+                  <div className="mt-4 rounded-xl bg-primary/10 p-4">
+                    <NeracaRow label="LABA BERSIH" value={labaRugi.labaBersih} bold highlight />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <Card>
         <CardHeader>
@@ -271,5 +383,14 @@ function Kpi({ label, value, positive }: { label: string; value: number; positiv
         <p className="mt-2 text-2xl font-bold">{fmt(value)}</p>
       </CardContent>
     </Card>
+  );
+}
+
+function NeracaRow({ label, value, bold, highlight }: { label: string; value: number; bold?: boolean; highlight?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between text-sm ${bold ? "font-bold" : ""} ${highlight ? "text-lg text-primary" : ""}`}>
+      <span>{label}</span>
+      <span className="tabular-nums">{fmt(value)}</span>
+    </div>
   );
 }
