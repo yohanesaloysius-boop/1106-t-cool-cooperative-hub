@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
+import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -133,6 +134,12 @@ const AuthenticatedAdminLaporanRoute =
     path: '/laporan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAngsuranRoute =
+  AuthenticatedAdminAngsuranRouteImport.update({
+    id: '/angsuran',
+    path: '/angsuran',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAnggotaRoute =
   AuthenticatedAdminAnggotaRouteImport.update({
     id: '/anggota',
@@ -156,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
+  '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -177,6 +185,7 @@ export interface FileRoutesByTo {
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
+  '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -201,6 +210,7 @@ export interface FileRoutesById {
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
+  '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/shu'
     | '/simpanan'
     | '/admin/anggota'
+    | '/admin/angsuran'
     | '/admin/laporan'
     | '/admin/pinjaman'
     | '/admin/shu'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/shu'
     | '/simpanan'
     | '/admin/anggota'
+    | '/admin/angsuran'
     | '/admin/laporan'
     | '/admin/pinjaman'
     | '/admin/shu'
@@ -269,6 +281,7 @@ export interface FileRouteTypes {
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
+    | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/shu'
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLaporanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/angsuran': {
+      id: '/_authenticated/admin/angsuran'
+      path: '/angsuran'
+      fullPath: '/admin/angsuran'
+      preLoaderRoute: typeof AuthenticatedAdminAngsuranRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/anggota': {
       id: '/_authenticated/admin/anggota'
       path: '/anggota'
@@ -438,6 +458,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnggotaRoute: typeof AuthenticatedAdminAnggotaRoute
+  AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
@@ -447,6 +468,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnggotaRoute: AuthenticatedAdminAnggotaRoute,
+  AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,

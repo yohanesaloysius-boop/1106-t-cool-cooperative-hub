@@ -27,6 +27,7 @@ const adminNav = [
   { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
   { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
   { to: "/admin/simpanan", label: "Verifikasi Simpanan", icon: PiggyBank },
+  { to: "/admin/angsuran", label: "Verifikasi Angsuran", icon: Receipt },
   { to: "/admin/pinjaman", label: "Approval Pinjaman", icon: ClipboardCheck },
   { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
   { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
