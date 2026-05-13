@@ -6,6 +6,7 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { StatCard, StatCardSkeleton } from "@/components/dashboard/stat-card";
 import { TransactionChart } from "@/components/dashboard/transaction-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { LiveActivityFeed } from "@/components/dashboard/live-activity-feed";
 import { ApprovalQueue } from "@/components/dashboard/approval-queue";
 import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck } from "lucide-react";
 
@@ -114,7 +115,10 @@ function AdminDashboard() {
       </div>
 
       {/* Activity */}
-      <ActivityFeed limit={10} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ActivityFeed limit={10} />
+        <LiveActivityFeed limit={10} title="Live Audit Stream" />
+      </div>
     </div>
   );
 }
