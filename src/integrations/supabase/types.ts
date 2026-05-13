@@ -261,8 +261,54 @@ export type Database = {
         }
         Relationships: []
       }
+      meeting_attendances: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          meeting_id: string
+          signature_id: string | null
+          signed_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          meeting_id: string
+          signature_id?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          meeting_id?: string
+          signature_id?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendances_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_notes: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           attachment_url: string | null
           created_at: string
           created_by: string | null
@@ -272,10 +318,14 @@ export type Database = {
           keputusan: string | null
           meeting_id: string
           notulis_id: string | null
+          signature_id: string | null
+          status: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           attachment_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -285,10 +335,14 @@ export type Database = {
           keputusan?: string | null
           meeting_id: string
           notulis_id?: string | null
+          signature_id?: string | null
+          status?: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           attachment_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -298,6 +352,8 @@ export type Database = {
           keputusan?: string | null
           meeting_id?: string
           notulis_id?: string | null
+          signature_id?: string | null
+          status?: string
           updated_at?: string
           updated_by?: string | null
         }
