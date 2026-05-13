@@ -22,6 +22,7 @@ import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as VerifyRouteImport } from './routes/verify.'
@@ -98,6 +99,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
+  id: '/approval',
+  path: '/approval',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAngsuranRoute = AuthenticatedAngsuranRouteImport.update({
   id: '/angsuran',
   path: '/angsuran',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/verify/': typeof VerifyRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
+  '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
+  '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/verify/': typeof VerifyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
+  '/_authenticated/approval': typeof AuthenticatedApprovalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/verify/'
     | '/admin'
     | '/angsuran'
+    | '/approval'
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify'
     | '/angsuran'
+    | '/approval'
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/verify/'
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
+    | '/_authenticated/approval'
     | '/_authenticated/dashboard'
     | '/_authenticated/dokumen'
     | '/_authenticated/kalkulator'
@@ -416,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/approval': {
+      id: '/_authenticated/approval'
+      path: '/approval'
+      fullPath: '/approval'
+      preLoaderRoute: typeof AuthenticatedApprovalRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/angsuran': {
       id: '/_authenticated/angsuran'
       path: '/angsuran'
@@ -524,6 +543,7 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
+  AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
@@ -537,6 +557,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
+  AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
