@@ -5,20 +5,24 @@ import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LoanCalculator } from "@/components/dashboard/loan-calculator";
+import { StatCard, StatCardSkeleton } from "@/components/dashboard/stat-card";
+import { TransactionChart } from "@/components/dashboard/transaction-chart";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
+import { FloatingActionButton } from "@/components/dashboard/floating-action";
 import { PiggyBank, HandCoins, Receipt, Wallet, ArrowUpRight } from "lucide-react";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — T-COOL Koperasi" }] }),
   component: DashboardPage,
 });
 
-const fmt = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
-
 function DashboardPage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["dashboard-stats", user?.id],
     enabled: !!user,
     queryFn: async () => {
@@ -37,26 +41,33 @@ function DashboardPage() {
     },
   });
 
-  const stats = [
-    { label: "Saldo Simpanan", value: data?.totalSimpanan ?? 0, icon: PiggyBank, accent: "text-primary" },
-    { label: "Total Pinjaman", value: data?.totalPinjaman ?? 0, icon: HandCoins, accent: "text-foreground" },
-    { label: "Sisa Angsuran", value: data?.sisaAngsuran ?? 0, icon: Receipt, accent: "text-warning" },
-    { label: "SHU Diterima", value: data?.totalShu ?? 0, icon: Wallet, accent: "text-success" },
-  ];
+  // Realtime: refresh stats on relevant changes
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`dash-${user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "simpanan", filter: `user_id=eq.${user.id}` }, () => refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman", filter: `user_id=eq.${user.id}` }, () => refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "angsuran", filter: `user_id=eq.${user.id}` }, () => refetch())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user, refetch]);
 
   return (
     <div className="space-y-6">
-      {/* Hero strip */}
-      <div className="rounded-2xl p-6 md:p-8 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
+        <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm text-white/70">Anggota</p>
+            <p className="text-sm text-white/70">Selamat datang kembali,</p>
             <h1 className="text-2xl md:text-3xl font-bold">{profile?.nama_lengkap ?? "—"}</h1>
             <p className="mt-1 text-sm text-white/80">No. Anggota: <span className="font-mono">{profile?.nomor_anggota ?? "—"}</span></p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="bg-white/15 text-white border-0 backdrop-blur">
-              Status: {profile?.status ?? "pending"}
+            <Badge variant="secondary" className="bg-white/15 text-white border-0 backdrop-blur capitalize">
+              {profile?.status ?? "pending"}
             </Badge>
             {data?.overdue ? (
               <Badge className="bg-destructive border-0">{data.overdue} angsuran lewat jatuh tempo</Badge>
@@ -67,55 +78,58 @@ function DashboardPage() {
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <Card key={s.label} style={{ boxShadow: "var(--shadow-card)" }}>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">{s.label}</p>
-                <s.icon className={`h-4 w-4 ${s.accent}`} />
-              </div>
-              <p className="mt-2 text-2xl font-bold tracking-tight">
-                {isLoading ? "…" : fmt.format(s.value)}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+        ) : (
+          <>
+            <StatCard label="Saldo Simpanan" value={data?.totalSimpanan ?? 0} icon={PiggyBank} accent="primary" hint="Total simpanan terverifikasi" />
+            <StatCard label="Total Pinjaman" value={data?.totalPinjaman ?? 0} icon={HandCoins} accent="success" hint="Aktif & dicairkan" />
+            <StatCard label="Sisa Angsuran" value={data?.sisaAngsuran ?? 0} icon={Receipt} accent="warning" hint="Belum lunas" />
+            <StatCard label="SHU Diterima" value={data?.totalShu ?? 0} icon={Wallet} accent="success" hint="Akumulasi semua tahun" />
+          </>
+        )}
       </div>
 
-      {/* Calculator + recent */}
+      {/* Chart + bills */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2"><TransactionChart userId={user?.id} title="Arus Kas Saya" /></div>
+        <UpcomingBills userId={user!.id} />
+      </div>
+
+      {/* Activity + calculator */}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <LoanCalculator
-            onApply={(input) => {
-              navigate({
-                to: "/pinjaman",
-                search: input as never,
-              });
-            }}
+            onApply={(input) => navigate({ to: "/pinjaman", search: input as never })}
           />
         </div>
-        <Card style={{ boxShadow: "var(--shadow-card)" }}>
-          <CardHeader><CardTitle className="flex items-center justify-between">Aksi Cepat <ArrowUpRight className="h-4 w-4 text-muted-foreground" /></CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <QuickAction title="Setor Simpanan" desc="Pokok, wajib, atau sukarela" onClick={() => navigate({ to: "/simpanan" })} />
-            <QuickAction title="Ajukan Pinjaman" desc="Mulai dari simulasi cicilan" onClick={() => navigate({ to: "/pinjaman" })} />
-            <QuickAction title="Bayar Angsuran" desc="Upload bukti transfer" onClick={() => navigate({ to: "/angsuran" })} />
-            <QuickAction title="Lihat SHU" desc="Riwayat pembagian SHU" onClick={() => navigate({ to: "/shu" })} />
-          </CardContent>
-        </Card>
+        <ActivityFeed userId={user?.id} />
       </div>
+
+      {/* Quick actions */}
+      <Card style={{ boxShadow: "var(--shadow-card)" }}>
+        <CardHeader><CardTitle className="flex items-center justify-between text-base">Aksi Cepat <ArrowUpRight className="h-4 w-4 text-muted-foreground" /></CardTitle></CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <QuickAction title="Setor Simpanan" desc="Pokok / wajib / sukarela" onClick={() => navigate({ to: "/simpanan" })} />
+          <QuickAction title="Ajukan Pinjaman" desc="Mulai dari simulasi" onClick={() => navigate({ to: "/pinjaman" })} />
+          <QuickAction title="Bayar Angsuran" desc="Upload bukti transfer" onClick={() => navigate({ to: "/angsuran" })} />
+          <QuickAction title="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
+        </CardContent>
+      </Card>
+
+      <FloatingActionButton />
     </div>
   );
 }
 
 function QuickAction({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="group flex w-full items-center justify-between rounded-xl border border-border bg-background p-3 text-left transition-colors hover:bg-muted">
+    <button onClick={onClick} className="group flex w-full items-center justify-between rounded-xl border border-border bg-background p-3 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
       <div>
         <p className="text-sm font-medium">{title}</p>
         <p className="text-xs text-muted-foreground">{desc}</p>
       </div>
-      <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+      <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
     </button>
   );
 }
