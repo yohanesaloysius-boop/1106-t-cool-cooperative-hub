@@ -54,7 +54,7 @@ export function ActivityFeed({ userId, limit = 8 }: { userId?: string; limit?: n
             </div>
           ))
         ) : items.length === 0 ? (
-          <EmptyState icon={Inbox} title="Belum ada transaksi" description="Aktivitas keuangan akan tampil di sini." />
+          <EmptyState icon={Inbox} title="Belum ada transaksi" desc="Aktivitas keuangan akan tampil di sini." />
         ) : (
           items.map((t) => (
             <div key={t.id} className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50">
