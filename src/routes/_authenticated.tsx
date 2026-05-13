@@ -102,7 +102,21 @@ function AuthLayout() {
           </div>
         </header>
 
-        <main className="p-4 md:p-8 pb-24 lg:pb-8"><Outlet /></main>
+        <main className="p-4 md:p-8 pb-24 lg:pb-8">
+          {profile && profile.status !== "active" && (
+            <div className={cn(
+              "mb-4 rounded-xl border p-3 text-sm",
+              profile.status === "pending" && "border-warning/40 bg-warning/10 text-foreground",
+              profile.status === "suspended" && "border-muted bg-muted text-muted-foreground",
+              profile.status === "rejected" && "border-destructive/40 bg-destructive/10 text-foreground",
+            )}>
+              {profile.status === "pending" && "Akun Anda menunggu verifikasi pengurus. Sebagian fitur dibatasi sampai akun diaktifkan."}
+              {profile.status === "suspended" && "Akun Anda saat ini ditangguhkan. Hubungi pengurus untuk informasi lebih lanjut."}
+              {profile.status === "rejected" && "Pendaftaran Anda ditolak. Silakan hubungi pengurus koperasi."}
+            </div>
+          )}
+          <Outlet />
+        </main>
 
         {/* Mobile bottom nav */}
         <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card lg:hidden">
