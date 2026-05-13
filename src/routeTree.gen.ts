@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
 import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
+import { Route as AuthenticatedRapatRouteImport } from './routes/_authenticated/rapat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
@@ -72,6 +73,11 @@ const AuthenticatedShuRoute = AuthenticatedShuRouteImport.update({
 const AuthenticatedRiwayatRoute = AuthenticatedRiwayatRouteImport.update({
   id: '/riwayat',
   path: '/riwayat',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRapatRoute = AuthenticatedRapatRouteImport.update({
+  id: '/rapat',
+  path: '/rapat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/rapat': typeof AuthenticatedRapatRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/rapat': typeof AuthenticatedRapatRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/rapat': typeof AuthenticatedRapatRoute
   '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/kalkulator'
     | '/pinjaman'
     | '/profil'
+    | '/rapat'
     | '/riwayat'
     | '/shu'
     | '/simpanan'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/kalkulator'
     | '/pinjaman'
     | '/profil'
+    | '/rapat'
     | '/riwayat'
     | '/shu'
     | '/simpanan'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kalkulator'
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
+    | '/_authenticated/rapat'
     | '/_authenticated/riwayat'
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
@@ -391,6 +403,13 @@ declare module '@tanstack/react-router' {
       path: '/riwayat'
       fullPath: '/riwayat'
       preLoaderRoute: typeof AuthenticatedRiwayatRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/rapat': {
+      id: '/_authenticated/rapat'
+      path: '/rapat'
+      fullPath: '/rapat'
+      preLoaderRoute: typeof AuthenticatedRapatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/profil': {
@@ -549,6 +568,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedRapatRoute: typeof AuthenticatedRapatRoute
   AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
   AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
@@ -563,6 +583,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedRapatRoute: AuthenticatedRapatRoute,
   AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
   AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
@@ -583,3 +604,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
