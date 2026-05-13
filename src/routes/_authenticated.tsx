@@ -3,14 +3,14 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, Bell, LogOut, Loader2 } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, Bell, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
 
-const nav = [
+const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
   { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
@@ -19,8 +19,17 @@ const nav = [
   { to: "/shu", label: "SHU", icon: Wallet },
 ];
 
+const adminNav = [
+  { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
+  { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
+  { to: "/admin/simpanan", label: "Verifikasi Simpanan", icon: PiggyBank },
+  { to: "/admin/pinjaman", label: "Approval Pinjaman", icon: ClipboardCheck },
+];
+
 function AuthLayout() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut, roles } = useAuth();
+  const isPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const nav = isPengurus ? [...memberNav, ...adminNav] : memberNav;
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
