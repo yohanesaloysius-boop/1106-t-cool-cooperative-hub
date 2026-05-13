@@ -97,7 +97,7 @@ function AuthLayout() {
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon"><Bell className="h-4 w-4" /></Button>
+            <NotificationCenter />
             <Avatar className="h-8 w-8 lg:hidden"><AvatarFallback>{initials}</AvatarFallback></Avatar>
           </div>
         </header>
