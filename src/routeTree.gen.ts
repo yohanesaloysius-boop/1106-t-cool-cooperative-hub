@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -52,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   id: '/simpanan',
   path: '/simpanan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kalkulator'
     | '/pinjaman'
+    | '/profil'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kalkulator'
     | '/pinjaman'
+    | '/profil'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/kalkulator'
     | '/_authenticated/pinjaman'
+    | '/_authenticated/profil'
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/pinjaman'
@@ -253,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/simpanan'
       fullPath: '/simpanan'
       preLoaderRoute: typeof AuthenticatedSimpananRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pinjaman': {
@@ -344,6 +363,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
 }
 
@@ -353,6 +373,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
 }
 
