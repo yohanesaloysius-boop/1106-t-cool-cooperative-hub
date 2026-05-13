@@ -22,6 +22,7 @@ import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as VerifyRouteImport } from './routes/verify.'
@@ -30,6 +31,7 @@ import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
+import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 
@@ -97,6 +99,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
+  id: '/approval',
+  path: '/approval',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAngsuranRoute = AuthenticatedAngsuranRouteImport.update({
   id: '/angsuran',
   path: '/angsuran',
@@ -140,6 +147,12 @@ const AuthenticatedAdminLaporanRoute =
     path: '/laporan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminApprovalRoute =
+  AuthenticatedAdminApprovalRouteImport.update({
+    id: '/approval',
+    path: '/approval',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAngsuranRoute =
   AuthenticatedAdminAngsuranRouteImport.update({
     id: '/angsuran',
@@ -161,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/verify/': typeof VerifyRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
+  '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -171,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
+  '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -184,6 +199,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
+  '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -194,6 +210,7 @@ export interface FileRoutesByTo {
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
+  '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -210,6 +227,7 @@ export interface FileRoutesById {
   '/verify/': typeof VerifyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
+  '/_authenticated/approval': typeof AuthenticatedApprovalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -220,6 +238,7 @@ export interface FileRoutesById {
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
+  '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -236,6 +255,7 @@ export interface FileRouteTypes {
     | '/verify/'
     | '/admin'
     | '/angsuran'
+    | '/approval'
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
@@ -246,6 +266,7 @@ export interface FileRouteTypes {
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/angsuran'
+    | '/admin/approval'
     | '/admin/laporan'
     | '/admin/pinjaman'
     | '/admin/shu'
@@ -259,6 +280,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify'
     | '/angsuran'
+    | '/approval'
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
@@ -269,6 +291,7 @@ export interface FileRouteTypes {
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/angsuran'
+    | '/admin/approval'
     | '/admin/laporan'
     | '/admin/pinjaman'
     | '/admin/shu'
@@ -284,6 +307,7 @@ export interface FileRouteTypes {
     | '/verify/'
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
+    | '/_authenticated/approval'
     | '/_authenticated/dashboard'
     | '/_authenticated/dokumen'
     | '/_authenticated/kalkulator'
@@ -294,6 +318,7 @@ export interface FileRouteTypes {
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
+    | '/_authenticated/admin/approval'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/shu'
@@ -403,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/approval': {
+      id: '/_authenticated/approval'
+      path: '/approval'
+      fullPath: '/approval'
+      preLoaderRoute: typeof AuthenticatedApprovalRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/angsuran': {
       id: '/_authenticated/angsuran'
       path: '/angsuran'
@@ -459,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLaporanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/approval': {
+      id: '/_authenticated/admin/approval'
+      path: '/approval'
+      fullPath: '/admin/approval'
+      preLoaderRoute: typeof AuthenticatedAdminApprovalRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/angsuran': {
       id: '/_authenticated/admin/angsuran'
       path: '/angsuran'
@@ -479,6 +518,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnggotaRoute: typeof AuthenticatedAdminAnggotaRoute
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
+  AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
@@ -489,6 +529,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnggotaRoute: AuthenticatedAdminAnggotaRoute,
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
+  AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
@@ -502,6 +543,7 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
+  AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
@@ -515,6 +557,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
+  AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
