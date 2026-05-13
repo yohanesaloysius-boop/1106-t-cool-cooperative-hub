@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,8 +7,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
+import { FileUpload } from "@/components/file-upload";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -25,10 +27,13 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   nama_lengkap: z.string().trim().min(2, "Nama minimal 2 karakter").max(100),
+  nik: z.string().trim().regex(/^\d{16}$/, "NIK harus 16 digit"),
   email: z.string().trim().email("Email tidak valid").max(255),
-  no_hp: z.string().trim().min(8, "Nomor HP tidak valid").max(20),
-  password: z.string().min(6, "Password minimal 6 karakter").max(72),
+  no_hp: z.string().trim().regex(/^[0-9+\-\s]{8,20}$/, "Nomor HP tidak valid"),
+  alamat: z.string().trim().min(5, "Alamat minimal 5 karakter").max(500),
+  password: z.string().min(8, "Password minimal 8 karakter").max(72),
 });
+
 
 function AuthPage() {
   const { mode } = Route.useSearch();
