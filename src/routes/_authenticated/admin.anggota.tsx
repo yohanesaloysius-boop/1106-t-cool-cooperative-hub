@@ -137,6 +137,9 @@ function AnggotaPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
                           {m.status !== "active" && (
                             <Button size="sm" variant="ghost" onClick={() => update.mutate({ id: m.id, status: "active" })}>
                               <CheckCircle2 className="h-4 w-4 text-success" />
