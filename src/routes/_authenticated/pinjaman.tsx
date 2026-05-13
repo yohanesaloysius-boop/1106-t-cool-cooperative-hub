@@ -12,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, HandCoins, Loader2, Calculator } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
+import { FileUpload } from "@/components/file-upload";
+import { LoanDetailDialog } from "@/components/loan-detail-dialog";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -37,7 +39,7 @@ const schema = z.object({
   bunga_persen: z.coerce.number().min(0).max(20),
   bunga_jenis: z.enum(["flat", "efektif", "menurun"]),
   tujuan: z.string().trim().min(5, "Tujuan minimal 5 karakter").max(500),
-  dokumen_url: z.string().trim().url().max(500).optional().or(z.literal("")),
+  dokumen_url: z.string().trim().max(500).optional().or(z.literal("")),
 });
 
 function PinjamanPage() {
@@ -153,8 +155,18 @@ function PinjamanPage() {
                   <Textarea className="mt-2" rows={3} maxLength={500} placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} />
                 </div>
                 <div>
-                  <Label>URL Dokumen Pendukung (opsional)</Label>
-                  <Input type="url" className="mt-2" placeholder="https://..." value={form.dokumen_url} onChange={(e) => setForm({ ...form, dokumen_url: e.target.value })} />
+                  <Label>Dokumen Pendukung (PDF/Gambar — opsional)</Label>
+                  <div className="mt-2">
+                    <FileUpload
+                      bucket="ktp"
+                      userId={user!.id}
+                      accept="image/*,application/pdf"
+                      label=""
+                      hint="Disimpan privat untuk verifikasi pengurus."
+                      maxMB={8}
+                      onUploaded={(r) => setForm({ ...form, dokumen_url: r.path })}
+                    />
+                  </div>
                 </div>
                 {sim && (
                   <div className="rounded-xl p-4 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
@@ -197,6 +209,10 @@ function PinjamanPage() {
                     <div className="text-right">
                       <StatusBadge status={r.status} />
                       <p className="mt-1 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                      <LoanDetailDialog
+                        pinjamanId={r.id}
+                        trigger={<Button size="sm" variant="ghost" className="mt-1 h-7 gap-1 text-xs"><Eye className="h-3 w-3" /> Detail</Button>}
+                      />
                     </div>
                   </div>
                 </div>

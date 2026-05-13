@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 
 const fmt = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
 
@@ -135,25 +136,53 @@ export function LoanCalculator({ onApply }: { onApply?: (input: { nominal: numbe
           </div>
         </div>
 
-        <div>
-          <p className="mb-3 text-sm font-semibold">Simulasi Jadwal Angsuran</p>
-          <div className="max-h-72 overflow-auto rounded-xl border border-border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted text-xs">
-                <tr><th className="p-2 text-left">#</th><th className="p-2 text-right">Pokok</th><th className="p-2 text-right">Bunga</th><th className="p-2 text-right">Cicilan</th><th className="p-2 text-right">Sisa</th></tr>
-              </thead>
-              <tbody>
-                {result.schedule.map((r) => (
-                  <tr key={r.ke} className="border-t border-border">
-                    <td className="p-2">{r.ke}</td>
-                    <td className="p-2 text-right">{fmt.format(Math.round(r.pokok))}</td>
-                    <td className="p-2 text-right">{fmt.format(Math.round(r.bunga))}</td>
-                    <td className="p-2 text-right font-medium">{fmt.format(Math.round(r.cicilan))}</td>
-                    <td className="p-2 text-right text-muted-foreground">{fmt.format(Math.round(r.sisa))}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <p className="mb-3 text-sm font-semibold">Grafik Simulasi</p>
+            <div className="h-64 rounded-xl border border-border p-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={result.schedule.map((s) => ({ ke: s.ke, Pokok: Math.round(s.pokok), Bunga: Math.round(s.bunga), Sisa: Math.round(s.sisa) }))}>
+                  <defs>
+                    <linearGradient id="gPokok" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="gBunga" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="ke" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(v: number) => fmt.format(v)} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid hsl(var(--border))" }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Area type="monotone" dataKey="Pokok" stackId="1" stroke="hsl(var(--primary))" fill="url(#gPokok)" />
+                  <Area type="monotone" dataKey="Bunga" stackId="1" stroke="hsl(var(--destructive))" fill="url(#gBunga)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div>
+            <p className="mb-3 text-sm font-semibold">Jadwal Angsuran</p>
+            <div className="max-h-64 overflow-auto rounded-xl border border-border">
+              <table className="w-full text-sm">
+                <thead className="bg-muted text-xs sticky top-0">
+                  <tr><th className="p-2 text-left">#</th><th className="p-2 text-right">Pokok</th><th className="p-2 text-right">Bunga</th><th className="p-2 text-right">Cicilan</th><th className="p-2 text-right">Sisa</th></tr>
+                </thead>
+                <tbody>
+                  {result.schedule.map((r) => (
+                    <tr key={r.ke} className="border-t border-border">
+                      <td className="p-2">{r.ke}</td>
+                      <td className="p-2 text-right">{fmt.format(Math.round(r.pokok))}</td>
+                      <td className="p-2 text-right">{fmt.format(Math.round(r.bunga))}</td>
+                      <td className="p-2 text-right font-medium">{fmt.format(Math.round(r.cicilan))}</td>
+                      <td className="p-2 text-right text-muted-foreground">{fmt.format(Math.round(r.sisa))}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </CardContent>
