@@ -70,7 +70,7 @@ function PinjamanApprovalPage() {
       const next = nextStatusFromStage[row.status as keyof typeof nextStatusFromStage];
       if (!next) throw new Error("Status tidak valid untuk approval.");
       const sigId = await recordSignature(sig, row.id);
-      const updates: Record<string, unknown> = { status: next };
+      const updates: { status: typeof next; approved_at?: string } = { status: next };
       if (next === "approved") updates.approved_at = new Date().toISOString();
       const { error } = await supabase.from("pinjaman").update(updates).eq("id", row.id);
       if (error) throw error;
@@ -119,30 +119,25 @@ function PinjamanApprovalPage() {
   const disburse = useMutation({
     mutationFn: async ({ row, sig }: { row: any; sig: SignatureResult }) => {
       await recordSignature(sig, row.id);
-      const c = calcLoan({
-        nominal: Number(row.nominal),
-        tenor_bulan: row.tenor_bulan,
-        bunga_persen: Number(row.bunga_persen),
-        bunga_jenis: row.bunga_jenis,
-      });
+      const c = calcLoan(Number(row.nominal), row.tenor_bulan, Number(row.bunga_persen), row.bunga_jenis);
       const { error } = await supabase.from("pinjaman").update({
         status: "disbursed",
         disbursed_at: new Date().toISOString(),
-        cicilan_per_bulan: c.monthly,
-        total_bayar: c.total,
+        cicilan_per_bulan: c.cicilan,
+        total_bayar: c.totalBayar,
       }).eq("id", row.id);
       if (error) throw error;
 
       // generate angsuran schedule
       const today = new Date();
       const rows = c.schedule.map((s) => {
-        const due = new Date(today.getFullYear(), today.getMonth() + s.month, today.getDate());
+        const due = new Date(today.getFullYear(), today.getMonth() + s.ke, today.getDate());
         return {
           pinjaman_id: row.id,
           user_id: row.user_id,
-          cicilan_ke: s.month,
+          cicilan_ke: s.ke,
           jatuh_tempo: due.toISOString().slice(0, 10),
-          nominal: s.payment,
+          nominal: s.cicilan,
           status: "unpaid" as const,
         };
       });
@@ -218,7 +213,7 @@ function PinjamanApprovalPage() {
                             <>
                               <SignaturePadDialog
                                 title="Setujui Pinjaman"
-                                onSign={(sig) => approve.mutateAsync({ row: r, sig })}
+                                onSign={async (sig) => { await approve.mutateAsync({ row: r, sig }); }}
                                 trigger={<Button size="sm" variant="ghost"><PenLine className="h-4 w-4 text-success" /></Button>}
                               />
                               <Button size="sm" variant="ghost" onClick={() => reject.mutate(r)}>
