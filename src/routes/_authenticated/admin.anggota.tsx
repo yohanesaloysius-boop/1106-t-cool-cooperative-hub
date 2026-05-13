@@ -30,14 +30,16 @@ const statusCls: Record<string, string> = {
 
 function AnggotaPage() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [q, setQ] = useState("");
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-members"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id,nomor_anggota,nama_lengkap,email,no_hp,status,joined_at")
+        .select("id,nomor_anggota,nama_lengkap,email,no_hp,status,joined_at,foto_url")
         .order("joined_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -45,10 +47,34 @@ function AnggotaPage() {
     },
   });
 
+  useEffect(() => {
+    const ch = supabase.channel("admin-members-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => qc.invalidateQueries({ queryKey: ["admin-members"] }))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [qc]);
+
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "active" | "suspended" | "rejected" }) => {
       const { error } = await supabase.from("profiles").update({ status }).eq("id", id);
       if (error) throw error;
+      // audit + notif
+      await Promise.all([
+        supabase.from("audit_logs").insert({
+          actor_id: user?.id, entity: "profiles", entity_id: id,
+          action: `member_${status}`, new_data: { status },
+        }),
+        supabase.from("notifications").insert({
+          user_id: id,
+          judul: status === "active" ? "Akun Anda telah diaktifkan" : status === "suspended" ? "Akun ditangguhkan" : "Pendaftaran ditolak",
+          pesan: status === "active"
+            ? "Selamat! Akun Anda telah diverifikasi pengurus dan dapat digunakan sepenuhnya."
+            : status === "suspended" ? "Akun Anda ditangguhkan oleh pengurus. Silakan hubungi sekretaris."
+            : "Pendaftaran Anda ditolak. Hubungi pengurus untuk informasi lanjut.",
+          kategori: status === "active" ? "success" : status === "suspended" ? "warning" : "error",
+          ref_table: "profiles", ref_id: id,
+        }),
+      ]);
     },
     onSuccess: (_, v) => {
       toast.success(`Status anggota diubah ke ${statusLabel[v.status]}`);
