@@ -165,6 +165,97 @@ function AnggotaPage() {
           )}
         </CardContent>
       </Card>
+
+      <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
+    </div>
+  );
+}
+
+function MemberDetailDialog({ id, onClose }: { id: string | null; onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["member-detail", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", id!).maybeSingle();
+      if (error) throw error;
+      let ktpUrl: string | null = null;
+      if (data?.ktp_url) {
+        const { data: signed } = await supabase.storage.from("ktp").createSignedUrl(data.ktp_url, 120);
+        ktpUrl = signed?.signedUrl ?? null;
+      }
+      const { data: docs } = await supabase.from("documents").select("id,nama,kategori,file_url,created_at").eq("user_id", id!).is("deleted_at", null).order("created_at", { ascending: false });
+      return { profile: data, ktpUrl, docs: docs ?? [] };
+    },
+  });
+
+  const openDoc = async (path: string) => {
+    const { data } = await supabase.storage.from("ktp").createSignedUrl(path, 120);
+    if (data) window.open(data.signedUrl, "_blank");
+  };
+
+  return (
+    <Dialog open={!!id} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle className="flex items-center gap-2"><IdCard className="h-4 w-4" /> Detail Anggota</DialogTitle></DialogHeader>
+        {isLoading || !data?.profile ? (
+          <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+        ) : (
+          <div className="space-y-5">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16"><AvatarImage src={data.profile.foto_url ?? undefined} /><AvatarFallback>{(data.profile.nama_lengkap ?? "?").slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
+              <div>
+                <p className="font-bold">{data.profile.nama_lengkap}</p>
+                <p className="font-mono text-xs text-muted-foreground">{data.profile.nomor_anggota ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{data.profile.email}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3 text-xs">
+              <Info label="NIK" value={data.profile.nik} />
+              <Info label="No HP" value={data.profile.no_hp} />
+              <Info label="Tempat/Tgl Lahir" value={[data.profile.tempat_lahir, data.profile.tanggal_lahir].filter(Boolean).join(", ")} />
+              <Info label="Pekerjaan" value={data.profile.pekerjaan} />
+              <Info label="Jenis Kelamin" value={data.profile.jenis_kelamin === "L" ? "Laki-laki" : data.profile.jenis_kelamin === "P" ? "Perempuan" : null} />
+              <Info label="Bergabung" value={new Date(data.profile.joined_at).toLocaleDateString("id-ID")} />
+              <div className="col-span-2"><Info label="Alamat" value={data.profile.alamat} /></div>
+            </div>
+
+            {data.ktpUrl && (
+              <div>
+                <p className="mb-2 text-xs font-semibold">Foto KTP</p>
+                <img src={data.ktpUrl} alt="KTP" className="w-full rounded-lg border border-border" />
+              </div>
+            )}
+
+            <div>
+              <p className="mb-2 text-xs font-semibold">Dokumen Pendukung ({data.docs.length})</p>
+              {data.docs.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Tidak ada dokumen.</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {data.docs.map((d) => (
+                    <button key={d.id} onClick={() => openDoc(d.file_url)} className="flex w-full items-center gap-2 rounded-md border border-border p-2 text-left text-xs hover:bg-muted">
+                      <FileText className="h-3.5 w-3.5 text-primary" />
+                      <span className="flex-1 truncate">{d.nama}</span>
+                      <span className="text-muted-foreground">{d.kategori}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        <DialogFooter><Button variant="outline" onClick={onClose}>Tutup</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Info({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div>
+      <p className="text-muted-foreground">{label}</p>
+      <p className="font-medium">{value || "—"}</p>
     </div>
   );
 }
