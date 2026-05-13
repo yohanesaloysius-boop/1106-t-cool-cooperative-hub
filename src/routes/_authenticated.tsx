@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 
@@ -15,8 +15,11 @@ const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
   { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
-  { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
   { to: "/angsuran", label: "Angsuran", icon: Receipt },
+  { to: "/riwayat", label: "Riwayat", icon: History },
+  { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
+  { to: "/profil", label: "Profil", icon: UserIcon },
+  { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
   { to: "/shu", label: "SHU", icon: Wallet },
 ];
 

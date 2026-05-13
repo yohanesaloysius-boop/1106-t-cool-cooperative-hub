@@ -15,8 +15,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
+import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
+import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -54,6 +57,16 @@ const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   path: '/simpanan',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedRiwayatRoute = AuthenticatedRiwayatRouteImport.update({
+  id: '/riwayat',
+  path: '/riwayat',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
   id: '/pinjaman',
   path: '/pinjaman',
@@ -62,6 +75,11 @@ const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
 const AuthenticatedKalkulatorRoute = AuthenticatedKalkulatorRouteImport.update({
   id: '/kalkulator',
   path: '/kalkulator',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDokumenRoute = AuthenticatedDokumenRouteImport.update({
+  id: '/dokumen',
+  path: '/dokumen',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -111,8 +129,11 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/profil': typeof AuthenticatedProfilRoute
+  '/riwayat': typeof AuthenticatedRiwayatRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -126,8 +147,11 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/profil': typeof AuthenticatedProfilRoute
+  '/riwayat': typeof AuthenticatedRiwayatRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -144,8 +168,11 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -162,8 +189,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/dashboard'
+    | '/dokumen'
     | '/kalkulator'
     | '/pinjaman'
+    | '/profil'
+    | '/riwayat'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -177,8 +207,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/angsuran'
     | '/dashboard'
+    | '/dokumen'
     | '/kalkulator'
     | '/pinjaman'
+    | '/profil'
+    | '/riwayat'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -194,8 +227,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dokumen'
     | '/_authenticated/kalkulator'
     | '/_authenticated/pinjaman'
+    | '/_authenticated/profil'
+    | '/_authenticated/riwayat'
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/pinjaman'
@@ -255,6 +291,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSimpananRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/riwayat': {
+      id: '/_authenticated/riwayat'
+      path: '/riwayat'
+      fullPath: '/riwayat'
+      preLoaderRoute: typeof AuthenticatedRiwayatRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/pinjaman': {
       id: '/_authenticated/pinjaman'
       path: '/pinjaman'
@@ -267,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/kalkulator'
       fullPath: '/kalkulator'
       preLoaderRoute: typeof AuthenticatedKalkulatorRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dokumen': {
+      id: '/_authenticated/dokumen'
+      path: '/dokumen'
+      fullPath: '/dokumen'
+      preLoaderRoute: typeof AuthenticatedDokumenRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -342,8 +399,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
 }
 
@@ -351,8 +411,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
 }
 
@@ -370,13 +433,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
