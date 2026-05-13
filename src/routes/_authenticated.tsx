@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 
@@ -34,6 +34,7 @@ const adminNav = [
   { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
   { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
   { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
+  { to: "/admin/audit", label: "Audit Log", icon: Activity },
 ];
 
 function AuthLayout() {
