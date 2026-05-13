@@ -71,7 +71,7 @@ function AnggotaPage() {
             ? "Selamat! Akun Anda telah diverifikasi pengurus dan dapat digunakan sepenuhnya."
             : status === "suspended" ? "Akun Anda ditangguhkan oleh pengurus. Silakan hubungi sekretaris."
             : "Pendaftaran Anda ditolak. Hubungi pengurus untuk informasi lanjut.",
-          kategori: status === "active" ? "success" : status === "suspended" ? "warning" : "error",
+          kategori: status === "active" ? "sukses" : status === "suspended" ? "peringatan" : "error",
           ref_table: "profiles", ref_id: id,
         }),
       ]);
