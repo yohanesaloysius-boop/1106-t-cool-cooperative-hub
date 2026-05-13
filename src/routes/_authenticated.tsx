@@ -3,8 +3,9 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, Bell, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationCenter } from "@/components/dashboard/notification-center";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
