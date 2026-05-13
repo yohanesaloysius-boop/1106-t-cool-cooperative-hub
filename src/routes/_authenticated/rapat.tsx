@@ -374,7 +374,7 @@ function UploadNotulenDialog({ meetingId, userId }: { meetingId: string; userId:
           <div><Label>Keputusan / Resolusi</Label><Textarea value={keputusan} onChange={(e) => setKeputusan(e.target.value)} rows={2} placeholder="Keputusan yang diambil dalam rapat" /></div>
           <div>
             <Label>Lampiran (opsional)</Label>
-            <FileUpload bucket="ktp" userId={userId} accept="application/pdf,image/*" onUploaded={(r) => setAttachment(r.url)} />
+            <FileUpload bucket="ktp" userId={userId} accept="application/pdf,image/*" label="Lampiran Notulen" onUploaded={(r) => setAttachment(r.publicUrl ?? r.path)} />
             {attachment && <p className="mt-1 text-xs text-success">✓ File terunggah</p>}
           </div>
           <div>
