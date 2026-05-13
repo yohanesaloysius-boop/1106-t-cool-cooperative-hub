@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 
@@ -28,6 +28,8 @@ const adminNav = [
   { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
   { to: "/admin/simpanan", label: "Verifikasi Simpanan", icon: PiggyBank },
   { to: "/admin/pinjaman", label: "Approval Pinjaman", icon: ClipboardCheck },
+  { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
+  { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
 ];
 
 function AuthLayout() {
