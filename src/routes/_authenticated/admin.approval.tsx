@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/admin/approval")({
   component: AdminApprovalPage,
 });
 
-type ApprovalRole = "sekretaris" | "bendahara" | "ketua";
+type ApprovalRole = "sekretaris" | "bendahara" | "ketua" | "anggota" | "super_admin";
 type TargetType = "pinjaman" | "simpanan" | "anggota" | "pengumuman" | "lainnya";
 type Status = "pending" | "approved" | "rejected" | "cancelled";
 
@@ -269,7 +269,7 @@ function ApprovalDetailDialog({ row, userId, canAct }: { row: ApprovalRow; userI
           user_id: row.created_by,
           judul: `Approval ${action === "approved" ? "Disetujui" : "Ditolak"}`,
           pesan: `${TARGET_LABEL[row.target_type] ?? row.target_type} step ${row.step_order} (${row.required_role}) telah ${action === "approved" ? "disetujui" : "ditolak"}.`,
-          kategori: action === "approved" ? "success" : "warning",
+          kategori: action === "approved" ? "sukses" : "peringatan",
           ref_table: "approvals",
           ref_id: row.id,
         });
