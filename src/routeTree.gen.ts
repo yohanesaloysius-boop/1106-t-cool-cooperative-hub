@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
+  id: '/simpanan',
+  path: '/simpanan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedKalkulatorRoute = AuthenticatedKalkulatorRouteImport.update({
   id: '/kalkulator',
   path: '/kalkulator',
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/simpanan': typeof AuthenticatedSimpananRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/simpanan': typeof AuthenticatedSimpananRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/kalkulator'
+  fullPaths: '/' | '/auth' | '/dashboard' | '/kalkulator' | '/simpanan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/kalkulator'
+  to: '/' | '/auth' | '/dashboard' | '/kalkulator' | '/simpanan'
   id:
     | '__root__'
     | '/'
@@ -72,6 +81,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/kalkulator'
+    | '/_authenticated/simpanan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -103,6 +113,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/simpanan': {
+      id: '/_authenticated/simpanan'
+      path: '/simpanan'
+      fullPath: '/simpanan'
+      preLoaderRoute: typeof AuthenticatedSimpananRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/kalkulator': {
       id: '/_authenticated/kalkulator'
       path: '/kalkulator'
@@ -123,11 +140,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
+  AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
+  AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
