@@ -155,8 +155,18 @@ function PinjamanPage() {
                   <Textarea className="mt-2" rows={3} maxLength={500} placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} />
                 </div>
                 <div>
-                  <Label>URL Dokumen Pendukung (opsional)</Label>
-                  <Input type="url" className="mt-2" placeholder="https://..." value={form.dokumen_url} onChange={(e) => setForm({ ...form, dokumen_url: e.target.value })} />
+                  <Label>Dokumen Pendukung (PDF/Gambar — opsional)</Label>
+                  <div className="mt-2">
+                    <FileUpload
+                      bucket="ktp"
+                      userId={user!.id}
+                      accept="image/*,application/pdf"
+                      label=""
+                      hint="Disimpan privat untuk verifikasi pengurus."
+                      maxMB={8}
+                      onUploaded={(r) => setForm({ ...form, dokumen_url: r.path })}
+                    />
+                  </div>
                 </div>
                 {sim && (
                   <div className="rounded-xl p-4 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
