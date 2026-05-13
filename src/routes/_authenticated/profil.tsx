@@ -63,9 +63,8 @@ function ProfilPage() {
   const save = useMutation({
     mutationFn: async (payload: Record<string, string>) => {
       const parsed = schema.parse(payload);
-      const update: Record<string, string | null> = {};
-      Object.entries(parsed).forEach(([k, v]) => { update[k] = v === "" ? null : (v as string); });
-      const { error } = await supabase.from("profiles").update(update).eq("id", user!.id);
+      const update = Object.fromEntries(Object.entries(parsed).map(([k, v]) => [k, v === "" ? null : v]));
+      const { error } = await supabase.from("profiles").update(update as never).eq("id", user!.id);
       if (error) throw error;
       await supabase.from("audit_logs").insert({
         actor_id: user!.id, entity: "profiles", entity_id: user!.id,
