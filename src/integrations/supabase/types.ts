@@ -14,16 +14,291 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      angsuran: {
+        Row: {
+          bukti_url: string | null
+          cicilan_ke: number
+          created_at: string
+          id: string
+          jatuh_tempo: string
+          nominal: number
+          paid_at: string | null
+          pinjaman_id: string
+          status: Database["public"]["Enums"]["angsuran_status"]
+          user_id: string
+        }
+        Insert: {
+          bukti_url?: string | null
+          cicilan_ke: number
+          created_at?: string
+          id?: string
+          jatuh_tempo: string
+          nominal: number
+          paid_at?: string | null
+          pinjaman_id: string
+          status?: Database["public"]["Enums"]["angsuran_status"]
+          user_id: string
+        }
+        Update: {
+          bukti_url?: string | null
+          cicilan_ke?: number
+          created_at?: string
+          id?: string
+          jatuh_tempo?: string
+          nominal?: number
+          paid_at?: string | null
+          pinjaman_id?: string
+          status?: Database["public"]["Enums"]["angsuran_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "angsuran_pinjaman_id_fkey"
+            columns: ["pinjaman_id"]
+            isOneToOne: false
+            referencedRelation: "pinjaman"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pinjaman: {
+        Row: {
+          approved_at: string | null
+          bukti_pencairan_url: string | null
+          bunga_jenis: Database["public"]["Enums"]["bunga_jenis"]
+          bunga_persen: number
+          cicilan_per_bulan: number | null
+          created_at: string
+          disbursed_at: string | null
+          dokumen_url: string | null
+          id: string
+          nominal: number
+          status: Database["public"]["Enums"]["pinjaman_status"]
+          tenor_bulan: number
+          total_bayar: number | null
+          tujuan: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          bukti_pencairan_url?: string | null
+          bunga_jenis?: Database["public"]["Enums"]["bunga_jenis"]
+          bunga_persen?: number
+          cicilan_per_bulan?: number | null
+          created_at?: string
+          disbursed_at?: string | null
+          dokumen_url?: string | null
+          id?: string
+          nominal: number
+          status?: Database["public"]["Enums"]["pinjaman_status"]
+          tenor_bulan: number
+          total_bayar?: number | null
+          tujuan?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          bukti_pencairan_url?: string | null
+          bunga_jenis?: Database["public"]["Enums"]["bunga_jenis"]
+          bunga_persen?: number
+          cicilan_per_bulan?: number | null
+          created_at?: string
+          disbursed_at?: string | null
+          dokumen_url?: string | null
+          id?: string
+          nominal?: number
+          status?: Database["public"]["Enums"]["pinjaman_status"]
+          tenor_bulan?: number
+          total_bayar?: number | null
+          tujuan?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          alamat: string | null
+          created_at: string
+          email: string | null
+          foto_url: string | null
+          id: string
+          jenis_kelamin: string | null
+          joined_at: string
+          ktp_url: string | null
+          nama_lengkap: string
+          nik: string | null
+          no_hp: string | null
+          nomor_anggota: string | null
+          pekerjaan: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          tanggal_lahir: string | null
+          tempat_lahir: string | null
+          updated_at: string
+        }
+        Insert: {
+          alamat?: string | null
+          created_at?: string
+          email?: string | null
+          foto_url?: string | null
+          id: string
+          jenis_kelamin?: string | null
+          joined_at?: string
+          ktp_url?: string | null
+          nama_lengkap: string
+          nik?: string | null
+          no_hp?: string | null
+          nomor_anggota?: string | null
+          pekerjaan?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          tanggal_lahir?: string | null
+          tempat_lahir?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alamat?: string | null
+          created_at?: string
+          email?: string | null
+          foto_url?: string | null
+          id?: string
+          jenis_kelamin?: string | null
+          joined_at?: string
+          ktp_url?: string | null
+          nama_lengkap?: string
+          nik?: string | null
+          no_hp?: string | null
+          nomor_anggota?: string | null
+          pekerjaan?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          tanggal_lahir?: string | null
+          tempat_lahir?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shu: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          dibagikan_at: string | null
+          id: string
+          nominal: number
+          tahun: number
+          user_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          dibagikan_at?: string | null
+          id?: string
+          nominal?: number
+          tahun: number
+          user_id: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          dibagikan_at?: string | null
+          id?: string
+          nominal?: number
+          tahun?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      simpanan: {
+        Row: {
+          bukti_url: string | null
+          catatan: string | null
+          created_at: string
+          id: string
+          jenis: Database["public"]["Enums"]["simpanan_jenis"]
+          nominal: number
+          status: Database["public"]["Enums"]["payment_status"]
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          bukti_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis: Database["public"]["Enums"]["simpanan_jenis"]
+          nominal: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          bukti_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis?: Database["public"]["Enums"]["simpanan_jenis"]
+          nominal?: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_pengurus: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      angsuran_status: "unpaid" | "pending" | "paid" | "overdue"
+      app_role: "super_admin" | "ketua" | "sekretaris" | "bendahara" | "anggota"
+      bunga_jenis: "flat" | "efektif" | "menurun"
+      member_status: "pending" | "active" | "suspended" | "rejected"
+      payment_status: "pending" | "verified" | "rejected"
+      pinjaman_status:
+        | "draft"
+        | "pending_sekretaris"
+        | "pending_bendahara"
+        | "pending_ketua"
+        | "approved"
+        | "rejected"
+        | "disbursed"
+        | "completed"
+        | "cancelled"
+      simpanan_jenis: "pokok" | "wajib" | "sukarela"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +425,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      angsuran_status: ["unpaid", "pending", "paid", "overdue"],
+      app_role: ["super_admin", "ketua", "sekretaris", "bendahara", "anggota"],
+      bunga_jenis: ["flat", "efektif", "menurun"],
+      member_status: ["pending", "active", "suspended", "rejected"],
+      payment_status: ["pending", "verified", "rejected"],
+      pinjaman_status: [
+        "draft",
+        "pending_sekretaris",
+        "pending_bendahara",
+        "pending_ketua",
+        "approved",
+        "rejected",
+        "disbursed",
+        "completed",
+        "cancelled",
+      ],
+      simpanan_jenis: ["pokok", "wajib", "sukarela"],
+    },
   },
 } as const
