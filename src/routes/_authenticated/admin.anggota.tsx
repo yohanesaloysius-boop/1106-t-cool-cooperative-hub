@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/anggota")({
   head: () => ({ meta: [{ title: "Kelola Anggota — T-COOL Koperasi" }] }),
