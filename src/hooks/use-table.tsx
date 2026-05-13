@@ -59,7 +59,7 @@ export function useTable<TRow = any>(opts: UseTableOptions<TRow>) {
     setLoading(true);
     setError(null);
     try {
-      let q: any = supabase.from(table).select(select, { count: "exact" });
+      let q: any = (supabase.from(table as any) as any).select(select, { count: "exact" });
       if (filters) {
         for (const [k, v] of Object.entries(filters)) {
           if (v === undefined || v === null || v === "") continue;
