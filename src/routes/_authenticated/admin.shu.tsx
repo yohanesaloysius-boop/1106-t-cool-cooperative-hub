@@ -111,7 +111,7 @@ function AdminShu() {
         user_id: r.user_id,
         judul: `SHU Tahun ${tahun} Diterima`,
         pesan: `Anda menerima SHU sebesar ${fmt(Number(r.nominal))} untuk tahun buku ${tahun}.`,
-        kategori: "success" as const,
+        kategori: "sukses" as const,
         url: "/shu",
         ref_table: "shu",
       })));
