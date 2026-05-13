@@ -39,7 +39,7 @@ const schema = z.object({
   bunga_persen: z.coerce.number().min(0).max(20),
   bunga_jenis: z.enum(["flat", "efektif", "menurun"]),
   tujuan: z.string().trim().min(5, "Tujuan minimal 5 karakter").max(500),
-  dokumen_url: z.string().trim().url().max(500).optional().or(z.literal("")),
+  dokumen_url: z.string().trim().max(500).optional().or(z.literal("")),
 });
 
 function PinjamanPage() {
