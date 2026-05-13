@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
+import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
 import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
@@ -55,6 +56,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   id: '/simpanan',
   path: '/simpanan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedShuRoute = AuthenticatedShuRouteImport.update({
+  id: '/shu',
+  path: '/shu',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedRiwayatRoute = AuthenticatedRiwayatRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
+  '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
+  '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
+  '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/pinjaman'
     | '/profil'
     | '/riwayat'
+    | '/shu'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/pinjaman'
     | '/profil'
     | '/riwayat'
+    | '/shu'
     | '/simpanan'
     | '/admin/anggota'
     | '/admin/pinjaman'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
     | '/_authenticated/riwayat'
+    | '/_authenticated/shu'
     | '/_authenticated/simpanan'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/pinjaman'
@@ -289,6 +301,13 @@ declare module '@tanstack/react-router' {
       path: '/simpanan'
       fullPath: '/simpanan'
       preLoaderRoute: typeof AuthenticatedSimpananRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/shu': {
+      id: '/_authenticated/shu'
+      path: '/shu'
+      fullPath: '/shu'
+      preLoaderRoute: typeof AuthenticatedShuRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/riwayat': {
@@ -404,6 +423,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
+  AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
 }
 
@@ -416,6 +436,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
+  AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
 }
 
@@ -433,3 +454,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
