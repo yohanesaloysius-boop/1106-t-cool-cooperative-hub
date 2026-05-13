@@ -151,7 +151,7 @@ function RegisterForm() {
       if (uid) {
         setTempUserId(uid);
         // Patch optional uploaded URLs into profile
-        const updates: Record<string, string> = {};
+        const updates: { ktp_url?: string; foto_url?: string } = {};
         if (ktpRef.current) updates.ktp_url = supabase.storage.from("ktp").getPublicUrl(ktpRef.current.path).data.publicUrl;
         if (avatarRef.current?.publicUrl) updates.foto_url = avatarRef.current.publicUrl;
         if (Object.keys(updates).length > 0) {
