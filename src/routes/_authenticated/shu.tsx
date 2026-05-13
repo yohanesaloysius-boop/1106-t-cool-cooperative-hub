@@ -43,7 +43,7 @@ function ShuPage() {
           {isLoading ? (
             <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}</div>
           ) : !data?.length ? (
-            <EmptyState icon={TrendingUp} title="Belum ada SHU" description="SHU akan dibagikan oleh pengurus pada akhir tahun buku." />
+            <EmptyState icon={TrendingUp} title="Belum ada SHU" desc="SHU akan dibagikan oleh pengurus pada akhir tahun buku." />
           ) : (
             <ul className="divide-y divide-border">
               {data.map((s) => (
