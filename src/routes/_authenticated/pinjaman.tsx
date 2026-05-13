@@ -209,6 +209,10 @@ function PinjamanPage() {
                     <div className="text-right">
                       <StatusBadge status={r.status} />
                       <p className="mt-1 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                      <LoanDetailDialog
+                        pinjamanId={r.id}
+                        trigger={<Button size="sm" variant="ghost" className="mt-1 h-7 gap-1 text-xs"><Eye className="h-3 w-3" /> Detail</Button>}
+                      />
                     </div>
                   </div>
                 </div>
