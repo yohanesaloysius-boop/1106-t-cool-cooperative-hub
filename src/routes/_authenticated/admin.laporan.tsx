@@ -19,7 +19,7 @@ import * as XLSX from "xlsx";
 
 export const Route = createFileRoute("/_authenticated/admin/laporan")({
   head: () => ({ meta: [{ title: "Laporan Keuangan — Admin" }] }),
-  component: AdminLaporan;
+  component: AdminLaporan,
 });
 
 const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
