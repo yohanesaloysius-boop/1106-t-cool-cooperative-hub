@@ -215,4 +215,3 @@ function RegisterForm() {
     </form>
   );
 }
-}
