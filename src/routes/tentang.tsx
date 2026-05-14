@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, HeartHandshake, Sparkles, ShieldCheck, Users, Target, Eye, Phone, MapPin, Mail } from "lucide-react";
+import { ArrowRight, HeartHandshake, Sparkles, ShieldCheck, Users, Target, Eye } from "lucide-react";
 
 export const Route = createFileRoute("/tentang")({
   head: () => ({
