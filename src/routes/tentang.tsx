@@ -80,6 +80,42 @@ function TentangPage() {
         </div>
       </section>
 
+      <section className="container mx-auto px-4 py-12">
+        <div className="rounded-3xl border border-border bg-card p-8 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Hubungi Kami</h2>
+          <p className="mt-2 text-muted-foreground">Punya pertanyaan? Tim kami siap membantu.</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
+            <a href="tel:+6281959171997" className="flex items-start gap-3 rounded-2xl border border-border p-5 transition-all hover:-translate-y-0.5 hover:border-primary/50">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
+                <Phone className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Telepon / WhatsApp</p>
+                <p className="mt-1 font-semibold">0819 5917 1997</p>
+              </div>
+            </a>
+            <a href="mailto:TcoolKoperasi@gmail.com" className="flex items-start gap-3 rounded-2xl border border-border p-5 transition-all hover:-translate-y-0.5 hover:border-primary/50">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
+                <Mail className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Email</p>
+                <p className="mt-1 font-semibold break-all">TcoolKoperasi@gmail.com</p>
+              </div>
+            </a>
+            <div className="flex items-start gap-3 rounded-2xl border border-border p-5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Alamat</p>
+                <p className="mt-1 font-semibold">Center Park Blok 3 No. 3, Simpang Kara, Batam</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="container mx-auto px-4 py-16">
         <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-white" style={{ background: "linear-gradient(135deg, hsl(160 84% 22%), hsl(160 70% 38%))", boxShadow: "var(--shadow-elegant)" }}>
           <div className="max-w-2xl">
