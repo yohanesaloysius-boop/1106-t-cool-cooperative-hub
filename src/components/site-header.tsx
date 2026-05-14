@@ -86,11 +86,11 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  href="mailto:t-coolperasi@gmail.com"
+                  href="mailto:t-coolkoperasi@gmail.com"
                   className="group flex items-start gap-2.5 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="h-4 w-4 mt-0.5 shrink-0" />
-                  <span className="break-all">t-coolperasi@gmail.com</span>
+                  <span className="break-all">t-coolkoperasi@gmail.com</span>
                 </a>
               </li>
               <li className="flex items-start gap-2.5 text-muted-foreground">
