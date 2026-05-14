@@ -11,7 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer } from "lucide-react";
+import { MemberCardPrint } from "@/components/member-card-print";
 
 export const Route = createFileRoute("/_authenticated/admin/anggota")({
   head: () => ({ meta: [{ title: "Kelola Anggota — T-COOL Koperasi" }] }),
@@ -33,6 +34,7 @@ function AnggotaPage() {
   const { user } = useAuth();
   const [q, setQ] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-members"],
@@ -137,8 +139,11 @@ function AnggotaPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)}>
+                          <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)} title="Detail">
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setPrintMember({ id: m.id, nama_lengkap: m.nama_lengkap, nomor_anggota: m.nomor_anggota, foto_url: m.foto_url, joined_at: m.joined_at })} title="Cetak Kartu Anggota">
+                            <Printer className="h-4 w-4 text-primary" />
                           </Button>
                           {m.status !== "active" && (
                             <Button size="sm" variant="ghost" onClick={() => update.mutate({ id: m.id, status: "active" })}>
@@ -167,6 +172,7 @@ function AnggotaPage() {
       </Card>
 
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
+      <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
     </div>
   );
 }

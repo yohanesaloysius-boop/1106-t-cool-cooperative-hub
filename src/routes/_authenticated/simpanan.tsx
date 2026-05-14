@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Plus, PiggyBank, Loader2 } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
+import { FileUpload } from "@/components/file-upload";
 
 export const Route = createFileRoute("/_authenticated/simpanan")({
   head: () => ({ meta: [{ title: "Simpanan Saya — T-COOL Koperasi" }] }),
@@ -26,7 +27,7 @@ const schema = z.object({
   jenis: z.enum(["pokok", "wajib", "sukarela"]),
   nominal: z.coerce.number().min(10_000, "Minimal Rp 10.000").max(1_000_000_000, "Terlalu besar"),
   catatan: z.string().trim().max(500).optional(),
-  bukti_url: z.string().trim().url("URL tidak valid").max(500).optional().or(z.literal("")),
+  bukti_url: z.string().trim().min(1, "Bukti transfer wajib diunggah").max(500),
 });
 
 function SimpananPage() {
@@ -110,8 +111,21 @@ function SimpananPage() {
                 <Input type="number" min={10000} className="mt-2" placeholder="100000" value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} />
               </div>
               <div>
-                <Label>URL Bukti Transfer (opsional)</Label>
-                <Input type="url" className="mt-2" placeholder="https://..." value={form.bukti_url} onChange={(e) => setForm({ ...form, bukti_url: e.target.value })} />
+                <Label className="flex items-center gap-1">
+                  Bukti Transfer <span className="text-destructive">*</span>
+                </Label>
+                <div className="mt-2">
+                  <FileUpload
+                    bucket="bukti-transfer"
+                    userId={user!.id}
+                    accept="image/*,application/pdf"
+                    label="Unggah bukti transfer"
+                    hint="Wajib. Format: gambar atau PDF, maks 4MB."
+                    maxMB={4}
+                    onUploaded={(res) => setForm({ ...form, bukti_url: res.path })}
+                  />
+                  {form.bukti_url && <p className="mt-1 text-[11px] text-success">✓ File terunggah</p>}
+                </div>
               </div>
               <div>
                 <Label>Catatan (opsional)</Label>
