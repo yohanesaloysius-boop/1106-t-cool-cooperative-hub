@@ -123,7 +123,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Outlet />
-        <WhatsAppWidget />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
