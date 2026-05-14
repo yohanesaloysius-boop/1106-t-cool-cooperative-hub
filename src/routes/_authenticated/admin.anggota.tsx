@@ -139,8 +139,11 @@ function AnggotaPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)}>
+                          <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)} title="Detail">
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setPrintMember({ id: m.id, nama_lengkap: m.nama_lengkap, nomor_anggota: m.nomor_anggota, foto_url: m.foto_url, joined_at: m.joined_at })} title="Cetak Kartu Anggota">
+                            <Printer className="h-4 w-4 text-primary" />
                           </Button>
                           {m.status !== "active" && (
                             <Button size="sm" variant="ghost" onClick={() => update.mutate({ id: m.id, status: "active" })}>
