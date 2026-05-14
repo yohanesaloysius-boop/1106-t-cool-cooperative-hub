@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Sprout } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const links = [
   { to: "/", label: "Beranda" },
@@ -43,27 +41,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <Link to="/dashboard">
-            <Button
-              size="sm"
-              className="hidden rounded-full px-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:inline-flex"
-            >
-              Dashboard
-            </Button>
-          </Link>
-          <Link
-            to="/auth"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground sm:inline-flex"
-          >
-            Keluar
-          </Link>
-          <Link to="/dashboard" className="group">
-            <Avatar className="h-9 w-9 ring-2 ring-white transition-transform duration-300 group-hover:scale-105">
-              <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">AD</AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
+        <div className="md:hidden" />
+
       </div>
     </header>
   );
