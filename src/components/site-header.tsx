@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Phone, Mail, MapPin } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const links = [
   { to: "/", label: "Beranda" },
@@ -41,7 +42,12 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="md:hidden" />
+        <Link to="/auth">
+          <Button size="sm" className="rounded-full shadow-sm">
+            <LogIn className="h-4 w-4" />
+            <span className="hidden sm:inline">Login</span>
+          </Button>
+        </Link>
 
       </div>
     </header>
