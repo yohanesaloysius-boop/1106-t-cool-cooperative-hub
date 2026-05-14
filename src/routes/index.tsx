@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowRight,
   ShieldCheck,
@@ -48,89 +51,129 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const growthData = [
-  { m: "Des", v: 720 },
-  { m: "Jan", v: 820 },
-  { m: "Feb", v: 880 },
-  { m: "Mar", v: 980 },
-  { m: "Apr", v: 1110 },
-  { m: "Mei", v: 1245 },
-];
+type PublicStats = {
+  total: number;
+  aktif: number;
+  pending: number;
+  nonaktif: number;
+  baru30: number;
+  growth: { m: string; v: number; baru: number }[];
+  distribusi: { aktif: number; pending: number; suspended: number; rejected: number };
+};
 
-const distData = [
-  { name: "Anggota Aktif", value: 65, color: "var(--chart-1)" },
-  { name: "Anggota Non Aktif", value: 20, color: "var(--chart-2)" },
-  { name: "Anggota Baru", value: 10, color: "var(--chart-3)" },
-  { name: "Anggota Keluar", value: 5, color: "var(--chart-4)" },
-];
+const fmtNum = new Intl.NumberFormat("id-ID");
 
-const stats = [
-  {
-    icon: Users,
-    label: "Total Anggota",
-    sub: "Jumlah seluruh anggota aktif",
-    tint: "from-emerald-300 to-emerald-500",
-    spark: "var(--chart-1)",
-    data: [4, 6, 5, 8, 7, 10, 12],
-  },
-  {
-    icon: UserPlus,
-    label: "Anggota Baru",
-    sub: "Anggota baru bulan ini",
-    tint: "from-sky-300 to-blue-500",
-    spark: "#3b82f6",
-    data: [2, 3, 5, 4, 7, 6, 9],
-  },
-  {
-    icon: Star,
-    label: "Anggota Aktif",
-    sub: "Anggota aktif saat ini",
-    tint: "from-amber-300 to-orange-400",
-    spark: "#f59e0b",
-    data: [5, 7, 6, 8, 7, 9, 11],
-  },
-  {
-    icon: Clock,
-    label: "Anggota Non Aktif",
-    sub: "Anggota tidak aktif (> 6 bulan)",
-    tint: "from-violet-300 to-purple-500",
-    spark: "#a855f7",
-    data: [3, 4, 3, 5, 4, 6, 5],
-  },
-];
+function timeAgo(iso: string) {
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "Baru saja";
+  if (m < 60) return `${m} menit yang lalu`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} jam yang lalu`;
+  const d = Math.floor(h / 24);
+  return `${d} hari yang lalu`;
+}
 
-const activities = [
-  {
-    icon: Users,
-    color: "bg-emerald-100 text-emerald-700",
-    title: "Anggota baru bergabung",
-    desc: "Siti Nurhaliza mendaftar sebagai anggota",
-    time: "2 menit yang lalu",
-  },
-  {
-    icon: Wallet,
-    color: "bg-sky-100 text-sky-700",
-    title: "Pembayaran iuran bulanan",
-    desc: "Budi Santoso melakukan pembayaran iuran",
-    time: "1 jam yang lalu",
-  },
-  {
-    icon: ShieldAlert,
-    color: "bg-amber-100 text-amber-700",
-    title: "Pengajuan pinjaman",
-    desc: "Ahmad Wijaya mengajukan pinjaman",
-    time: "3 jam yang lalu",
-  },
-  {
-    icon: UserCog,
-    color: "bg-violet-100 text-violet-700",
-    title: "Perubahan data anggota",
-    desc: "Dewi Lestari memperbarui data pribadi",
-    time: "5 jam yang lalu",
-  },
-];
+const ACTIVITY_META: Record<string, { icon: typeof Users; color: string }> = {
+  member: { icon: Users, color: "bg-emerald-100 text-emerald-700" },
+  simpanan: { icon: Wallet, color: "bg-sky-100 text-sky-700" },
+  pinjaman: { icon: ShieldAlert, color: "bg-amber-100 text-amber-700" },
+  default: { icon: UserCog, color: "bg-violet-100 text-violet-700" },
+};
 
 function Landing() {
+  const { data: stats, refetch: refetchStats } = useQuery({
+    queryKey: ["public-koperasi-stats"],
+    queryFn: async (): Promise<PublicStats> => {
+      const { data, error } = await supabase.rpc("get_public_koperasi_stats");
+      if (error) throw error;
+      return data as PublicStats;
+    },
+    staleTime: 30_000,
+  });
+
+  const { data: activities, refetch: refetchActivity } = useQuery({
+    queryKey: ["public-recent-activity"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_public_recent_activity", { limit_count: 6 });
+      if (error) throw error;
+      return (data ?? []) as { kind: string; title: string; descr: string; ts: string }[];
+    },
+    staleTime: 30_000,
+  });
+
+  // Realtime: refresh on any change to profiles / simpanan / pinjaman
+  useEffect(() => {
+    const ch = supabase
+      .channel("public-landing-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        refetchStats();
+        refetchActivity();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "simpanan" }, () => refetchActivity())
+      .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman" }, () => refetchActivity())
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [refetchStats, refetchActivity]);
+
+  const growthData = (stats?.growth ?? []).map((g) => ({ m: g.m, v: g.v }));
+
+  const totalDist =
+    (stats?.distribusi.aktif ?? 0) +
+    (stats?.distribusi.pending ?? 0) +
+    (stats?.distribusi.suspended ?? 0) +
+    (stats?.distribusi.rejected ?? 0);
+  const pct = (n: number) => (totalDist > 0 ? Math.round((n / totalDist) * 100) : 0);
+  const distData = [
+    { name: "Anggota Aktif", value: pct(stats?.distribusi.aktif ?? 0), color: "var(--chart-1)" },
+    { name: "Menunggu Verifikasi", value: pct(stats?.distribusi.pending ?? 0), color: "var(--chart-2)" },
+    { name: "Suspended", value: pct(stats?.distribusi.suspended ?? 0), color: "var(--chart-3)" },
+    { name: "Ditolak", value: pct(stats?.distribusi.rejected ?? 0), color: "var(--chart-4)" },
+  ];
+
+  const sparkFromGrowth = (stats?.growth ?? []).map((g) => g.v);
+  const sparkBaru = (stats?.growth ?? []).map((g) => g.baru);
+  const statCards = [
+    {
+      icon: Users,
+      label: "Total Anggota",
+      sub: "Jumlah seluruh anggota terdaftar",
+      value: stats?.total ?? 0,
+      tint: "from-emerald-300 to-emerald-500",
+      spark: "var(--chart-1)",
+      data: sparkFromGrowth.length ? sparkFromGrowth : [0, 0, 0, 0, 0, 0],
+    },
+    {
+      icon: UserPlus,
+      label: "Anggota Baru",
+      sub: "Pendaftaran 30 hari terakhir",
+      value: stats?.baru30 ?? 0,
+      tint: "from-sky-300 to-blue-500",
+      spark: "#3b82f6",
+      data: sparkBaru.length ? sparkBaru : [0, 0, 0, 0, 0, 0],
+    },
+    {
+      icon: Star,
+      label: "Anggota Aktif",
+      sub: "Status terverifikasi",
+      value: stats?.aktif ?? 0,
+      tint: "from-amber-300 to-orange-400",
+      spark: "#f59e0b",
+      data: sparkFromGrowth.length ? sparkFromGrowth : [0, 0, 0, 0, 0, 0],
+    },
+    {
+      icon: Clock,
+      label: "Tidak Aktif",
+      sub: "Suspended / ditolak",
+      value: stats?.nonaktif ?? 0,
+      tint: "from-violet-300 to-purple-500",
+      spark: "#a855f7",
+      data: sparkBaru.length ? sparkBaru : [0, 0, 0, 0, 0, 0],
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -240,7 +283,7 @@ function Landing() {
 
         {/* STAT CARDS */}
         <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
+          {statCards.map((s) => (
             <div
               key={s.label}
               className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1"
@@ -257,6 +300,7 @@ function Landing() {
                   <p className="mt-1 text-xs text-muted-foreground leading-snug">{s.sub}</p>
                 </div>
               </div>
+              <p className="mt-3 text-2xl font-bold tabular-nums">{fmtNum.format(s.value)}</p>
               <div className="mt-3 h-12">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={s.data.map((v, i) => ({ i, v }))}>
@@ -337,19 +381,27 @@ function Landing() {
             </div>
             <ul className="mt-5 relative">
               <span className="absolute left-[11px] top-2 bottom-2 w-px bg-border" aria-hidden />
-              {activities.map((a) => (
-                <li key={a.title} className="relative flex items-start gap-4 py-3.5">
-                  <span className="relative z-10 mt-1 h-3 w-3 rounded-full border-2 border-card bg-primary shrink-0 ring-2 ring-primary/20" />
-                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${a.color}`}>
-                    <a.icon className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold">{a.title}</p>
-                    <p className="text-xs text-muted-foreground">{a.desc}</p>
-                  </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">{a.time}</span>
-                </li>
-              ))}
+              {(activities ?? []).length === 0 ? (
+                <li className="py-6 text-center text-sm text-muted-foreground">Belum ada aktivitas.</li>
+              ) : (
+                (activities ?? []).map((a, idx) => {
+                  const meta = ACTIVITY_META[a.kind] ?? ACTIVITY_META.default;
+                  const Icon = meta.icon;
+                  return (
+                    <li key={idx} className="relative flex items-start gap-4 py-3.5">
+                      <span className="relative z-10 mt-1 h-3 w-3 rounded-full border-2 border-card bg-primary shrink-0 ring-2 ring-primary/20" />
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${meta.color}`}>
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold">{a.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">{a.descr}</p>
+                      </div>
+                      <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(a.ts)}</span>
+                    </li>
+                  );
+                })
+              )}
             </ul>
           </div>
         </section>
