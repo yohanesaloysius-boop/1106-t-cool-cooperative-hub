@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -86,33 +87,53 @@ function DashboardPage() {
   const pieColors = useMemo(() => ["var(--primary)", "var(--primary-glow)", "var(--warning)", "var(--destructive)"], []);
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+      }}
+    >
       {/* 1+2. Hero Section dengan ilustrasi 3D utama */}
-      <section
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } }}
         className="glass relative overflow-hidden rounded-[2rem] p-6 md:p-10"
         style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-soft)" }}
       >
-        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-white/40 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-primary/15 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 animate-float-slow rounded-full bg-white/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 animate-float rounded-full bg-primary/15 blur-3xl" />
 
         <div className="relative grid items-center gap-8 md:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold text-primary backdrop-blur">
-              <Sparkles className="h-3 w-3" /> T-Cool Koperasi
-            </span>
+            <motion.span
+              initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold text-primary backdrop-blur"
+            >
+              <Sparkles className="h-3 w-3 animate-pulse" /> T-Cool Koperasi
+            </motion.span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl">
-              Halo, {profile?.nama_lengkap?.split(" ")[0] ?? "Anggota"} 👋
+              Halo,{" "}
+              <span className="shimmer-text">
+                {profile?.nama_lengkap?.split(" ")[0] ?? "Anggota"}
+              </span>{" "}
+              👋
             </h1>
             <p className="mt-3 max-w-md text-sm text-muted-foreground md:text-base">
               Pantau pertumbuhan anggota dan aktivitas koperasi dalam satu dashboard yang ringan dan modern.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <Button onClick={() => navigate({ to: "/simpanan" })} className="rounded-full px-5 shadow-sm">
-                Setor Simpanan
-              </Button>
-              <Button variant="outline" onClick={() => navigate({ to: "/pinjaman" })} className="rounded-full bg-white/70 px-5 backdrop-blur">
-                Ajukan Pinjaman
-              </Button>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Button onClick={() => navigate({ to: "/simpanan" })} className="rounded-full px-5 shadow-sm animate-glow">
+                  Setor Simpanan
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Button variant="outline" onClick={() => navigate({ to: "/pinjaman" })} className="rounded-full bg-white/70 px-5 backdrop-blur">
+                  Ajukan Pinjaman
+                </Button>
+              </motion.div>
               <Badge variant="secondary" className="rounded-full bg-white/70 px-3 py-1 text-primary border-0 backdrop-blur capitalize">
                 {profile?.status ?? "pending"}
               </Badge>
@@ -122,28 +143,37 @@ function DashboardPage() {
           {/* 3. Ilustrasi 3D utama */}
           <div className="relative mx-auto w-full max-w-md md:max-w-none">
             <div className="absolute inset-x-8 bottom-2 h-10 rounded-full bg-primary/20 blur-2xl" />
-            <img
+            <motion.img
               src={hero3d}
               alt="Ilustrasi 3D dashboard koperasi"
               width={1024}
               height={1024}
-              className="relative mx-auto w-full max-w-sm drop-shadow-xl md:max-w-md"
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative mx-auto w-full max-w-sm animate-float drop-shadow-xl md:max-w-md"
             />
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 5. 4 Kartu statistik anggota */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.section
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <StatTile label="Total Anggota" value={data?.total ?? 0} icon={Users} tone="primary" hint="Seluruh anggota terdaftar" loading={isLoading} />
         <StatTile label="Anggota Aktif" value={data?.aktif ?? 0} icon={UserCheck} tone="success" hint="Status terverifikasi" loading={isLoading} />
         <StatTile label="Menunggu Verifikasi" value={data?.pending ?? 0} icon={UserPlus} tone="warning" hint="Pendaftaran baru" loading={isLoading} />
         <StatTile label="Tidak Aktif" value={data?.nonaktif ?? 0} icon={UserX} tone="muted" hint="Suspended / ditolak" loading={isLoading} />
-      </section>
+      </motion.section>
 
       {/* 4 + 6. Grafik pertumbuhan + distribusi */}
-      <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        className="grid gap-6 lg:grid-cols-3"
+      >
+        <Card className="hover-lift lg:col-span-2 rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div>
               <CardTitle className="text-base">Pertumbuhan Anggota</CardTitle>
@@ -169,13 +199,22 @@ function DashboardPage() {
                   contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
                   formatter={(v: number) => fmtNum.format(v)}
                 />
-                <Area type="monotone" dataKey="total" stroke="var(--primary)" strokeWidth={2.5} fill="url(#gMint)" />
+                <Area
+                  type="monotone"
+                  dataKey="total"
+                  stroke="var(--primary)"
+                  strokeWidth={2.5}
+                  fill="url(#gMint)"
+                  isAnimationActive
+                  animationDuration={1200}
+                  animationEasing="ease-out"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="hover-lift rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader>
             <CardTitle className="text-base">Distribusi Anggota</CardTitle>
             <CardDescription>Berdasarkan status keanggotaan</CardDescription>
@@ -195,6 +234,9 @@ function DashboardPage() {
                     paddingAngle={3}
                     stroke="var(--card)"
                     strokeWidth={3}
+                    isAnimationActive
+                    animationDuration={1100}
+                    animationEasing="ease-out"
                   >
                     {(data?.distribusi ?? []).map((_, i) => (
                       <Cell key={i} fill={pieColors[i % pieColors.length]} />
@@ -210,14 +252,17 @@ function DashboardPage() {
             )}
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 7. Aktivitas terbaru anggota */}
-      <section className="grid gap-6 lg:grid-cols-3">
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        className="grid gap-6 lg:grid-cols-3"
+      >
         <div className="lg:col-span-2">
           <ActivityFeed limit={8} />
         </div>
-        <Card className="rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="hover-lift rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-base">
               Aksi Cepat
@@ -232,8 +277,8 @@ function DashboardPage() {
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
           </CardContent>
         </Card>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
 
@@ -255,24 +300,31 @@ function StatTile({
   loading?: boolean;
 }) {
   return (
-    <Card
-      className="group relative overflow-hidden rounded-3xl border-border/40 transition-all hover:-translate-y-0.5"
-      style={{ boxShadow: "var(--shadow-card)" }}
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 14, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } } }}
+      whileHover={{ y: -4, scale: 1.015 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
     >
-      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
-      <CardContent className="relative p-5">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-          <div className={`rounded-xl bg-white/70 p-2 backdrop-blur ${toneMap[tone].split(" ").pop()}`}>
-            <Icon className="h-4 w-4" />
+      <Card
+        className="group relative overflow-hidden rounded-3xl border-border/40"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
+        <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/30 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+        <CardContent className="relative p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className={`rounded-xl bg-white/70 p-2 backdrop-blur transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${toneMap[tone].split(" ").pop()}`}>
+              <Icon className="h-4 w-4" />
+            </div>
           </div>
-        </div>
-        <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums text-foreground">
-          {loading ? <span className="inline-block h-8 w-20 animate-pulse rounded bg-muted" /> : fmtNum.format(value)}
-        </p>
-        {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
-      </CardContent>
-    </Card>
+          <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums text-foreground">
+            {loading ? <span className="inline-block h-8 w-20 animate-pulse rounded bg-muted" /> : fmtNum.format(value)}
+          </p>
+          {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
