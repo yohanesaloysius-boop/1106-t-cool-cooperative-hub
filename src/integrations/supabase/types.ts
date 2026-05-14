@@ -1013,6 +1013,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_koperasi_stats: { Args: never; Returns: Json }
+      get_public_recent_activity: {
+        Args: { limit_count?: number }
+        Returns: {
+          descr: string
+          kind: string
+          title: string
+          ts: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
