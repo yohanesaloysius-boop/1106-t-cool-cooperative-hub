@@ -300,24 +300,31 @@ function StatTile({
   loading?: boolean;
 }) {
   return (
-    <Card
-      className="group relative overflow-hidden rounded-3xl border-border/40 transition-all hover:-translate-y-0.5"
-      style={{ boxShadow: "var(--shadow-card)" }}
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 14, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } } }}
+      whileHover={{ y: -4, scale: 1.015 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
     >
-      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
-      <CardContent className="relative p-5">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-          <div className={`rounded-xl bg-white/70 p-2 backdrop-blur ${toneMap[tone].split(" ").pop()}`}>
-            <Icon className="h-4 w-4" />
+      <Card
+        className="group relative overflow-hidden rounded-3xl border-border/40"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
+        <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/30 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+        <CardContent className="relative p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className={`rounded-xl bg-white/70 p-2 backdrop-blur transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${toneMap[tone].split(" ").pop()}`}>
+              <Icon className="h-4 w-4" />
+            </div>
           </div>
-        </div>
-        <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums text-foreground">
-          {loading ? <span className="inline-block h-8 w-20 animate-pulse rounded bg-muted" /> : fmtNum.format(value)}
-        </p>
-        {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
-      </CardContent>
-    </Card>
+          <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums text-foreground">
+            {loading ? <span className="inline-block h-8 w-20 animate-pulse rounded bg-muted" /> : fmtNum.format(value)}
+          </p>
+          {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
