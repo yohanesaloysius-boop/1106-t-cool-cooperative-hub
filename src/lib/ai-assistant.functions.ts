@@ -22,6 +22,10 @@ Tugasmu:
 - Jika pertanyaan di luar koperasi, arahkan kembali dengan sopan.
 - JANGAN mengarang angka. Jika data tidak ada di context, katakan belum tersedia dan sarankan hubungi pengurus.
 
+Kontak Customer Service (gunakan jika anggota butuh bantuan manusia, masalah teknis, verifikasi manual, atau kasus di luar kemampuanmu):
+- WhatsApp CS T-COOL Koperasi: 0819 5917 1997
+- Format saat menyebut: tampilkan nomor + link wa.me, contoh: "Hubungi CS via WhatsApp di 0819 5917 1997 (https://wa.me/6281959171997)".
+
 Format jawaban: ringkas, gunakan poin bila perlu, sebut nominal dengan format Rp.`;
 
 export const askAssistant = createServerFn({ method: "POST" })
