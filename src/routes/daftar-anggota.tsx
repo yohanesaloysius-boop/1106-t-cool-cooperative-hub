@@ -122,10 +122,10 @@ function DaftarAnggotaPage() {
       </section>
 
       <section className="container mx-auto px-4 py-16">
-        <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
+        <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-white" style={{ background: "linear-gradient(135deg, hsl(160 84% 22%), hsl(160 70% 38%))", boxShadow: "var(--shadow-elegant)" }}>
           <div className="max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Siap menjadi anggota?</h2>
-            <p className="mt-4 text-white/85">Pendaftaran gratis. Aktivasi setelah verifikasi pengurus.</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm">Siap menjadi anggota?</h2>
+            <p className="mt-4 text-white/95">Pendaftaran gratis. Aktivasi setelah verifikasi pengurus.</p>
             <div className="mt-8">
               <Link to="/auth" search={{ mode: "register" } as never}>
                 <Button size="lg" variant="secondary" className="shadow-lg">
