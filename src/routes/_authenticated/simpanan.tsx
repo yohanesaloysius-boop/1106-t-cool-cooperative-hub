@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Plus, PiggyBank, Loader2 } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
+import { FileUpload } from "@/components/file-upload";
 
 export const Route = createFileRoute("/_authenticated/simpanan")({
   head: () => ({ meta: [{ title: "Simpanan Saya — T-COOL Koperasi" }] }),
