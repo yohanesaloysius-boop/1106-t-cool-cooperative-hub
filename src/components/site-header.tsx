@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Sprout } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const links = [
   { to: "/", label: "Beranda" },
