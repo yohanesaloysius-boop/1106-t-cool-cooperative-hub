@@ -31,10 +31,10 @@ function ShuPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 md:p-8 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="flex items-center gap-2 text-sm text-white/80"><Coins className="h-4 w-4" /> Sisa Hasil Usaha</div>
-        <h1 className="mt-2 text-3xl md:text-4xl font-bold">{fmt(total)}</h1>
-        <p className="mt-1 text-sm text-white/80">Total SHU yang sudah diterima dari koperasi</p>
+      <div className="rounded-2xl p-6 md:p-8 text-white" style={{ background: "linear-gradient(135deg, hsl(160 84% 25%), hsl(160 70% 40%))", boxShadow: "var(--shadow-elegant)" }}>
+        <div className="flex items-center gap-2 text-sm text-white/90"><Coins className="h-4 w-4" /> Sisa Hasil Usaha</div>
+        <h1 className="mt-2 text-3xl md:text-4xl font-bold drop-shadow-sm">{fmt(total)}</h1>
+        <p className="mt-1 text-sm text-white/90">Total SHU yang sudah diterima dari koperasi</p>
       </div>
 
       <Card>
