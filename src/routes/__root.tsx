@@ -11,7 +11,6 @@ import {
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
-import { WhatsAppWidget } from "@/components/whatsapp-widget";
 
 function NotFoundComponent() {
   return (
