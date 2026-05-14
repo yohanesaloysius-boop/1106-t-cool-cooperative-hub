@@ -29,7 +29,7 @@ const benefits = [
 ];
 
 const persyaratan = [
-  "WNI berusia minimal 17 tahun atau sudah menikah",
+  "Anggota Jemaat dan ikut dalam kelompok FC",
   "Memiliki KTP yang masih berlaku",
   "Bersedia membayar simpanan pokok dan wajib",
   "Menyetujui anggaran dasar dan rumah tangga koperasi",
