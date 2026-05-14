@@ -81,10 +81,10 @@ function TentangPage() {
       </section>
 
       <section className="container mx-auto px-4 py-16">
-        <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
+        <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-white" style={{ background: "linear-gradient(135deg, hsl(160 84% 22%), hsl(160 70% 38%))", boxShadow: "var(--shadow-elegant)" }}>
           <div className="max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Siap bergabung?</h2>
-            <p className="mt-4 text-white/85">Daftarkan diri Anda dan rasakan koperasi yang berbeda — modern, transparan, dan ada di genggaman.</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm">Siap bergabung?</h2>
+            <p className="mt-4 text-white/95">Daftarkan diri Anda dan rasakan koperasi yang berbeda — modern, transparan, dan ada di genggaman.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/daftar-anggota">
                 <Button size="lg" variant="secondary" className="shadow-lg">
