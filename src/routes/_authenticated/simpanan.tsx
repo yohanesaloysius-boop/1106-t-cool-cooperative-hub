@@ -111,8 +111,21 @@ function SimpananPage() {
                 <Input type="number" min={10000} className="mt-2" placeholder="100000" value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} />
               </div>
               <div>
-                <Label>URL Bukti Transfer (opsional)</Label>
-                <Input type="url" className="mt-2" placeholder="https://..." value={form.bukti_url} onChange={(e) => setForm({ ...form, bukti_url: e.target.value })} />
+                <Label className="flex items-center gap-1">
+                  Bukti Transfer <span className="text-destructive">*</span>
+                </Label>
+                <div className="mt-2">
+                  <FileUpload
+                    bucket="bukti-transfer"
+                    userId={user!.id}
+                    accept="image/*,application/pdf"
+                    label="Unggah bukti transfer"
+                    hint="Wajib. Format: gambar atau PDF, maks 4MB."
+                    maxMB={4}
+                    onUploaded={(res) => setForm({ ...form, bukti_url: res.path })}
+                  />
+                  {form.bukti_url && <p className="mt-1 text-[11px] text-success">✓ File terunggah</p>}
+                </div>
               </div>
               <div>
                 <Label>Catatan (opsional)</Label>
