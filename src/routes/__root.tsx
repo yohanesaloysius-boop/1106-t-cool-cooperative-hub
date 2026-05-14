@@ -9,8 +9,15 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
+import { AiAssistant } from "@/components/dashboard/ai-assistant";
+
+function GlobalAiAssistant() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <AiAssistant />;
+}
 
 function NotFoundComponent() {
   return (
@@ -123,6 +130,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Outlet />
+        <GlobalAiAssistant />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
