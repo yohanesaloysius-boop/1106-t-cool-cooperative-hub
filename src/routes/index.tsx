@@ -8,7 +8,6 @@ import {
   Clock,
   Calculator,
   ChevronDown,
-  UserCircle2,
   Wallet,
   ShieldAlert,
   UserCog,
@@ -361,5 +360,3 @@ function Landing() {
   );
 }
 
-// Keep imports referenced (avoid TS unused-import noise on aux icons)
-void UserCircle2;
