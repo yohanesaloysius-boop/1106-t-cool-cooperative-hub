@@ -27,7 +27,7 @@ const schema = z.object({
   jenis: z.enum(["pokok", "wajib", "sukarela"]),
   nominal: z.coerce.number().min(10_000, "Minimal Rp 10.000").max(1_000_000_000, "Terlalu besar"),
   catatan: z.string().trim().max(500).optional(),
-  bukti_url: z.string().trim().url("URL tidak valid").max(500).optional().or(z.literal("")),
+  bukti_url: z.string().trim().min(1, "Bukti transfer wajib diunggah").max(500),
 });
 
 function SimpananPage() {
