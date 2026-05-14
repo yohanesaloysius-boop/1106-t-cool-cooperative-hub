@@ -85,7 +85,7 @@ function Landing() {
   const { data: stats, refetch: refetchStats } = useQuery({
     queryKey: ["public-koperasi-stats"],
     queryFn: async (): Promise<PublicStats> => {
-      const { data, error } = await supabase.rpc("get_public_koperasi_stats");
+      const { data, error } = await (supabase.rpc as any)("get_public_koperasi_stats");
       if (error) throw error;
       return data as PublicStats;
     },
@@ -95,7 +95,7 @@ function Landing() {
   const { data: activities, refetch: refetchActivity } = useQuery({
     queryKey: ["public-recent-activity"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_public_recent_activity", { limit_count: 6 });
+      const { data, error } = await (supabase.rpc as any)("get_public_recent_activity", { limit_count: 6 });
       if (error) throw error;
       return (data ?? []) as { kind: string; title: string; descr: string; ts: string }[];
     },
