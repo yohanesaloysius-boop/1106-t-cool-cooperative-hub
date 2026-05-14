@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -37,6 +38,11 @@ import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tentang': typeof TentangRoute
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/tentang'
     | '/verify/'
     | '/admin'
     | '/angsuran'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/tentang'
     | '/verify'
     | '/angsuran'
     | '/approval'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/tentang'
     | '/verify/'
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
@@ -356,11 +368,19 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -620,6 +640,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
 }
 export const routeTree = rootRouteImport
