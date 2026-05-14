@@ -30,6 +30,7 @@ import {
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { SocialProofNotification } from "@/components/social-proof-notification";
 import hero3d from "@/assets/hero-3d.png";
 
 export const Route = createFileRoute("/")({
@@ -408,6 +409,7 @@ function Landing() {
       </main>
 
       <SiteFooter />
+      <SocialProofNotification />
     </div>
   );
 }
