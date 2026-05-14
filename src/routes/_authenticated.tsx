@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
-import { AiAssistant } from "@/components/dashboard/ai-assistant";
+
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
