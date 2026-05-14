@@ -157,7 +157,7 @@ function AuthLayout() {
           </div>
         </nav>
       </div>
-      <AiAssistant />
+      
     </div>
   );
 }
