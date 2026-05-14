@@ -172,6 +172,7 @@ function AnggotaPage() {
       </Card>
 
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
+      <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
     </div>
   );
 }
