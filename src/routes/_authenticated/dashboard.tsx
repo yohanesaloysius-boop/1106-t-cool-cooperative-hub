@@ -169,8 +169,11 @@ function DashboardPage() {
       </motion.section>
 
       {/* 4 + 6. Grafik pertumbuhan + distribusi */}
-      <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        className="grid gap-6 lg:grid-cols-3"
+      >
+        <Card className="hover-lift lg:col-span-2 rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div>
               <CardTitle className="text-base">Pertumbuhan Anggota</CardTitle>
@@ -196,13 +199,22 @@ function DashboardPage() {
                   contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
                   formatter={(v: number) => fmtNum.format(v)}
                 />
-                <Area type="monotone" dataKey="total" stroke="var(--primary)" strokeWidth={2.5} fill="url(#gMint)" />
+                <Area
+                  type="monotone"
+                  dataKey="total"
+                  stroke="var(--primary)"
+                  strokeWidth={2.5}
+                  fill="url(#gMint)"
+                  isAnimationActive
+                  animationDuration={1200}
+                  animationEasing="ease-out"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="hover-lift rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader>
             <CardTitle className="text-base">Distribusi Anggota</CardTitle>
             <CardDescription>Berdasarkan status keanggotaan</CardDescription>
@@ -222,6 +234,9 @@ function DashboardPage() {
                     paddingAngle={3}
                     stroke="var(--card)"
                     strokeWidth={3}
+                    isAnimationActive
+                    animationDuration={1100}
+                    animationEasing="ease-out"
                   >
                     {(data?.distribusi ?? []).map((_, i) => (
                       <Cell key={i} fill={pieColors[i % pieColors.length]} />
@@ -237,14 +252,17 @@ function DashboardPage() {
             )}
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 7. Aktivitas terbaru anggota */}
-      <section className="grid gap-6 lg:grid-cols-3">
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        className="grid gap-6 lg:grid-cols-3"
+      >
         <div className="lg:col-span-2">
           <ActivityFeed limit={8} />
         </div>
-        <Card className="rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="hover-lift rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-base">
               Aksi Cepat
@@ -259,8 +277,8 @@ function DashboardPage() {
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
           </CardContent>
         </Card>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
 
