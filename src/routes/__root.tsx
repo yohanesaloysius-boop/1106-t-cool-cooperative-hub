@@ -130,6 +130,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Outlet />
+        <GlobalAiAssistant />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
