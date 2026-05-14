@@ -30,7 +30,7 @@ function DashboardPage() {
     queryFn: async () => {
       const { data: rows } = await supabase
         .from("profiles")
-        .select("id,status,created_at,jenis_kelamin")
+        .select("id,status,created_at")
         .order("created_at", { ascending: true });
       const list = rows ?? [];
       const total = list.length;
