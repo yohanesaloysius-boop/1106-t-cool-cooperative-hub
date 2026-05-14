@@ -46,18 +46,18 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="hidden lg:flex flex-col justify-between p-10 text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
+      <div className="hidden lg:flex flex-col justify-between p-10 text-foreground" style={{ background: "var(--gradient-hero)" }}>
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-9 w-9 rounded-xl bg-white/20 backdrop-blur" />
-          <span className="text-lg font-bold">T-COOL Koperasi</span>
+          <div className="h-9 w-9 rounded-xl bg-foreground/10 backdrop-blur ring-1 ring-foreground/20" />
+          <span className="text-lg font-bold text-foreground">T-COOL Koperasi</span>
         </Link>
         <div>
-          <h2 className="text-4xl font-bold leading-tight">Koperasi modern di genggaman Anda.</h2>
-          <p className="mt-4 text-white/80 max-w-md">
+          <h2 className="text-4xl font-bold leading-tight text-foreground">Koperasi modern di genggaman Anda.</h2>
+          <p className="mt-4 text-foreground/75 max-w-md">
             Pantau simpanan, ajukan pinjaman, dan lihat SHU Anda kapan saja — semua transparan dan realtime.
           </p>
         </div>
-        <p className="text-sm text-white/60">© {new Date().getFullYear()} T-COOL Koperasi</p>
+        <p className="text-sm text-foreground/60">© {new Date().getFullYear()} T-COOL Koperasi</p>
       </div>
       <div className="flex items-center justify-center p-6 bg-background">
         <div className="w-full max-w-md">
