@@ -10,7 +10,7 @@ import { TransactionChart } from "@/components/dashboard/transaction-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { FloatingActionButton } from "@/components/dashboard/floating-action";
-import { PiggyBank, HandCoins, Receipt, Wallet, ArrowUpRight } from "lucide-react";
+import { PiggyBank, HandCoins, Receipt, Wallet, ArrowUpRight, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -55,22 +55,31 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-12 -left-12 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
-        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Hero — light glassmorphism */}
+      <div
+        className="glass relative overflow-hidden rounded-3xl p-6 md:p-10"
+        style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-soft)" }}
+      >
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm text-white/70">Selamat datang kembali,</p>
-            <h1 className="text-2xl md:text-3xl font-bold">{profile?.nama_lengkap ?? "—"}</h1>
-            <p className="mt-1 text-sm text-white/80">No. Anggota: <span className="font-mono">{profile?.nomor_anggota ?? "—"}</span></p>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold text-primary backdrop-blur">
+              <Sparkles className="h-3 w-3" /> T-Cool Koperasi
+            </span>
+            <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+              Halo, {profile?.nama_lengkap?.split(" ")[0] ?? "Anggota"} 👋
+            </h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              No. Anggota <span className="font-mono text-foreground/80">{profile?.nomor_anggota ?? "—"}</span> · pantau keuanganmu kapan saja.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="bg-white/15 text-white border-0 backdrop-blur capitalize">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="rounded-full bg-white/70 px-3 py-1 text-primary border-0 backdrop-blur capitalize">
               {profile?.status ?? "pending"}
             </Badge>
             {data?.overdue ? (
-              <Badge className="bg-destructive border-0">{data.overdue} angsuran lewat jatuh tempo</Badge>
+              <Badge className="rounded-full bg-destructive/90 border-0">{data.overdue} angsuran lewat jatuh tempo</Badge>
             ) : null}
           </div>
         </div>
