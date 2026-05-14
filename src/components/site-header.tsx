@@ -50,10 +50,74 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/60 py-10 mt-20">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} T-COOL Koperasi. Sistem koperasi digital.</p>
-        <p>Dibangun untuk koperasi Indonesia.</p>
+    <footer className="border-t border-border/60 py-12 mt-20">
+      <div className="container mx-auto px-4">
+        <div className="grid gap-8 md:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm ring-1 ring-white/60"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                <Sprout className="h-4 w-4" />
+              </span>
+              <span className="text-base font-bold tracking-tight">
+                T-Cool <span className="text-primary">Koperasi</span>
+              </span>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground max-w-xs">
+              Sistem koperasi digital — modern, transparan, dan terpercaya.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold">Hubungi Kami</h3>
+            <ul className="mt-4 space-y-3 text-sm">
+              <li>
+                <a
+                  href="https://wa.me/6281959171997"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-2.5 text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Phone className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>0819 5917 1997 <span className="text-xs opacity-70">(WhatsApp)</span></span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:TcoolKoperasi@gmail.com"
+                  className="group flex items-start gap-2.5 text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Mail className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span className="break-all">TcoolKoperasi@gmail.com</span>
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5 text-muted-foreground">
+                <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Center Park Blok 3 No. 3, Simpang Kara, Batam</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold">Navigasi</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              {links.map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-muted-foreground hover:text-primary transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} T-COOL Koperasi. Sistem koperasi digital.</p>
+          <p>Dibangun untuk koperasi Indonesia.</p>
+        </div>
       </div>
     </footer>
   );
