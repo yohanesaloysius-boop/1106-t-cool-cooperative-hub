@@ -29,7 +29,7 @@ const benefits = [
 ];
 
 const persyaratan = [
-  "Anggota Jemaat dan ikut dalam kelompok FC",
+  "Anggota Jemaat dan juga anggota kelompok FC",
   "Memiliki KTP yang masih berlaku",
   "Bersedia membayar simpanan pokok dan wajib",
   "Menyetujui anggaran dasar dan rumah tangga koperasi",
