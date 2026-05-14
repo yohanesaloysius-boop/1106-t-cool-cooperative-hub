@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin } from "lucide-react";
 
 const links = [
   { to: "/", label: "Beranda" },
