@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
+import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -189,6 +190,12 @@ const AuthenticatedAdminAnggotaRoute =
     path: '/anggota',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicHooksDailyRemindersRoute =
+  ApiPublicHooksDailyRemindersRouteImport.update({
+    id: '/api/public/hooks/daily-reminders',
+    path: '/api/public/hooks/daily-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -248,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -280,6 +289,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin/'
+    | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin'
+    | '/api/public/hooks/daily-reminders'
   id:
     | '__root__'
     | '/'
@@ -372,6 +384,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
     | '/_authenticated/admin/'
+    | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -383,6 +396,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
+  ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -590,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnggotaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/hooks/daily-reminders': {
+      id: '/api/public/hooks/daily-reminders'
+      path: '/api/public/hooks/daily-reminders'
+      fullPath: '/api/public/hooks/daily-reminders'
+      preLoaderRoute: typeof ApiPublicHooksDailyRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -663,17 +684,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
+  ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
