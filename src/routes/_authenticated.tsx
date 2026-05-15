@@ -114,6 +114,27 @@ function AuthLayout() {
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
           </div>
           <div className="flex items-center gap-2">
+            {realPengurus && (
+              <button
+                onClick={() => {
+                  const next = !viewAsMember;
+                  setViewAsMember(next);
+                  toast.success(next ? "Mode Anggota aktif" : "Mode Pengurus aktif", {
+                    description: next ? "Anda melihat tampilan seperti anggota biasa." : "Akses pengurus dipulihkan.",
+                  });
+                  if (next && pathname.startsWith("/admin")) navigate({ to: "/dashboard" });
+                }}
+                className={cn(
+                  "hidden md:inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                  viewAsMember ? "border-warning/50 bg-warning/10 text-foreground" : "border-border bg-muted/50 hover:bg-muted",
+                )}
+                title={viewAsMember ? "Klik untuk kembali ke Mode Pengurus" : "Lihat sebagai anggota biasa"}
+              >
+                {viewAsMember ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                {viewAsMember ? "Mode Anggota" : "Mode Pengurus"}
+                <Switch checked={viewAsMember} className="pointer-events-none scale-75" />
+              </button>
+            )}
             <NotificationCenter />
             <Link to="/profil" className="hidden sm:inline-flex">
               <Button variant="outline" size="sm" className="gap-2 rounded-full">
