@@ -4,16 +4,17 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/file-upload";
 import { StatusBadge } from "@/components/empty-state";
-import { Loader2, Save, User as UserIcon, IdCard } from "lucide-react";
+import { Loader2, Save, User as UserIcon, IdCard, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profil")({
   head: () => ({ meta: [{ title: "Profil Anggota — T-COOL Koperasi" }] }),
@@ -32,7 +33,7 @@ const schema = z.object({
 });
 
 function ProfilPage() {
-  const { user, refresh } = useAuth();
+  const { user, refresh, roles } = useAuth();
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["profile-full", user?.id],
@@ -114,7 +115,12 @@ function ProfilPage() {
               <div className="text-center">
                 <p className="font-semibold">{data.nama_lengkap}</p>
                 <p className="font-mono text-xs text-muted-foreground">{data.nomor_anggota ?? "—"}</p>
-                <div className="mt-2"><StatusBadge status={data.status} /></div>
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                  <StatusBadge status={data.status} />
+                  <Badge variant="secondary" className="gap-1 rounded-full text-[10px]">
+                    <ShieldCheck className="h-3 w-3" /> {roleLabel(roles)}
+                  </Badge>
+                </div>
               </div>
             </div>
             <div className="space-y-3 border-t border-border pt-4">
@@ -171,4 +177,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {children}
     </div>
   );
+}
+
+function roleLabel(roles: AppRole[]): string {
+  if (roles.includes("super_admin")) return "Super Admin";
+  if (roles.includes("ketua")) return "Ketua";
+  if (roles.includes("sekretaris")) return "Sekretaris";
+  if (roles.includes("bendahara")) return "Bendahara";
+  return "Anggota";
 }
