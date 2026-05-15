@@ -17,13 +17,14 @@ export const Route = createFileRoute("/_authenticated")({
 const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
+  { to: "/tabungan-berjangka", label: "Tabungan Berjangka", icon: TrendingUp },
   { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
   { to: "/angsuran", label: "Angsuran", icon: Receipt },
   { to: "/riwayat", label: "Riwayat", icon: History },
   { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
   { to: "/profil", label: "Profil", icon: UserIcon },
   { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
-  { to: "/shu", label: "SHU", icon: Wallet },
+  { to: "/shu", label: "SHU & Reward", icon: Wallet },
   { to: "/approval", label: "Status Approval", icon: FileSignature },
   { to: "/rapat", label: "Rapat", icon: CalendarDays },
 ];
@@ -32,17 +33,19 @@ const adminNav = [
   { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
   { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
   { to: "/admin/simpanan", label: "Verifikasi Simpanan", icon: PiggyBank },
+  { to: "/admin/tabungan-berjangka", label: "Tabungan Berjangka", icon: TrendingUp },
   { to: "/admin/angsuran", label: "Verifikasi Angsuran", icon: Receipt },
   { to: "/admin/pinjaman", label: "Approval Pinjaman", icon: ClipboardCheck },
   { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
   { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
   { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
+  { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
   { to: "/admin/audit", label: "Audit Log", icon: Activity },
 ];
 
 function AuthLayout() {
-  const { user, profile, loading, signOut, roles } = useAuth();
-  const isPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
+  const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
   const nav = isPengurus ? [...memberNav, ...adminNav] : memberNav;
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
