@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 const fmtNum = new Intl.NumberFormat("id-ID");
 
 function DashboardPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, isPengurus } = useAuth();
   const navigate = useNavigate();
 
   const { data, isLoading, refetch } = useQuery({
@@ -157,7 +157,8 @@ function DashboardPage() {
         </div>
       </motion.section>
 
-      {/* 5. 4 Kartu statistik anggota */}
+      {/* 5. 4 Kartu statistik anggota — hanya pengurus */}
+      {isPengurus && (
       <motion.section
         variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
@@ -167,6 +168,7 @@ function DashboardPage() {
         <StatTile label="Menunggu Verifikasi" value={data?.pending ?? 0} icon={UserPlus} tone="warning" hint="Pendaftaran baru" loading={isLoading} />
         <StatTile label="Tidak Aktif" value={data?.nonaktif ?? 0} icon={UserX} tone="muted" hint="Suspended / ditolak" loading={isLoading} />
       </motion.section>
+      )}
 
       {/* 4 + 6. Grafik pertumbuhan + distribusi */}
       <motion.section

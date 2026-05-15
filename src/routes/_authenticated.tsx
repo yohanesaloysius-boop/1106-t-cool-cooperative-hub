@@ -1,8 +1,9 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, TrendingUp, Settings as SettingsIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
@@ -12,6 +13,20 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
+
+const ROLE_LABEL: Record<AppRole, string> = {
+  super_admin: "Super Admin",
+  ketua: "Ketua",
+  sekretaris: "Sekretaris",
+  bendahara: "Bendahara",
+  anggota: "Anggota",
+};
+function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
+  if (viewAsMember) return "Anggota";
+  const order: AppRole[] = ["super_admin", "ketua", "bendahara", "sekretaris", "anggota"];
+  const r = order.find((x) => roles.includes(x)) ?? "anggota";
+  return ROLE_LABEL[r];
+}
 
 const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -95,6 +110,9 @@ function AuthLayout() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{profile?.nama_lengkap ?? "Anggota"}</p>
               <p className="truncate text-xs text-muted-foreground">{profile?.nomor_anggota ?? "—"}</p>
+              <Badge variant="secondary" className="mt-1 rounded-full px-2 py-0 text-[10px] font-semibold">
+                {roleLabel(roles, viewAsMember)}
+              </Badge>
             </div>
           </div>
         </div>
@@ -108,7 +126,6 @@ function AuthLayout() {
             <span className="font-bold">T-COOL</span>
           </div>
           <div className="hidden lg:block">
-            <p className="text-sm text-muted-foreground">Selamat datang kembali,</p>
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -152,15 +169,6 @@ function AuthLayout() {
               </div>
             )}
             <NotificationCenter />
-            <Link to="/profil" className="hidden sm:inline-flex">
-              <Button variant="outline" size="sm" className="gap-2 rounded-full">
-                <Avatar className="h-6 w-6 -ml-1"><AvatarFallback className="text-[10px]">{initials}</AvatarFallback></Avatar>
-                <span className="max-w-[120px] truncate">{profile?.nama_lengkap?.split(" ")[0] ?? "Profil"}</span>
-              </Button>
-            </Link>
-            <Link to="/profil" className="sm:hidden">
-              <Avatar className="h-8 w-8"><AvatarFallback>{initials}</AvatarFallback></Avatar>
-            </Link>
             <Button variant="outline" size="sm" className="gap-2 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Keluar</span>
