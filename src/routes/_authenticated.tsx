@@ -3,9 +3,11 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, ClipboardCheck, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, TrendingUp, Settings as SettingsIcon, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/_authenticated")({
