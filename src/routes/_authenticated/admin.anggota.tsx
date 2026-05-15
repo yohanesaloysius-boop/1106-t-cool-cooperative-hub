@@ -271,3 +271,61 @@ function Info({ label, value }: { label: string; value?: string | null }) {
     </div>
   );
 }
+
+function ImportCsvButton() {
+  const importFn = useServerFn(importMembersCsv);
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    setBusy(true);
+    try {
+      const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      const rows = lines.map((l) => {
+        const [email, nama_lengkap, no_hp, nik, alamat] = l.split(",").map((s) => s?.trim());
+        return { email, nama_lengkap, no_hp, nik, alamat };
+      }).filter((r) => r.email && r.nama_lengkap);
+      if (rows.length === 0) { toast.error("Tidak ada baris valid"); return; }
+      const res = await importFn({ data: { rows } });
+      toast.success(`${res.ok} undangan dikirim`, { description: res.errors.length ? `${res.errors.length} gagal` : undefined });
+      qc.invalidateQueries({ queryKey: ["admin-members"] });
+      setOpen(false); setText("");
+    } catch (e) { toast.error((e as Error).message); } finally { setBusy(false); }
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}><Upload className="mr-2 h-3.5 w-3.5" />Import CSV</Button>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Import Anggota dari CSV</DialogTitle></DialogHeader>
+        <p className="text-xs text-muted-foreground">Format per baris: <code className="rounded bg-muted px-1">email,nama,no_hp,nik,alamat</code>. Anggota akan menerima email undangan.</p>
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={8} className="w-full rounded-md border border-input bg-background p-2 font-mono text-xs" placeholder="budi@email.com,Budi Santoso,08123,3201...,Jl. Mawar 1" />
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
+          <Button onClick={submit} disabled={busy}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Kirim Undangan</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DeleteDemoButton() {
+  const delFn = useServerFn(deleteDemoMembers);
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    if (!confirm("Hapus semua anggota data demo? Tindakan ini permanen.")) return;
+    setBusy(true);
+    try {
+      const res = await delFn({ data: undefined });
+      toast.success(`${res.removed} dari ${res.total} anggota demo dihapus`);
+      qc.invalidateQueries({ queryKey: ["admin-members"] });
+    } catch (e) { toast.error((e as Error).message); } finally { setBusy(false); }
+  };
+  return (
+    <Button variant="outline" size="sm" onClick={run} disabled={busy}>
+      {busy ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-2 h-3.5 w-3.5 text-destructive" />}
+      Hapus Data Demo
+    </Button>
+  );
+}
