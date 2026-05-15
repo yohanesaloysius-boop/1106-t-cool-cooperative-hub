@@ -317,7 +317,7 @@ function DeleteDemoButton() {
     if (!confirm("Hapus semua anggota data demo? Tindakan ini permanen.")) return;
     setBusy(true);
     try {
-      const res = await delFn({ data: undefined });
+      const res = await delFn();
       toast.success(`${res.removed} dari ${res.total} anggota demo dihapus`);
       qc.invalidateQueries({ queryKey: ["admin-members"] });
     } catch (e) { toast.error((e as Error).message); } finally { setBusy(false); }
