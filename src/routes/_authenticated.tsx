@@ -96,6 +96,9 @@ function AuthLayout() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{profile?.nama_lengkap ?? "Anggota"}</p>
               <p className="truncate text-xs text-muted-foreground">{profile?.nomor_anggota ?? "—"}</p>
+              <Badge variant="secondary" className="mt-1 rounded-full px-2 py-0 text-[10px] font-semibold">
+                {roleLabel(roles, viewAsMember)}
+              </Badge>
             </div>
           </div>
         </div>
