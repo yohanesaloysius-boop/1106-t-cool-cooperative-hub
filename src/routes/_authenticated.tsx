@@ -155,15 +155,6 @@ function AuthLayout() {
               </div>
             )}
             <NotificationCenter />
-            <Link to="/profil" className="hidden sm:inline-flex">
-              <Button variant="outline" size="sm" className="gap-2 rounded-full">
-                <Avatar className="h-6 w-6 -ml-1"><AvatarFallback className="text-[10px]">{initials}</AvatarFallback></Avatar>
-                <span className="max-w-[120px] truncate">{profile?.nama_lengkap?.split(" ")[0] ?? "Profil"}</span>
-              </Button>
-            </Link>
-            <Link to="/profil" className="sm:hidden">
-              <Avatar className="h-8 w-8"><AvatarFallback>{initials}</AvatarFallback></Avatar>
-            </Link>
             <Button variant="outline" size="sm" className="gap-2 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Keluar</span>
