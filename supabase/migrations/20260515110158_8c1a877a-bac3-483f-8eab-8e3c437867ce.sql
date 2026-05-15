@@ -1,0 +1,1 @@
+UPDATE public.profiles SET nama_lengkap='Yohanes Aloysius' WHERE id='240fd826-63db-41a8-a570-86913aeb096d' AND nama_lengkap='Super Admin';
