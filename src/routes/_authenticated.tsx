@@ -112,7 +112,6 @@ function AuthLayout() {
             <span className="font-bold">T-COOL</span>
           </div>
           <div className="hidden lg:block">
-            <p className="text-sm text-muted-foreground">Selamat datang kembali,</p>
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
           </div>
           <div className="flex items-center gap-2">
