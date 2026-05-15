@@ -261,6 +261,66 @@ export type Database = {
         }
         Relationships: []
       }
+      lowongan_kerja: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          deskripsi: string | null
+          expired_at: string | null
+          gender: string | null
+          id: string
+          judul: string
+          kontak_email: string | null
+          kontak_nama: string | null
+          kontak_telepon: string
+          lokasi: string | null
+          perusahaan: string
+          posisi: string
+          status: Database["public"]["Enums"]["lowongan_status"]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          expired_at?: string | null
+          gender?: string | null
+          id?: string
+          judul: string
+          kontak_email?: string | null
+          kontak_nama?: string | null
+          kontak_telepon: string
+          lokasi?: string | null
+          perusahaan: string
+          posisi: string
+          status?: Database["public"]["Enums"]["lowongan_status"]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          expired_at?: string | null
+          gender?: string | null
+          id?: string
+          judul?: string
+          kontak_email?: string | null
+          kontak_nama?: string | null
+          kontak_telepon?: string
+          lokasi?: string | null
+          perusahaan?: string
+          posisi?: string
+          status?: Database["public"]["Enums"]["lowongan_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meeting_attendances: {
         Row: {
           catatan: string | null
@@ -1152,6 +1212,7 @@ export type Database = {
         | "lainnya"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
+      lowongan_status: "pending" | "approved" | "rejected" | "expired"
       meeting_status: "scheduled" | "ongoing" | "completed" | "cancelled"
       member_status: "pending" | "active" | "suspended" | "rejected"
       notif_kategori:
@@ -1328,6 +1389,7 @@ export const Constants = {
       ],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
+      lowongan_status: ["pending", "approved", "rejected", "expired"],
       meeting_status: ["scheduled", "ongoing", "completed", "cancelled"],
       member_status: ["pending", "active", "suspended", "rejected"],
       notif_kategori: [
