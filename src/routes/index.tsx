@@ -14,6 +14,10 @@ import {
   Wallet,
   ShieldAlert,
   UserCog,
+  Briefcase,
+  Phone,
+  MapPin,
+  Plus,
 } from "lucide-react";
 import {
   Area,
