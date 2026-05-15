@@ -115,7 +115,12 @@ function ProfilPage() {
               <div className="text-center">
                 <p className="font-semibold">{data.nama_lengkap}</p>
                 <p className="font-mono text-xs text-muted-foreground">{data.nomor_anggota ?? "—"}</p>
-                <div className="mt-2"><StatusBadge status={data.status} /></div>
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                  <StatusBadge status={data.status} />
+                  <Badge variant="secondary" className="gap-1 rounded-full text-[10px]">
+                    <ShieldCheck className="h-3 w-3" /> {roleLabel(roles)}
+                  </Badge>
+                </div>
               </div>
             </div>
             <div className="space-y-3 border-t border-border pt-4">
