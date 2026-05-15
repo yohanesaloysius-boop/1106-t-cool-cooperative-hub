@@ -16,6 +16,7 @@ import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
 import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
@@ -74,6 +75,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTabunganBerjangkaRoute =
+  AuthenticatedTabunganBerjangkaRouteImport.update({
+    id: '/tabungan-berjangka',
+    path: '/tabungan-berjangka',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   id: '/simpanan',
   path: '/simpanan',
@@ -217,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
+  '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -247,6 +255,7 @@ export interface FileRoutesByTo {
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
+  '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -280,6 +289,7 @@ export interface FileRoutesById {
   '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
+  '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/riwayat'
     | '/shu'
     | '/simpanan'
+    | '/tabungan-berjangka'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/riwayat'
     | '/shu'
     | '/simpanan'
+    | '/tabungan-berjangka'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -375,6 +387,7 @@ export interface FileRouteTypes {
     | '/_authenticated/riwayat'
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
+    | '/_authenticated/tabungan-berjangka'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tabungan-berjangka': {
+      id: '/_authenticated/tabungan-berjangka'
+      path: '/tabungan-berjangka'
+      fullPath: '/tabungan-berjangka'
+      preLoaderRoute: typeof AuthenticatedTabunganBerjangkaRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/simpanan': {
       id: '/_authenticated/simpanan'
@@ -654,6 +674,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
   AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
+  AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -669,6 +690,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
   AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
+  AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
