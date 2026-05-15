@@ -338,57 +338,73 @@ function Landing() {
           ))}
         </section>
 
-        {/* DISTRIBUSI + AKTIVITAS */}
+        {/* LOWONGAN + AKTIVITAS */}
         <section className="mt-8 grid gap-6 lg:grid-cols-12">
+          {/* INFO LOWONGAN KERJA */}
           <div
             className="lg:col-span-5 rounded-3xl border border-border bg-card p-6"
             style={{ boxShadow: "var(--shadow-card)" }}
           >
-            <h3 className="text-lg font-semibold">Distribusi Anggota</h3>
-            <div className="mt-4 grid grid-cols-2 items-center gap-4">
-              <div className="h-[220px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={distData}
-                      innerRadius={55}
-                      outerRadius={90}
-                      paddingAngle={3}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {distData.map((d) => (
-                        <Cell key={d.name} fill={d.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Briefcase className="h-4 w-4" />
+                </span>
+                <h3 className="text-lg font-semibold">Info Lowongan Kerja</h3>
               </div>
-              <ul className="space-y-3 text-sm">
-                {distData.map((d) => (
-                  <li key={d.name}>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-foreground/80">
-                        <span
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ background: d.color }}
-                        />
-                        {d.name}
-                      </span>
-                      <span className="font-semibold">{d.value}%</span>
+              <Link to="/auth">
+                <Button size="sm" variant="outline" className="rounded-full text-xs">
+                  <Plus className="mr-1 h-3 w-3" /> Pasang
+                </Button>
+              </Link>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Anggota & pengurus dapat memasang info lowongan setelah disetujui pengurus.
+            </p>
+            <ul className="mt-4 space-y-3 max-h-[360px] overflow-y-auto pr-1">
+              {(lowongan ?? []).length === 0 ? (
+                <li className="py-6 text-center text-sm text-muted-foreground">Belum ada lowongan.</li>
+              ) : (
+                lowongan!.map((l: any) => (
+                  <li
+                    key={l.id}
+                    className="rounded-2xl border border-border/60 bg-background/60 p-4 transition-all hover:border-primary/40 hover:shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold leading-tight">{l.judul}</p>
+                        <p className="text-xs text-muted-foreground">{l.perusahaan}</p>
+                      </div>
+                      <Badge variant="secondary" className="shrink-0 text-[10px] uppercase">
+                        {l.gender}
+                      </Badge>
                     </div>
-                    <div className="mt-1.5 h-1 w-full rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full"
-                        style={{ width: `${d.value}%`, background: d.color }}
-                      />
+                    {l.deskripsi && (
+                      <p className="mt-2 line-clamp-2 text-xs text-foreground/70">{l.deskripsi}</p>
+                    )}
+                    <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <Briefcase className="h-3 w-3" /> {l.posisi}
+                      </span>
+                      {l.lokasi && (
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-3 w-3" /> {l.lokasi}
+                        </span>
+                      )}
+                      <a
+                        href={`tel:${l.kontak_telepon}`}
+                        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+                      >
+                        <Phone className="h-3 w-3" /> {l.kontak_telepon}
+                      </a>
                     </div>
                   </li>
-                ))}
-              </ul>
-            </div>
+                ))
+              )}
+            </ul>
           </div>
 
+          {/* AKTIVITAS TERBARU — auto-scroll marquee */}
           <div
             className="lg:col-span-7 rounded-3xl border border-border bg-card p-6"
             style={{ boxShadow: "var(--shadow-card)" }}
@@ -399,36 +415,41 @@ function Landing() {
                 Lihat Semua
               </button>
             </div>
-            <ul className="mt-5 relative">
-              <span className="absolute left-[11px] top-2 bottom-2 w-px bg-border" aria-hidden />
-              {(activities ?? []).length === 0 ? (
-                <li className="py-6 text-center text-sm text-muted-foreground">Belum ada aktivitas.</li>
-              ) : (
-                (activities ?? []).map((a, idx) => {
-                  const meta = ACTIVITY_META[a.kind] ?? ACTIVITY_META.default;
-                  const Icon = meta.icon;
-                  return (
-                    <li key={idx} className="relative flex items-start gap-4 py-3.5">
-                      <span className="relative z-10 mt-1 h-3 w-3 rounded-full border-2 border-card bg-primary shrink-0 ring-2 ring-primary/20" />
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${meta.color}`}>
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold">{a.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{a.descr}</p>
-                      </div>
-                      <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(a.ts)}</span>
-                    </li>
-                  );
-                })
-              )}
-            </ul>
+            {(activities ?? []).length === 0 ? (
+              <p className="py-10 text-center text-sm text-muted-foreground">Belum ada aktivitas.</p>
+            ) : (
+              <div
+                className="relative mt-5 overflow-hidden"
+                style={{ height: 360, maskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)", WebkitMaskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)" }}
+              >
+                <ul className="flex flex-col gap-3 animate-marquee-y">
+                  {[...(activities ?? []).slice(0, 5), ...(activities ?? []).slice(0, 5)].map((a, idx) => {
+                    const meta = ACTIVITY_META[a.kind] ?? ACTIVITY_META.default;
+                    const Icon = meta.icon;
+                    return (
+                      <li
+                        key={idx}
+                        className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 p-3"
+                      >
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${meta.color}`}>
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold">{a.title}</p>
+                          <p className="truncate text-xs text-muted-foreground">{a.descr}</p>
+                        </div>
+                        <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(a.ts)}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
       </main>
 
       <SiteFooter />
-      <SocialProofNotification />
     </div>
   );
 }
