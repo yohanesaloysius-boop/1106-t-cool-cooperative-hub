@@ -20,9 +20,14 @@ interface AuthCtx {
   profile: Profile | null;
   roles: AppRole[];
   loading: boolean;
+  isPengurus: boolean;
+  viewAsMember: boolean;
+  setViewAsMember: (v: boolean) => void;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 }
+
+const VIEW_AS_KEY = "tcool.viewAsMember";
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
@@ -32,6 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewAsMember, setViewAsMemberState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(VIEW_AS_KEY) === "1";
+  });
+  const setViewAsMember = (v: boolean) => {
+    setViewAsMemberState(v);
+    if (typeof window !== "undefined") window.localStorage.setItem(VIEW_AS_KEY, v ? "1" : "0");
+  };
+  const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const isPengurus = realPengurus && !viewAsMember;
 
   const loadProfile = async (uid: string) => {
     const [{ data: p }, { data: r }] = await Promise.all([
@@ -80,6 +95,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     roles,
     loading,
+    isPengurus,
+    viewAsMember: realPengurus ? viewAsMember : false,
+    setViewAsMember: realPengurus ? setViewAsMember : () => {},
     signOut: async () => {
       await supabase.auth.signOut();
     },

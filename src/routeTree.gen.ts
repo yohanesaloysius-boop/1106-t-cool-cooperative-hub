@@ -16,6 +16,7 @@ import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
 import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
@@ -30,9 +31,11 @@ import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as VerifyRouteImport } from './routes/verify.'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminTabunganBerjangkaRouteImport } from './routes/_authenticated/admin.tabungan-berjangka'
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
+import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
@@ -74,6 +77,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTabunganBerjangkaRoute =
+  AuthenticatedTabunganBerjangkaRouteImport.update({
+    id: '/tabungan-berjangka',
+    path: '/tabungan-berjangka',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
   id: '/simpanan',
   path: '/simpanan',
@@ -144,6 +153,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminTabunganBerjangkaRoute =
+  AuthenticatedAdminTabunganBerjangkaRouteImport.update({
+    id: '/tabungan-berjangka',
+    path: '/tabungan-berjangka',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSimpananRoute =
   AuthenticatedAdminSimpananRouteImport.update({
     id: '/simpanan',
@@ -159,6 +174,12 @@ const AuthenticatedAdminPinjamanRoute =
   AuthenticatedAdminPinjamanRouteImport.update({
     id: '/pinjaman',
     path: '/pinjaman',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPengaturanRoute =
+  AuthenticatedAdminPengaturanRouteImport.update({
+    id: '/pengaturan',
+    path: '/pengaturan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminLaporanRoute =
@@ -217,14 +238,17 @@ export interface FileRoutesByFullPath {
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
+  '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -247,14 +271,17 @@ export interface FileRoutesByTo {
   '/riwayat': typeof AuthenticatedRiwayatRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
+  '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -280,14 +307,17 @@ export interface FileRoutesById {
   '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
+  '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -313,14 +343,17 @@ export interface FileRouteTypes {
     | '/riwayat'
     | '/shu'
     | '/simpanan'
+    | '/tabungan-berjangka'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
     | '/admin/laporan'
+    | '/admin/pengaturan'
     | '/admin/pinjaman'
     | '/admin/shu'
     | '/admin/simpanan'
+    | '/admin/tabungan-berjangka'
     | '/admin/'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -343,14 +376,17 @@ export interface FileRouteTypes {
     | '/riwayat'
     | '/shu'
     | '/simpanan'
+    | '/tabungan-berjangka'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
     | '/admin/laporan'
+    | '/admin/pengaturan'
     | '/admin/pinjaman'
     | '/admin/shu'
     | '/admin/simpanan'
+    | '/admin/tabungan-berjangka'
     | '/admin'
     | '/api/public/hooks/daily-reminders'
   id:
@@ -375,14 +411,17 @@ export interface FileRouteTypes {
     | '/_authenticated/riwayat'
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
+    | '/_authenticated/tabungan-berjangka'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/laporan'
+    | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
+    | '/_authenticated/admin/tabungan-berjangka'
     | '/_authenticated/admin/'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
@@ -449,6 +488,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tabungan-berjangka': {
+      id: '/_authenticated/tabungan-berjangka'
+      path: '/tabungan-berjangka'
+      fullPath: '/tabungan-berjangka'
+      preLoaderRoute: typeof AuthenticatedTabunganBerjangkaRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/simpanan': {
       id: '/_authenticated/simpanan'
@@ -548,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/tabungan-berjangka': {
+      id: '/_authenticated/admin/tabungan-berjangka'
+      path: '/tabungan-berjangka'
+      fullPath: '/admin/tabungan-berjangka'
+      preLoaderRoute: typeof AuthenticatedAdminTabunganBerjangkaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/simpanan': {
       id: '/_authenticated/admin/simpanan'
       path: '/simpanan'
@@ -567,6 +620,13 @@ declare module '@tanstack/react-router' {
       path: '/pinjaman'
       fullPath: '/admin/pinjaman'
       preLoaderRoute: typeof AuthenticatedAdminPinjamanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pengaturan': {
+      id: '/_authenticated/admin/pengaturan'
+      path: '/pengaturan'
+      fullPath: '/admin/pengaturan'
+      preLoaderRoute: typeof AuthenticatedAdminPengaturanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/laporan': {
@@ -620,9 +680,11 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
+  AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
   AuthenticatedAdminSimpananRoute: typeof AuthenticatedAdminSimpananRoute
+  AuthenticatedAdminTabunganBerjangkaRoute: typeof AuthenticatedAdminTabunganBerjangkaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -632,9 +694,12 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
+  AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
   AuthenticatedAdminSimpananRoute: AuthenticatedAdminSimpananRoute,
+  AuthenticatedAdminTabunganBerjangkaRoute:
+    AuthenticatedAdminTabunganBerjangkaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -654,6 +719,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
   AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
+  AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -669,6 +735,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
   AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
+  AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -689,13 +756,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
