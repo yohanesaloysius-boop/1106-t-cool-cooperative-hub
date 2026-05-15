@@ -95,7 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     roles,
     loading,
+    isPengurus,
+    viewAsMember: realPengurus ? viewAsMember : false,
+    setViewAsMember: realPengurus ? setViewAsMember : () => {},
     signOut: async () => {
+      await supabase.auth.signOut();
+    },
+    refresh: async () => {
+      if (user) await loadProfile(user.id);
+    },
+  };
       await supabase.auth.signOut();
     },
     refresh: async () => {
