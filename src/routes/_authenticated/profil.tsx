@@ -178,3 +178,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
+
+function roleLabel(roles: AppRole[]): string {
+  if (roles.includes("super_admin")) return "Super Admin";
+  if (roles.includes("ketua")) return "Ketua";
+  if (roles.includes("sekretaris")) return "Sekretaris";
+  if (roles.includes("bendahara")) return "Bendahara";
+  return "Anggota";
+}
