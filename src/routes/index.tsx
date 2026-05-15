@@ -122,7 +122,7 @@ function Landing() {
     staleTime: 30_000,
   });
 
-  // Realtime: refresh on any change to profiles / simpanan / pinjaman
+  // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
     const ch = supabase
       .channel("public-landing-rt")
@@ -132,27 +132,14 @@ function Landing() {
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "simpanan" }, () => refetchActivity())
       .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman" }, () => refetchActivity())
+      .on("postgres_changes", { event: "*", schema: "public", table: "lowongan_kerja" }, () => refetchLowongan())
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
-  }, [refetchStats, refetchActivity]);
+  }, [refetchStats, refetchActivity, refetchLowongan]);
 
   const growthData = (stats?.growth ?? []).map((g) => ({ m: g.m, v: g.v }));
-
-  const totalDist =
-    (stats?.distribusi.aktif ?? 0) +
-    (stats?.distribusi.pending ?? 0) +
-    (stats?.distribusi.suspended ?? 0) +
-    (stats?.distribusi.rejected ?? 0);
-  const pct = (n: number) => (totalDist > 0 ? Math.round((n / totalDist) * 100) : 0);
-  const distData = [
-    { name: "Anggota Aktif", value: pct(stats?.distribusi.aktif ?? 0), color: "var(--chart-1)" },
-    { name: "Menunggu Verifikasi", value: pct(stats?.distribusi.pending ?? 0), color: "var(--chart-2)" },
-    { name: "Suspended", value: pct(stats?.distribusi.suspended ?? 0), color: "var(--chart-3)" },
-    { name: "Ditolak", value: pct(stats?.distribusi.rejected ?? 0), color: "var(--chart-4)" },
-  ];
-
   const sparkFromGrowth = (stats?.growth ?? []).map((g) => g.v);
   const sparkBaru = (stats?.growth ?? []).map((g) => g.baru);
   const statCards = [
