@@ -113,25 +113,43 @@ function AuthLayout() {
           </div>
           <div className="flex items-center gap-2">
             {realPengurus && (
-              <button
-                onClick={() => {
-                  const next = !viewAsMember;
-                  setViewAsMember(next);
-                  toast.success(next ? "Mode Anggota aktif" : "Mode Pengurus aktif", {
-                    description: next ? "Anda melihat tampilan seperti anggota biasa." : "Akses pengurus dipulihkan.",
-                  });
-                  if (next && pathname.startsWith("/admin")) navigate({ to: "/dashboard" });
-                }}
-                className={cn(
-                  "hidden md:inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-                  viewAsMember ? "border-warning/50 bg-warning/10 text-foreground" : "border-border bg-muted/50 hover:bg-muted",
-                )}
-                title={viewAsMember ? "Klik untuk kembali ke Mode Pengurus" : "Lihat sebagai anggota biasa"}
+              <div
+                role="tablist"
+                aria-label="Mode tampilan"
+                className="hidden sm:inline-flex items-center rounded-full border border-border bg-muted/60 p-0.5 text-xs font-semibold shadow-inner"
               >
-                {viewAsMember ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-                {viewAsMember ? "Mode Anggota" : "Mode Pengurus"}
-                <Switch checked={viewAsMember} className="pointer-events-none scale-75" />
-              </button>
+                <button
+                  role="tab"
+                  aria-selected={!viewAsMember}
+                  onClick={() => {
+                    if (!viewAsMember) return;
+                    setViewAsMember(false);
+                    toast.success("Mode Pengurus aktif", { description: "Akses pengurus dipulihkan." });
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                    !viewAsMember ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <ShieldCheck className="h-3.5 w-3.5" /> Pengurus
+                </button>
+                <button
+                  role="tab"
+                  aria-selected={viewAsMember}
+                  onClick={() => {
+                    if (viewAsMember) return;
+                    setViewAsMember(true);
+                    toast.success("Mode Anggota aktif", { description: "Anda melihat tampilan seperti anggota biasa." });
+                    if (pathname.startsWith("/admin")) navigate({ to: "/dashboard" });
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                    viewAsMember ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <UserIcon className="h-3.5 w-3.5" /> Anggota
+                </button>
+              </div>
             )}
             <NotificationCenter />
             <Link to="/profil" className="hidden sm:inline-flex">
