@@ -33,7 +33,7 @@ const schema = z.object({
 });
 
 function ProfilPage() {
-  const { user, refresh } = useAuth();
+  const { user, refresh, roles } = useAuth();
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["profile-full", user?.id],
