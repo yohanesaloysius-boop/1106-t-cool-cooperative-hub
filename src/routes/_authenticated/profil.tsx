@@ -4,16 +4,17 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/file-upload";
 import { StatusBadge } from "@/components/empty-state";
-import { Loader2, Save, User as UserIcon, IdCard } from "lucide-react";
+import { Loader2, Save, User as UserIcon, IdCard, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profil")({
   head: () => ({ meta: [{ title: "Profil Anggota — T-COOL Koperasi" }] }),
