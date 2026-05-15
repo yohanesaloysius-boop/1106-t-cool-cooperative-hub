@@ -14,6 +14,20 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
 
+const ROLE_LABEL: Record<AppRole, string> = {
+  super_admin: "Super Admin",
+  ketua: "Ketua",
+  sekretaris: "Sekretaris",
+  bendahara: "Bendahara",
+  anggota: "Anggota",
+};
+function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
+  if (viewAsMember) return "Anggota";
+  const order: AppRole[] = ["super_admin", "ketua", "bendahara", "sekretaris", "anggota"];
+  const r = order.find((x) => roles.includes(x)) ?? "anggota";
+  return ROLE_LABEL[r];
+}
+
 const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
