@@ -20,9 +20,14 @@ interface AuthCtx {
   profile: Profile | null;
   roles: AppRole[];
   loading: boolean;
+  isPengurus: boolean;
+  viewAsMember: boolean;
+  setViewAsMember: (v: boolean) => void;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 }
+
+const VIEW_AS_KEY = "tcool.viewAsMember";
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
