@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 const fmtNum = new Intl.NumberFormat("id-ID");
 
 function DashboardPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, isPengurus } = useAuth();
   const navigate = useNavigate();
 
   const { data, isLoading, refetch } = useQuery({
