@@ -8,9 +8,9 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 function AdminGuard() {
-  const { roles, loading } = useAuth();
+  const { roles, loading, viewAsMember } = useAuth();
   const navigate = useNavigate();
-  const allowed = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const allowed = !viewAsMember && roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
 
   useEffect(() => {
     if (!loading && !allowed) navigate({ to: "/dashboard" });
