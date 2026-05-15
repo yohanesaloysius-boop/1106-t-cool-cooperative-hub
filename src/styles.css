@@ -210,6 +210,13 @@
   .animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .animate-pop-in { animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+  @keyframes marquee-y {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+  .animate-marquee-y { animation: marquee-y 24s linear infinite; }
+  .animate-marquee-y:hover { animation-play-state: paused; }
+
   .hover-lift {
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
                 box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
