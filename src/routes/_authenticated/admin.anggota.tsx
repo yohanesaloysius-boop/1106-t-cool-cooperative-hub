@@ -101,9 +101,13 @@ function AnggotaPage() {
           <h1 className="text-2xl font-bold tracking-tight">Kelola Anggota</h1>
           <p className="text-sm text-muted-foreground">Aktivasi, tangguhkan, atau tolak permohonan keanggotaan.</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama / nomor / email" className="pl-8 sm:w-72" />
+        <div className="flex flex-wrap items-center gap-2">
+          <ImportCsvButton />
+          <DeleteDemoButton />
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama / nomor / email" className="pl-8 sm:w-72" />
+          </div>
         </div>
       </div>
 
