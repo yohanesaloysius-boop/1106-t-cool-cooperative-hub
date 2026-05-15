@@ -96,7 +96,6 @@ function AuthLayout() {
               <p className="truncate text-sm font-medium">{profile?.nama_lengkap ?? "Anggota"}</p>
               <p className="truncate text-xs text-muted-foreground">{profile?.nomor_anggota ?? "—"}</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => signOut()}><LogOut className="h-4 w-4" /></Button>
           </div>
         </div>
       </aside>
