@@ -100,9 +100,24 @@ function Landing() {
   const { data: activities, refetch: refetchActivity } = useQuery({
     queryKey: ["public-recent-activity"],
     queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)("get_public_recent_activity", { limit_count: 6 });
+      const { data, error } = await (supabase.rpc as any)("get_public_recent_activity", { limit_count: 5 });
       if (error) throw error;
       return (data ?? []) as { kind: string; title: string; descr: string; ts: string }[];
+    },
+    staleTime: 30_000,
+  });
+
+  const { data: lowongan, refetch: refetchLowongan } = useQuery({
+    queryKey: ["public-lowongan"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lowongan_kerja")
+        .select("id,judul,perusahaan,posisi,gender,lokasi,kontak_nama,kontak_telepon,deskripsi,created_at")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      if (error) throw error;
+      return data ?? [];
     },
     staleTime: 30_000,
   });
