@@ -105,12 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (user) await loadProfile(user.id);
     },
   };
-      await supabase.auth.signOut();
-    },
-    refresh: async () => {
-      if (user) await loadProfile(user.id);
-    },
-  };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
