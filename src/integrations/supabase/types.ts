@@ -834,6 +834,54 @@ export type Database = {
         }
         Relationships: []
       }
+      shu_rewards: {
+        Row: {
+          bonus_loyalitas: number
+          catatan: string | null
+          created_at: string
+          id: string
+          poin_keaktifan: number
+          poin_kehadiran_rapat: number
+          poin_pelunasan_pinjaman: number
+          poin_referral: number
+          tahun: number
+          total_bonus: number
+          total_poin: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_loyalitas?: number
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          poin_keaktifan?: number
+          poin_kehadiran_rapat?: number
+          poin_pelunasan_pinjaman?: number
+          poin_referral?: number
+          tahun: number
+          total_bonus?: number
+          total_poin?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_loyalitas?: number
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          poin_keaktifan?: number
+          poin_kehadiran_rapat?: number
+          poin_pelunasan_pinjaman?: number
+          poin_referral?: number
+          tahun?: number
+          total_bonus?: number
+          total_poin?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       signatures: {
         Row: {
           created_at: string
@@ -924,6 +972,66 @@ export type Database = {
           user_id?: string
           verified_at?: string | null
           verified_by?: string | null
+        }
+        Relationships: []
+      }
+      tabungan_berjangka: {
+        Row: {
+          bukti_url: string | null
+          bunga_persen: number
+          catatan: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          nominal: number
+          status: Database["public"]["Enums"]["tabungan_status"]
+          tanggal_jatuh_tempo: string | null
+          tanggal_mulai: string | null
+          tenor_bulan: number
+          total_bagi_hasil: number | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+          withdrawn_at: string | null
+        }
+        Insert: {
+          bukti_url?: string | null
+          bunga_persen?: number
+          catatan?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          nominal: number
+          status?: Database["public"]["Enums"]["tabungan_status"]
+          tanggal_jatuh_tempo?: string | null
+          tanggal_mulai?: string | null
+          tenor_bulan: number
+          total_bagi_hasil?: number | null
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+          withdrawn_at?: string | null
+        }
+        Update: {
+          bukti_url?: string | null
+          bunga_persen?: number
+          catatan?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          nominal?: number
+          status?: Database["public"]["Enums"]["tabungan_status"]
+          tanggal_jatuh_tempo?: string | null
+          tanggal_mulai?: string | null
+          tenor_bulan?: number
+          total_bagi_hasil?: number | null
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          withdrawn_at?: string | null
         }
         Relationships: []
       }
@@ -1066,6 +1174,12 @@ export type Database = {
         | "completed"
         | "cancelled"
       simpanan_jenis: "pokok" | "wajib" | "sukarela"
+      tabungan_status:
+        | "pending"
+        | "active"
+        | "matured"
+        | "withdrawn"
+        | "rejected"
       transaksi_jenis:
         | "simpanan_masuk"
         | "simpanan_keluar"
@@ -1238,6 +1352,13 @@ export const Constants = {
         "cancelled",
       ],
       simpanan_jenis: ["pokok", "wajib", "sukarela"],
+      tabungan_status: [
+        "pending",
+        "active",
+        "matured",
+        "withdrawn",
+        "rejected",
+      ],
       transaksi_jenis: [
         "simpanan_masuk",
         "simpanan_keluar",
