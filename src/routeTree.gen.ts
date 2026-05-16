@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedRapatRouteImport } from './routes/_authenticated/rapat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
+import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_authenticated/marketplace-saya'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -31,11 +33,14 @@ import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as VerifyRouteImport } from './routes/verify.'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as MarketplaceTokoSlugRouteImport } from './routes/marketplace.toko.$slug'
+import { Route as MarketplaceProdukIdRouteImport } from './routes/marketplace.produk.$id'
 import { Route as AuthenticatedAdminTabunganBerjangkaRouteImport } from './routes/_authenticated/admin.tabungan-berjangka'
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
+import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
@@ -51,6 +56,11 @@ const TentangRoute = TentangRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -113,6 +123,12 @@ const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
   path: '/pinjaman',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMarketplaceSayaRoute =
+  AuthenticatedMarketplaceSayaRouteImport.update({
+    id: '/marketplace-saya',
+    path: '/marketplace-saya',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedKalkulatorRoute = AuthenticatedKalkulatorRouteImport.update({
   id: '/kalkulator',
   path: '/kalkulator',
@@ -153,6 +169,16 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const MarketplaceTokoSlugRoute = MarketplaceTokoSlugRouteImport.update({
+  id: '/toko/$slug',
+  path: '/toko/$slug',
+  getParentRoute: () => MarketplaceRoute,
+} as any)
+const MarketplaceProdukIdRoute = MarketplaceProdukIdRouteImport.update({
+  id: '/produk/$id',
+  path: '/produk/$id',
+  getParentRoute: () => MarketplaceRoute,
+} as any)
 const AuthenticatedAdminTabunganBerjangkaRoute =
   AuthenticatedAdminTabunganBerjangkaRouteImport.update({
     id: '/tabungan-berjangka',
@@ -180,6 +206,12 @@ const AuthenticatedAdminPengaturanRoute =
   AuthenticatedAdminPengaturanRouteImport.update({
     id: '/pengaturan',
     path: '/pengaturan',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMarketplaceRoute =
+  AuthenticatedAdminMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminLaporanRoute =
@@ -223,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
@@ -232,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -244,11 +278,14 @@ export interface FileRoutesByFullPath {
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
+  '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
+  '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -257,6 +294,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify': typeof VerifyRoute
@@ -265,6 +303,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -277,11 +316,14 @@ export interface FileRoutesByTo {
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
+  '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
+  '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -292,6 +334,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
@@ -301,6 +344,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/_authenticated/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/rapat': typeof AuthenticatedRapatRoute
@@ -313,11 +357,14 @@ export interface FileRoutesById {
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
+  '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
+  '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -328,6 +375,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/daftar-anggota'
     | '/forgot-password'
+    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify/'
@@ -337,6 +385,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
+    | '/marketplace-saya'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -349,11 +398,14 @@ export interface FileRouteTypes {
     | '/admin/approval'
     | '/admin/audit'
     | '/admin/laporan'
+    | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin/tabungan-berjangka'
+    | '/marketplace/produk/$id'
+    | '/marketplace/toko/$slug'
     | '/admin/'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -362,6 +414,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/daftar-anggota'
     | '/forgot-password'
+    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify'
@@ -370,6 +423,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dokumen'
     | '/kalkulator'
+    | '/marketplace-saya'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -382,11 +436,14 @@ export interface FileRouteTypes {
     | '/admin/approval'
     | '/admin/audit'
     | '/admin/laporan'
+    | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin/tabungan-berjangka'
+    | '/marketplace/produk/$id'
+    | '/marketplace/toko/$slug'
     | '/admin'
     | '/api/public/hooks/daily-reminders'
   id:
@@ -396,6 +453,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/daftar-anggota'
     | '/forgot-password'
+    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify/'
@@ -405,6 +463,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/dokumen'
     | '/_authenticated/kalkulator'
+    | '/_authenticated/marketplace-saya'
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
     | '/_authenticated/rapat'
@@ -417,11 +476,14 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/approval'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/laporan'
+    | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
     | '/_authenticated/admin/tabungan-berjangka'
+    | '/marketplace/produk/$id'
+    | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
@@ -432,6 +494,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DaftarAnggotaRoute: typeof DaftarAnggotaRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  MarketplaceRoute: typeof MarketplaceRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
@@ -452,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -538,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPinjamanRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/marketplace-saya': {
+      id: '/_authenticated/marketplace-saya'
+      path: '/marketplace-saya'
+      fullPath: '/marketplace-saya'
+      preLoaderRoute: typeof AuthenticatedMarketplaceSayaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/kalkulator': {
       id: '/_authenticated/kalkulator'
       path: '/kalkulator'
@@ -594,6 +671,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/marketplace/toko/$slug': {
+      id: '/marketplace/toko/$slug'
+      path: '/toko/$slug'
+      fullPath: '/marketplace/toko/$slug'
+      preLoaderRoute: typeof MarketplaceTokoSlugRouteImport
+      parentRoute: typeof MarketplaceRoute
+    }
+    '/marketplace/produk/$id': {
+      id: '/marketplace/produk/$id'
+      path: '/produk/$id'
+      fullPath: '/marketplace/produk/$id'
+      preLoaderRoute: typeof MarketplaceProdukIdRouteImport
+      parentRoute: typeof MarketplaceRoute
+    }
     '/_authenticated/admin/tabungan-berjangka': {
       id: '/_authenticated/admin/tabungan-berjangka'
       path: '/tabungan-berjangka'
@@ -627,6 +718,13 @@ declare module '@tanstack/react-router' {
       path: '/pengaturan'
       fullPath: '/admin/pengaturan'
       preLoaderRoute: typeof AuthenticatedAdminPengaturanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/marketplace': {
+      id: '/_authenticated/admin/marketplace'
+      path: '/marketplace'
+      fullPath: '/admin/marketplace'
+      preLoaderRoute: typeof AuthenticatedAdminMarketplaceRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/laporan': {
@@ -680,6 +778,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
+  AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
@@ -694,6 +793,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
+  AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
@@ -713,6 +813,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
+  AuthenticatedMarketplaceSayaRoute: typeof AuthenticatedMarketplaceSayaRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRapatRoute: typeof AuthenticatedRapatRoute
@@ -729,6 +830,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
+  AuthenticatedMarketplaceSayaRoute: AuthenticatedMarketplaceSayaRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRapatRoute: AuthenticatedRapatRoute,
@@ -742,12 +844,27 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface MarketplaceRouteChildren {
+  MarketplaceProdukIdRoute: typeof MarketplaceProdukIdRoute
+  MarketplaceTokoSlugRoute: typeof MarketplaceTokoSlugRoute
+}
+
+const MarketplaceRouteChildren: MarketplaceRouteChildren = {
+  MarketplaceProdukIdRoute: MarketplaceProdukIdRoute,
+  MarketplaceTokoSlugRoute: MarketplaceTokoSlugRoute,
+}
+
+const MarketplaceRouteWithChildren = MarketplaceRoute._addFileChildren(
+  MarketplaceRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   DaftarAnggotaRoute: DaftarAnggotaRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  MarketplaceRoute: MarketplaceRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
