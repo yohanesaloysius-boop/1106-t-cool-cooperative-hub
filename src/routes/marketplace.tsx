@@ -97,7 +97,7 @@ function MarketplacePage() {
 
         {/* FEATURED */}
         {featured.length > 0 && !kategori && (
-          <section>
+          <section id="produk-unggulan" className="scroll-mt-24">
             <div className="mb-4">
               <h2 className="text-xl font-bold tracking-tight md:text-2xl">⭐ Produk Unggulan</h2>
               <p className="text-sm text-muted-foreground">Pilihan terbaik dari toko-toko anggota</p>
