@@ -403,6 +403,44 @@ export async function removeFavorite(memberId: string, productId: string) {
   if (error) throw error;
 }
 
+// ---------- INTEGRATION RPC ----------
+export type MarketplaceStats = {
+  toko_aktif: number;
+  produk_aktif: number;
+  transaksi_total: number;
+  gmv: number;
+};
+
+export async function getMarketplaceStats(): Promise<MarketplaceStats> {
+  const { data, error } = await (supabase.rpc as any)("get_marketplace_stats");
+  if (error) throw error;
+  return data as MarketplaceStats;
+}
+
+export type FeaturedProduct = {
+  id: string;
+  nama_produk: string;
+  slug: string;
+  harga: number;
+  diskon_persen: number;
+  gambar_produk: string[];
+  store_id: string;
+  store_nama: string;
+  store_slug: string;
+};
+
+export async function getFeaturedProducts(limit = 8): Promise<FeaturedProduct[]> {
+  const { data, error } = await (supabase.rpc as any)("get_featured_products", { _limit: limit });
+  if (error) throw error;
+  return (data ?? []) as FeaturedProduct[];
+}
+
+export async function isActiveSeller(userId: string): Promise<boolean> {
+  const { data, error } = await (supabase.rpc as any)("is_active_seller", { _user_id: userId });
+  if (error) return false;
+  return Boolean(data);
+}
+
 // ---------- STORAGE ----------
 /** Upload file ke bucket `marketplace`. Path harus diawali userId (RLS). */
 export async function uploadMarketplaceFile(
