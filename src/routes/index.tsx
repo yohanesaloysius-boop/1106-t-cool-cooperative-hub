@@ -326,12 +326,8 @@ function Landing() {
                 </span>
                 <h3 className="text-lg font-semibold">Info Lowongan Kerja</h3>
               </div>
-              <Link to="/auth">
-                <Button size="sm" variant="outline" className="rounded-full text-xs">
-                  <Plus className="mr-1 h-3 w-3" /> Pasang
-                </Button>
-              </Link>
             </div>
+
             <p className="mt-1 text-xs text-muted-foreground">
               Anggota & pengurus dapat memasang info lowongan setelah disetujui pengurus.
             </p>
