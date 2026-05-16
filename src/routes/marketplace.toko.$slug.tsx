@@ -3,7 +3,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CalendarCheck, MapPin, MessageCircle, Star, Store as StoreIcon } from "lucide-react";
 import { ProductCard } from "@/components/marketplace/product-card";
-import { getStore, getStoreProducts } from "@/lib/marketplace-mock";
+import { getStore, getStoreProducts, type MarketplaceProduct } from "@/lib/marketplace-mock";
 
 export const Route = createFileRoute("/marketplace/toko/$slug")({
   head: ({ params }) => {
@@ -99,7 +99,7 @@ function StoreDetail() {
             </p>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
-              {products.map((p: typeof products[number]) => (
+              {(products as MarketplaceProduct[]).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
