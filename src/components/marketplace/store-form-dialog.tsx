@@ -82,6 +82,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
           alamat: alamat.trim() || null,
           logo,
           banner,
+          instagram: instagram.trim() || null,
+          facebook: facebook.trim() || null,
+          tiktok: tiktok.trim() || null,
+          shopee: shopee.trim() || null,
         });
         toast.success("Profil toko diperbarui");
       } else {
@@ -93,6 +97,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
           alamat: alamat.trim() || undefined,
           logo: logo ?? undefined,
           banner: banner ?? undefined,
+          instagram: instagram.trim() || undefined,
+          facebook: facebook.trim() || undefined,
+          tiktok: tiktok.trim() || undefined,
+          shopee: shopee.trim() || undefined,
         });
         toast.success("Toko berhasil dibuka 🎉");
       }
