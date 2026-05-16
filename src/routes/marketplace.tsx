@@ -204,48 +204,25 @@ function MarketplacePage() {
           </section>
         )}
 
-        {/* SEMUA PRODUK / FILTER + INFINITE */}
+        {/* SEMUA PRODUK — DEMO (data dummy mirip Tokopedia) */}
         <section id="semua-produk" className="scroll-mt-24">
-          <div className="mb-4 flex items-end justify-between gap-2">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div>
-              <h2 className="text-xl font-bold tracking-tight md:text-2xl">
-                {q ? `Hasil pencarian: "${q}"` : currentCat ? `Kategori: ${currentCat.nama_kategori}` : "Semua Produk"}
-              </h2>
-              <p className="text-sm text-muted-foreground">{total} produk ditemukan</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tight md:text-2xl">Semua Produk</h2>
+                <Badge variant="secondary" className="rounded-full">Demo</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Tampilan contoh ({DEMO_PRODUCTS.length} produk dummy) — akan diganti saat ada pembaruan.
+              </p>
             </div>
-            {(kategori || q) && (
-              <Link to="/marketplace" search={{}}>
-                <Button size="sm" variant="outline" className="rounded-full">Reset</Button>
-              </Link>
-            )}
           </div>
 
-          {infinite.isLoading ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="aspect-[3/4] animate-pulse rounded-2xl bg-muted" />
-              ))}
-            </div>
-          ) : products.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-              Tidak ada produk yang cocok{q ? ` untuk "${q}"` : ""}.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
-                {products.map((p) => <RealProductCard key={p.id} product={p} />)}
-              </div>
-              <div ref={sentinelRef} className="flex justify-center py-8">
-                {infinite.isFetchingNextPage ? (
-                  <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Memuat produk berikutnya…
-                  </span>
-                ) : !infinite.hasNextPage ? (
-                  <span className="text-xs text-muted-foreground">Sudah sampai akhir 🎉</span>
-                ) : null}
-              </div>
-            </>
-          )}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
+            {DEMO_PRODUCTS.map((p) => (
+              <DemoProductCard key={p.id} product={p} />
+            ))}
+          </div>
         </section>
 
         {/* CTA */}
