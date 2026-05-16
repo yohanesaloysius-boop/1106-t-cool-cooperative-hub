@@ -11,6 +11,7 @@ const links = [
 ] as const;
 
 export function SiteHeader() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-4 z-40 px-3 md:px-6">
       <div
