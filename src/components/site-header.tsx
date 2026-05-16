@@ -47,21 +47,64 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {user ? (
-          <Link to="/dashboard">
-            <Button size="sm" className="rounded-full shadow-sm">
-              <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </Button>
-          </Link>
-        ) : (
-          <Link to="/auth">
-            <Button size="sm" className="rounded-full shadow-sm">
-              <LogIn className="h-4 w-4" />
-              <span className="hidden sm:inline">Login</span>
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          {user && realPengurus && (
+            <div className="hidden sm:flex items-center gap-1 rounded-full border border-border/70 bg-white/80 p-1 shadow-sm" role="group" aria-label="Mode tampilan">
+              <button
+                type="button"
+                onClick={() => setViewAsMember(false)}
+                aria-pressed={!viewAsMember}
+                title="Mode Admin / Pengurus"
+                className={cn(
+                  "relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                  !viewAsMember
+                    ? "bg-emerald-500 text-white shadow"
+                    : "text-foreground/70 hover:text-foreground",
+                )}
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Admin
+                {!viewAsMember && (
+                  <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-white ring-2 ring-emerald-300 animate-pulse" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewAsMember(true)}
+                aria-pressed={viewAsMember}
+                title="Mode Anggota"
+                className={cn(
+                  "relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                  viewAsMember
+                    ? "bg-emerald-500 text-white shadow"
+                    : "text-foreground/70 hover:text-foreground",
+                )}
+              >
+                <UserIcon className="h-3.5 w-3.5" />
+                Anggota
+                {viewAsMember && (
+                  <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-white ring-2 ring-emerald-300 animate-pulse" />
+                )}
+              </button>
+            </div>
+          )}
+
+          {user ? (
+            <Link to="/dashboard">
+              <Button size="sm" className="rounded-full shadow-sm">
+                <LayoutDashboard className="h-4 w-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/auth">
+              <Button size="sm" className="rounded-full shadow-sm">
+                <LogIn className="h-4 w-4" />
+                <span className="hidden sm:inline">Login</span>
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );
