@@ -228,7 +228,38 @@ function MarketplaceSayaPage() {
         ))}
       </div>
 
-      {/* Tabs */}
+      {/* Sales chart */}
+      <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 to-emerald-500 text-white shadow-md">
+            <TrendingUp className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold">Statistik Penjualan</h2>
+            <p className="text-xs text-muted-foreground">14 hari terakhir · {totalTerjual} item terjual total</p>
+          </div>
+        </div>
+        <div className="h-56 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="hari" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+              <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
+              <Tooltip
+                contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }}
+                formatter={(v: any, name) => name === "pendapatan" ? fmtIDR(Number(v)) : v}
+              />
+              <Area type="monotone" dataKey="pendapatan" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#salesFill)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <Tabs defaultValue="produk" className="space-y-4">
         <TabsList className="rounded-full">
           <TabsTrigger value="produk" className="rounded-full"><Package className="mr-2 h-4 w-4" />Produk</TabsTrigger>
