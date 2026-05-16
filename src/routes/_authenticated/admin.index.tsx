@@ -88,7 +88,7 @@ function AdminDashboard() {
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
               <ShieldCheck className="h-3 w-3" /> {roleTitle[primaryRole]}
             </div>
-            <h1 className="mt-2 text-2xl md:text-3xl font-bold">Dashboard Pengurus</h1>
+            <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#372f2f]">Dashboard Pengurus</h1>
             <p className="mt-1 text-sm text-white/80">Halo, {profile?.nama_lengkap ?? "Pengurus"} · pantau koperasi secara realtime.</p>
           </div>
           <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-white hover:bg-white/25 backdrop-blur border border-white/20">
