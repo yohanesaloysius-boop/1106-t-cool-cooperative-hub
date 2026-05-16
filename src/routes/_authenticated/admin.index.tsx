@@ -119,6 +119,28 @@ function AdminDashboard() {
         <ApprovalQueue />
       </div>
 
+      {/* Pusat Verifikasi — gabungan Simpanan, Pinjaman, Angsuran */}
+      <Card style={{ boxShadow: "var(--shadow-card)" }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <ClipboardCheck className="h-4 w-4 text-primary" />
+            Pusat Verifikasi
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="simpanan">
+            <TabsList>
+              <TabsTrigger value="simpanan">Verifikasi Simpanan</TabsTrigger>
+              <TabsTrigger value="pinjaman">Approval Pinjaman</TabsTrigger>
+              <TabsTrigger value="angsuran">Verifikasi Angsuran</TabsTrigger>
+            </TabsList>
+            <TabsContent value="simpanan" className="mt-4"><SimpananVerifyPage /></TabsContent>
+            <TabsContent value="pinjaman" className="mt-4"><PinjamanApprovalPage /></TabsContent>
+            <TabsContent value="angsuran" className="mt-4"><AdminAngsuranPage /></TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
       {/* Activity */}
       <div className="grid gap-6 lg:grid-cols-2">
         <ActivityFeed limit={10} />
