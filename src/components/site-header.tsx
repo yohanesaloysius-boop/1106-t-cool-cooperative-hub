@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Phone, Mail, MapPin, LogIn } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const links = [
   { to: "/", label: "Beranda" },
@@ -10,6 +11,7 @@ const links = [
 ] as const;
 
 export function SiteHeader() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-4 z-40 px-3 md:px-6">
       <div
@@ -43,13 +45,21 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link to="/auth">
-          <Button size="sm" className="rounded-full shadow-sm">
-            <LogIn className="h-4 w-4" />
-            <span className="hidden sm:inline">Login</span>
-          </Button>
-        </Link>
-
+        {user ? (
+          <Link to="/dashboard">
+            <Button size="sm" className="rounded-full shadow-sm">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </Button>
+          </Link>
+        ) : (
+          <Link to="/auth">
+            <Button size="sm" className="rounded-full shadow-sm">
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Login</span>
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );

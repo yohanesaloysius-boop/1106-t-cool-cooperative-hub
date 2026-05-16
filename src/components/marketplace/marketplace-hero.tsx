@@ -1,8 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { Sparkles, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export function MarketplaceHero() {
+  const { user } = useAuth();
+  const bukaTokoTo = user ? "/marketplace-saya" : "/auth";
+
+  const scrollToProduk = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const el = document.getElementById("produk-unggulan") || document.getElementById("semua-produk");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   return (
     <section
       className="relative overflow-hidden rounded-3xl border border-border p-6 md:p-10"
@@ -25,12 +34,12 @@ export function MarketplaceHero() {
             Harga komunitas, kualitas terjamin, untung bersama.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/auth">
+            <Link to={bukaTokoTo}>
               <Button size="lg" className="rounded-full shadow-lg">
                 <Store className="mr-2 h-4 w-4" /> Buka Toko Sekarang
               </Button>
             </Link>
-            <a href="#produk-unggulan">
+            <a href="#produk-unggulan" onClick={scrollToProduk}>
               <Button size="lg" variant="outline" className="rounded-full bg-card/80 backdrop-blur">
                 Jelajahi Produk
               </Button>
