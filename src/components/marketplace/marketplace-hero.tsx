@@ -9,7 +9,7 @@ export function MarketplaceHero() {
 
   const scrollToProduk = (e: React.MouseEvent) => {
     e.preventDefault();
-    const el = document.getElementById("produk-unggulan") || document.getElementById("semua-produk");
+    const el = document.getElementById("semua-produk") || document.getElementById("produk-unggulan");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   return (
