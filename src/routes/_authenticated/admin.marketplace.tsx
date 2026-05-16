@@ -147,7 +147,7 @@ function AdminMarketplacePage() {
               <ShieldCheck className="h-3 w-3" /> Admin Marketplace
             </div>
             <h1 className="mt-2 text-2xl md:text-3xl font-bold">Manajemen Marketplace</h1>
-            <p className="mt-1 text-sm text-white/80">Approve toko & produk, moderasi konten, dan pantau performa marketplace komunitas.</p>
+            <p className="mt-1 text-sm text-[#3e3232]">Approve toko & produk, moderasi konten, dan pantau performa marketplace komunitas.</p>
           </div>
           <Button variant="secondary" size="sm" className="rounded-full" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} /> Refresh
