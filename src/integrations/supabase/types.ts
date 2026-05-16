@@ -321,6 +321,301 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          nama_kategori: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          nama_kategori: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          nama_kategori?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketplace_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          member_id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_id: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_favorites_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_favorites_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_products: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          deskripsi: string | null
+          gambar_produk: string[]
+          harga: number
+          id: string
+          nama_produk: string
+          slug: string
+          status_produk: Database["public"]["Enums"]["product_status"]
+          stok: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          deskripsi?: string | null
+          gambar_produk?: string[]
+          harga?: number
+          id?: string
+          nama_produk: string
+          slug: string
+          status_produk?: Database["public"]["Enums"]["product_status"]
+          stok?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          deskripsi?: string | null
+          gambar_produk?: string[]
+          harga?: number
+          id?: string
+          nama_produk?: string
+          slug?: string
+          status_produk?: Database["public"]["Enums"]["product_status"]
+          stok?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          komentar: string | null
+          member_id: string
+          product_id: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          komentar?: string | null
+          member_id: string
+          product_id: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          komentar?: string | null
+          member_id?: string
+          product_id?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_reviews_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_stores: {
+        Row: {
+          alamat: string | null
+          banner: string | null
+          created_at: string
+          deskripsi: string | null
+          id: string
+          logo: string | null
+          member_id: string
+          nama_toko: string
+          slug: string
+          status_toko: Database["public"]["Enums"]["store_status"]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          alamat?: string | null
+          banner?: string | null
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          logo?: string | null
+          member_id: string
+          nama_toko: string
+          slug: string
+          status_toko?: Database["public"]["Enums"]["store_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          alamat?: string | null
+          banner?: string | null
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          logo?: string | null
+          member_id?: string
+          nama_toko?: string
+          slug?: string
+          status_toko?: Database["public"]["Enums"]["store_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_stores_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_transactions: {
+        Row: {
+          buyer_id: string
+          catatan: string | null
+          created_at: string
+          harga_satuan: number
+          id: string
+          product_id: string
+          qty: number
+          seller_id: string
+          status: Database["public"]["Enums"]["mp_trx_status"]
+          store_id: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          buyer_id: string
+          catatan?: string | null
+          created_at?: string
+          harga_satuan: number
+          id?: string
+          product_id: string
+          qty: number
+          seller_id: string
+          status?: Database["public"]["Enums"]["mp_trx_status"]
+          store_id: string
+          total: number
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string
+          catatan?: string | null
+          created_at?: string
+          harga_satuan?: number
+          id?: string
+          product_id?: string
+          qty?: number
+          seller_id?: string
+          status?: Database["public"]["Enums"]["mp_trx_status"]
+          store_id?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_transactions_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_transactions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_transactions_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_transactions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_attendances: {
         Row: {
           catatan: string | null
@@ -1215,6 +1510,13 @@ export type Database = {
       lowongan_status: "pending" | "approved" | "rejected" | "expired"
       meeting_status: "scheduled" | "ongoing" | "completed" | "cancelled"
       member_status: "pending" | "active" | "suspended" | "rejected"
+      mp_trx_status:
+        | "pending"
+        | "confirmed"
+        | "paid"
+        | "shipped"
+        | "completed"
+        | "cancelled"
       notif_kategori:
         | "info"
         | "sukses"
@@ -1234,7 +1536,9 @@ export type Database = {
         | "disbursed"
         | "completed"
         | "cancelled"
+      product_status: "draft" | "active" | "out_of_stock" | "archived"
       simpanan_jenis: "pokok" | "wajib" | "sukarela"
+      store_status: "active" | "inactive" | "suspended"
       tabungan_status:
         | "pending"
         | "active"
@@ -1392,6 +1696,14 @@ export const Constants = {
       lowongan_status: ["pending", "approved", "rejected", "expired"],
       meeting_status: ["scheduled", "ongoing", "completed", "cancelled"],
       member_status: ["pending", "active", "suspended", "rejected"],
+      mp_trx_status: [
+        "pending",
+        "confirmed",
+        "paid",
+        "shipped",
+        "completed",
+        "cancelled",
+      ],
       notif_kategori: [
         "info",
         "sukses",
@@ -1413,7 +1725,9 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      product_status: ["draft", "active", "out_of_stock", "archived"],
       simpanan_jenis: ["pokok", "wajib", "sukarela"],
+      store_status: ["active", "inactive", "suspended"],
       tabungan_status: [
         "pending",
         "active",
