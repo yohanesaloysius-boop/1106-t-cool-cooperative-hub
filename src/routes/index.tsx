@@ -332,10 +332,10 @@ function Landing() {
               Anggota & pengurus dapat memasang info lowongan setelah disetujui pengurus.
             </p>
             <ul className="mt-4 space-y-3 max-h-[360px] overflow-y-auto pr-1">
-              {(lowongan ?? []).length === 0 ? (
+              {false ? (
                 <li className="py-6 text-center text-sm text-muted-foreground">Belum ada lowongan.</li>
               ) : (
-                lowongan!.map((l: any) => (
+                lowonganList.map((l: any) => (
                   <li
                     key={l.id}
                     className="rounded-2xl border border-border/60 bg-background/60 p-4 transition-all hover:border-primary/40 hover:shadow-sm"
@@ -385,7 +385,7 @@ function Landing() {
                 Lihat Semua
               </button>
             </div>
-            {(activities ?? []).length === 0 ? (
+            {false ? (
               <p className="py-10 text-center text-sm text-muted-foreground">Belum ada aktivitas.</p>
             ) : (
               <div
@@ -393,7 +393,7 @@ function Landing() {
                 style={{ height: 360, maskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)", WebkitMaskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)" }}
               >
                 <ul className="flex flex-col gap-3 animate-marquee-y">
-                  {[...(activities ?? []).slice(0, 5), ...(activities ?? []).slice(0, 5)].map((a, idx) => {
+                  {[...activitiesList.slice(0, 5), ...activitiesList.slice(0, 5)].map((a, idx) => {
                     const meta = ACTIVITY_META[a.kind] ?? ACTIVITY_META.default;
                     const Icon = meta.icon;
                     return (
