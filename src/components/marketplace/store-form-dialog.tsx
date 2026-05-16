@@ -183,6 +183,29 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
               <Input value={alamat} onChange={(e) => setAlamat(e.target.value)} maxLength={200} placeholder="Kota / Kecamatan" />
             </div>
           </div>
+
+          <div className="rounded-2xl border border-border bg-muted/30 p-4">
+            <Label className="text-sm font-semibold">Sosial Media (opsional)</Label>
+            <p className="mb-3 text-xs text-muted-foreground">Username tanpa @, atau link lengkap</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center gap-2">
+                <Instagram className="h-4 w-4 shrink-0 text-pink-500" />
+                <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="instagram" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Facebook className="h-4 w-4 shrink-0 text-blue-600" />
+                <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="facebook" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Music2 className="h-4 w-4 shrink-0" />
+                <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="tiktok" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 shrink-0 text-orange-500" />
+                <Input value={shopee} onChange={(e) => setShopee(e.target.value)} placeholder="shopee" maxLength={80} />
+              </div>
+            </div>
+          </div>
         </div>
 
         <DialogFooter>
