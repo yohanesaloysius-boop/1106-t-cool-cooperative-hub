@@ -17,6 +17,8 @@ import {
   Phone,
   MapPin,
   Plus,
+  ShoppingBag,
+  Lock,
 } from "lucide-react";
 import {
   Line,
@@ -95,6 +97,22 @@ function Landing() {
       return (data ?? []) as { kind: string; title: string; descr: string; ts: string }[];
     },
     staleTime: 30_000,
+  });
+
+  const { data: produkMP } = useQuery({
+    queryKey: ["public-marketplace-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("marketplace_products")
+        .select("id,nama_produk,harga,diskon_persen,gambar_produk,marketplace_stores!inner(nama_toko,status_toko)")
+        .eq("status_produk", "active")
+        .eq("marketplace_stores.status_toko", "active")
+        .order("created_at", { ascending: false })
+        .limit(12);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
   });
 
   const { data: lowongan, refetch: refetchLowongan } = useQuery({
@@ -274,6 +292,72 @@ function Landing() {
               </div>
             </div>
           ))}
+        </section>
+
+        {/* PRODUK MARKETPLACE — public preview, beli harus login */}
+        <section className="mt-12">
+          <div className="flex items-end justify-between gap-3 mb-5">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <ShoppingBag className="h-4 w-4" />
+                </span>
+                <h2 className="text-2xl font-bold tracking-tight">Produk Marketplace</h2>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Dari anggota, untuk anggota. <span className="font-medium text-foreground/80">Login dulu untuk belanja.</span>
+              </p>
+            </div>
+            <Link to="/marketplace">
+              <Button variant="outline" size="sm" className="rounded-full">
+                Lihat semua <ArrowRight className="ml-1 h-3 w-3" />
+              </Button>
+            </Link>
+          </div>
+
+          {(produkMP ?? []).length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-border bg-card py-10 text-center text-sm text-muted-foreground">
+              Belum ada produk.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {produkMP!.map((p: any) => {
+                const img = p.gambar_produk?.[0] ?? "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop";
+                const diskon = p.diskon_persen ?? 0;
+                const hargaAkhir = diskon > 0 ? Math.round(p.harga * (1 - diskon / 100)) : p.harga;
+                return (
+                  <Link
+                    key={p.id}
+                    to="/auth"
+                    className="group relative block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/40"
+                    style={{ boxShadow: "var(--shadow-card)" }}
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-muted">
+                      <img src={img} alt={p.nama_produk} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      {diskon > 0 && (
+                        <span className="absolute left-2 top-2 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">-{diskon}%</span>
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/80 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-lg">
+                          <Lock className="h-3 w-3" /> Login untuk Belanja
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-2.5">
+                      <p className="line-clamp-2 text-xs font-medium leading-tight min-h-[2rem]">{p.nama_produk}</p>
+                      <p className="mt-1 truncate text-[10px] text-muted-foreground">{p.marketplace_stores?.nama_toko}</p>
+                      <div className="mt-1.5 flex items-baseline gap-1.5">
+                        <span className="text-sm font-bold text-primary">{fmtNum.format(hargaAkhir)}</span>
+                        {diskon > 0 && (
+                          <span className="text-[10px] text-muted-foreground line-through">{fmtNum.format(p.harga)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* LOWONGAN + AKTIVITAS */}

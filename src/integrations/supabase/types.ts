@@ -436,22 +436,7 @@ export type Database = {
           updated_at?: string
           view_count?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_products_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_products_store_id_fkey"
-            columns: ["store_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_stores"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       marketplace_reviews: {
         Row: {
@@ -559,15 +544,7 @@ export type Database = {
           updated_at?: string
           whatsapp?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_stores_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       marketplace_transactions: {
         Row: {
@@ -612,36 +589,7 @@ export type Database = {
           total?: number
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_transactions_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_transactions_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_transactions_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_transactions_store_id_fkey"
-            columns: ["store_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_stores"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       meeting_attendances: {
         Row: {
