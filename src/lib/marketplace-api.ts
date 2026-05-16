@@ -165,6 +165,33 @@ export async function updateStore(id: string, patch: Partial<DbStore>) {
 }
 
 // ---------- PRODUCTS ----------
+export async function listProductsPage(opts: {
+  categorySlug?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}) {
+  const page = Math.max(0, opts.page ?? 0);
+  const pageSize = opts.pageSize ?? 12;
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
+  let q = supabase
+    .from("marketplace_products")
+    .select(
+      "*, marketplace_categories!inner(slug, nama_kategori), marketplace_stores!inner(slug, nama_toko, status_toko)",
+      { count: "exact" },
+    )
+    .eq("status_produk", "active")
+    .eq("marketplace_stores.status_toko", "active")
+    .order("created_at", { ascending: false })
+    .range(from, to);
+  if (opts.search) q = q.ilike("nama_produk", `%${opts.search}%`);
+  if (opts.categorySlug) q = q.eq("marketplace_categories.slug", opts.categorySlug);
+  const { data, error, count } = await q;
+  if (error) throw error;
+  return { rows: (data ?? []) as any[], count: count ?? 0, page, pageSize };
+}
+
 export async function listProducts(opts?: {
   categorySlug?: string;
   search?: string;
