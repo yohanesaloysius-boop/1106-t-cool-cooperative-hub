@@ -137,6 +137,10 @@ export async function createMyStore(input: {
   deskripsi?: string;
   logo?: string;
   banner?: string;
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
+  shopee?: string;
 }) {
   const base = slugify(input.nama_toko) || `toko-${Date.now()}`;
   const slug = `${base}-${Math.random().toString(36).slice(2, 6)}`;
