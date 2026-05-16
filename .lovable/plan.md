@@ -1,66 +1,69 @@
-## Rencana Implementasi (5 Fitur Besar)
+# Marketplace Komunitas — Struktur Dasar
 
-### 1. Mode Anggota untuk Pengurus & Super Admin
-- Tambah toggle "Lihat sebagai Anggota" di header (hanya muncul untuk role pengurus/super_admin).
-- Simpan status `viewAsMember` di `localStorage` + context `useAuth`.
-- Saat aktif: sembunyikan menu admin, halaman `/admin/*` redirect ke `/dashboard`, `is_pengurus` check di UI dimatikan sementara.
-- Toggle balik ke "Mode Pengurus" kapan saja. Tidak ubah role di DB — murni view-switching di klien.
+Fokus tahap ini: **UI, routing, layout**. Belum bikin tabel database / transaksi / upload produk real — semua pakai data dummy supaya bisa cepat di-review.
 
-### 2. Fitur Baru
+## 1. Routing baru (TanStack file routes)
 
-**A. Tabungan Berjangka (Deposito Koperasi)**
-- Tabel baru `tabungan_berjangka`: nominal, tenor (3/6/12/24 bulan), bunga_persen (default 0.5%/bulan), tanggal_mulai, tanggal_jatuh_tempo, status (`active`/`matured`/`withdrawn`/`pending`), bukti_url.
-- Halaman anggota `/tabungan-berjangka`: ajukan, lihat saldo + estimasi bagi hasil, riwayat.
-- Halaman pengurus `/admin/tabungan-berjangka`: verifikasi & cairkan saat jatuh tempo.
-- RLS: anggota lihat punya sendiri, pengurus lihat semua.
+Halaman publik (tanpa login):
+- `src/routes/marketplace.tsx` — Home Marketplace (hero, produk unggulan slider, toko pilihan, kategori, CTA gabung)
+- `src/routes/marketplace.produk.$id.tsx` — Detail Produk
+- `src/routes/marketplace.toko.$slug.tsx` — Detail Toko
 
-**B. Program Reward SHU**
-- Tabel `shu_rewards`: `user_id`, `tahun`, `poin_keaktifan`, `bonus_loyalitas`, `bonus_referral`, `total_bonus`.
-- Sistem poin (umum di Indonesia):
-  - Setor simpanan wajib tepat waktu: +10 poin/bulan
-  - Hadir rapat: +20 poin
-  - Pinjaman lunas tepat waktu: +50 poin
-  - Anggota >2 tahun: bonus loyalitas 5% dari SHU dasar
-  - Referral anggota baru aktif: +100 poin
-- Poin dikonversi ke bonus SHU saat pembagian akhir tahun.
-- Halaman `/shu` ditambah tab "Reward & Poin Saya".
+Halaman anggota (di dalam `_authenticated`):
+- `src/routes/_authenticated/marketplace-saya.tsx` — Dashboard Seller (toko saya + daftar produk saya, tombol tambah produk — placeholder)
 
-### 3. Aturan Bisnis (Settings)
-- Halaman baru `/admin/pengaturan` (super_admin only).
-- Edit nilai di tabel `settings`:
-  - `pinjaman.bunga_persen` (default 1.5%/bulan)
-  - `pinjaman.tenor_max` (default 24 bulan)
-  - `simpanan.pokok_min` (default Rp 500.000)
-  - `simpanan.wajib_bulanan` (default Rp 100.000)
-  - `shu.persen_jasa_modal` (default 30%)
-  - `shu.persen_jasa_usaha` (default 25%)
-  - `shu.persen_dana_cadangan` (default 25%)
-  - `shu.persen_dana_sosial` (default 10%)
-  - `shu.persen_pengurus` (default 10%)
-  - `tabungan_berjangka.bunga_3bln/6bln/12bln/24bln`
-- Form ini langsung dipakai sebagai default di kalkulator pinjaman & form simpanan.
+Halaman admin (di dalam `_authenticated`, role `is_pengurus`):
+- `src/routes/_authenticated/admin.marketplace.tsx` — Manajemen Marketplace (tab: Produk, Toko, Kategori, Laporan — placeholder tabel dummy)
 
-### 4. Setup Data Awal
-- **Super admin pertama**: sudah otomatis via trigger `handle_new_user` (email `yohanesaloysius@gmail.com`). Tidak perlu migrasi tambahan — cukup dokumentasi cara daftar.
-- **Import anggota lama**: tombol "Import CSV" di `/admin/anggota` — parse CSV (nama, email, no_hp, nik, alamat) dan kirim invite via `supabase.auth.admin.inviteUserByEmail` melalui server function (admin client). Anggota dapat email magic link.
+## 2. Update navigasi
 
-### 5. Seed 30 Anggota Contoh
-- Migration sekali jalan: insert 30 baris dummy ke `auth.users` + `profiles` + `user_roles` (role `anggota`).
-- Nama Indonesia variatif, status campuran (20 active, 7 pending, 3 suspended), nomor anggota auto-generate.
-- Tambah beberapa simpanan & pinjaman dummy supaya dashboard hidup.
-- Beri tag `created_by = 'seed-demo'` di kolom catatan agar admin bisa hapus massal lewat tombol "Hapus Data Demo" di `/admin/anggota`.
+- **Header publik** (`site-header.tsx`): tambah link "Marketplace" ke nav utama.
+- **Sidebar anggota** (`_authenticated.tsx`): tambah menu "Marketplace" + "Marketplace Saya".
+- **Sidebar admin**: tambah menu "Manajemen Marketplace".
 
----
+## 3. Update homepage (`src/routes/index.tsx`)
 
-### Urutan Eksekusi
-1. **Migration besar**: tabel baru (`tabungan_berjangka`, `shu_rewards`), settings default, seed 30 anggota dummy + transaksi.
-2. **Auth context**: tambah `viewAsMember` toggle.
-3. **UI baru**: header toggle, halaman tabungan berjangka (anggota + admin), halaman reward SHU, halaman pengaturan, tombol import CSV & hapus data demo.
-4. **Aturan bisnis**: baca settings di kalkulator & form.
+Placeholder "Marketplace Komunitas — Segera Hadir" di kolom kanan hero diganti jadi **preview card aktif** yang menampilkan:
+- Mini hero
+- 4 produk unggulan dummy (carousel auto-scroll horizontal)
+- Tombol "Jelajahi Marketplace" → `/marketplace`
 
-### Catatan
-- Tidak menyentuh email/WhatsApp (sesuai permintaan sebelumnya).
-- Notifikasi otomatis untuk tabungan jatuh tempo akan ditambahkan ke `daily-reminders` cron yang sudah ada.
-- Estimasi: 1 migration besar + ~10 file frontend baru/diubah.
+## 4. Komponen marketplace baru
 
-Lanjutkan implementasi?
+`src/components/marketplace/`:
+- `product-card.tsx` — kartu produk (gambar, nama, harga, toko, rating)
+- `store-card.tsx` — kartu toko (logo, nama, kota, jumlah produk)
+- `category-pill.tsx` — chip kategori
+- `product-carousel.tsx` — slider auto-scroll horizontal pakai CSS marquee (re-use pola `animate-marquee-y`, dibuat varian horizontal)
+- `marketplace-hero.tsx` — hero banner gradient + CTA
+
+## 5. Data dummy
+
+`src/lib/marketplace-mock.ts`:
+- 12 produk dummy (nama Indonesia, harga rupiah, kategori, toko, rating, gambar dari Unsplash)
+- 6 toko anggota
+- 8 kategori (Kuliner, Fashion, Elektronik, Pertanian, Jasa, Kerajinan, Kesehatan, Lainnya)
+
+Gambar pakai URL `https://images.unsplash.com/...` (tidak generate file lokal).
+
+## 6. Role marketplace
+
+Tambah field klien-side `is_seller` di `use-auth` (default `false`, toggle manual lewat tombol "Buka Toko" di halaman Marketplace Saya — UI only, belum simpan ke DB). Role admin pakai `is_pengurus` yang sudah ada.
+
+## 7. Desain
+
+- Token warna & shadow dari `styles.css` yang sudah ada (jangan hardcode).
+- Style premium-modern (gaya Tokopedia/Shopee): kartu rounded-2xl, shadow halus, hover lift, badge diskon merah, harga primary, rating bintang amber.
+- Responsive: grid 2 kolom mobile → 4 kolom desktop.
+- Dark mode mengikuti theme yang sudah ada.
+
+## Yang TIDAK dikerjakan tahap ini
+
+- Tabel database produk/toko/transaksi
+- Upload gambar produk
+- Sistem pesan/chat
+- Checkout/pembayaran
+- Approval produk oleh admin (UI ada, tombol no-op)
+- Persistensi role `seller`
+
+Lanjut implementasi?
