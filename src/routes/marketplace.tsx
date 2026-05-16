@@ -17,6 +17,8 @@ import {
   type DbStore,
 } from "@/lib/marketplace-api";
 import { cartItemEffectivePrice, useCart } from "@/lib/cart";
+import { PRODUCTS as DEMO_PRODUCTS } from "@/lib/marketplace-mock";
+import { ProductCard as DemoProductCard } from "@/components/marketplace/product-card";
 
 type Search = { kategori?: string; q?: string };
 
