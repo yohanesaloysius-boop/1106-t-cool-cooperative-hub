@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const links = [
   { to: "/", label: "Beranda" },
+  { to: "/marketplace", label: "Marketplace" },
   { to: "/daftar-anggota", label: "Daftar Anggota" },
   { to: "/tentang", label: "Tentang" },
 ] as const;

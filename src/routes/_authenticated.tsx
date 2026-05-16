@@ -4,7 +4,7 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { toast } from "sonner";
@@ -40,6 +40,8 @@ const memberNav = [
   { to: "/shu", label: "SHU & Reward", icon: Wallet },
   { to: "/approval", label: "Status Approval", icon: FileSignature },
   { to: "/rapat", label: "Rapat", icon: CalendarDays },
+  { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+  { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
 ];
 
 const adminNav = [
@@ -48,6 +50,7 @@ const adminNav = [
   { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
   { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
   { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
+  { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
   { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
   { to: "/admin/audit", label: "Audit Log", icon: Activity },
 ];
