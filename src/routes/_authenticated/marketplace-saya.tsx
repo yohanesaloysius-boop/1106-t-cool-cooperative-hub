@@ -185,6 +185,10 @@ function MarketplaceSayaPage() {
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               {store.alamat && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{store.alamat}</span>}
               {store.whatsapp && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{store.whatsapp}</span>}
+              {(store as any).instagram && <a href={`https://instagram.com/${(store as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-pink-500"><Instagram className="h-3 w-3" />{(store as any).instagram}</a>}
+              {(store as any).facebook && <a href={`https://facebook.com/${(store as any).facebook}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-blue-600"><Facebook className="h-3 w-3" />{(store as any).facebook}</a>}
+              {(store as any).tiktok && <a href={`https://tiktok.com/@${(store as any).tiktok.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1"><Music2 className="h-3 w-3" />{(store as any).tiktok}</a>}
+              {(store as any).shopee && <a href={`https://shopee.co.id/${(store as any).shopee}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-orange-500"><ShoppingBag className="h-3 w-3" />{(store as any).shopee}</a>}
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Badge variant={store.status_toko === "active" ? "default" : "secondary"} className="rounded-full">
