@@ -138,7 +138,7 @@ function MarketplacePage() {
         )}
 
         {/* SEMUA PRODUK / FILTER */}
-        <section>
+        <section id="semua-produk" className="scroll-mt-24">
           <div className="mb-4 flex items-end justify-between gap-2">
             <div>
               <h2 className="text-xl font-bold tracking-tight md:text-2xl">
