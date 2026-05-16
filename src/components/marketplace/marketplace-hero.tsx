@@ -34,12 +34,12 @@ export function MarketplaceHero() {
             Harga komunitas, kualitas terjamin, untung bersama.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/auth">
+            <Link to={bukaTokoTo}>
               <Button size="lg" className="rounded-full shadow-lg">
                 <Store className="mr-2 h-4 w-4" /> Buka Toko Sekarang
               </Button>
             </Link>
-            <a href="#produk-unggulan">
+            <a href="#produk-unggulan" onClick={scrollToProduk}>
               <Button size="lg" variant="outline" className="rounded-full bg-card/80 backdrop-blur">
                 Jelajahi Produk
               </Button>
