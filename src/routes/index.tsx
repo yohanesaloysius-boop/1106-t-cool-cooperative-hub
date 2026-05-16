@@ -202,21 +202,41 @@ function Landing() {
             </div>
           </div>
 
-          {/* Marketplace Komunitas — placeholder (segera hadir) */}
-          <div className="lg:col-span-5">
+          {/* Marketplace Komunitas — preview card */}
+          <Link
+            to="/marketplace"
+            className="lg:col-span-5 group block"
+          >
             <div
-              className="h-full rounded-3xl border border-dashed border-primary/40 bg-gradient-to-br from-primary/5 to-transparent p-6 flex flex-col items-center justify-center text-center"
+              className="h-full rounded-3xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:border-primary/40"
               style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                Segera Hadir
-              </span>
-              <h3 className="mt-4 text-2xl font-bold tracking-tight">Marketplace Komunitas</h3>
-              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                Tempat anggota koperasi saling jual-beli produk & jasa dalam komunitas T-COOL.
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  Marketplace Komunitas
+                </span>
+                <span className="text-xs font-medium text-primary group-hover:underline">Jelajahi →</span>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {[
+                  "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop",
+                  "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300&h=300&fit=crop",
+                  "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=300&h=300&fit=crop",
+                  "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=300&fit=crop",
+                  "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+                  "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop",
+                ].map((src, i) => (
+                  <div key={i} className="aspect-square overflow-hidden rounded-xl ring-1 ring-border">
+                    <img src={src} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-sm font-semibold">Belanja dari anggota, untuk anggota.</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Kuliner, fashion, kerajinan, dan jasa dari sesama anggota koperasi T-COOL.
               </p>
             </div>
-          </div>
+          </Link>
         </section>
 
         {/* STAT CARDS */}
