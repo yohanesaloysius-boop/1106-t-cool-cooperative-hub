@@ -10,7 +10,6 @@ import {
   Star,
   Clock,
   Calculator,
-  ChevronDown,
   Wallet,
   ShieldAlert,
   UserCog,
@@ -20,19 +19,13 @@ import {
   Plus,
 } from "lucide-react";
 import {
-  Area,
-  AreaChart,
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
-import hero3d from "@/assets/hero-3d.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
