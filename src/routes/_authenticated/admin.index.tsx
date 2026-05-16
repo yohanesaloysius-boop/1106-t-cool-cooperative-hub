@@ -8,7 +8,12 @@ import { TransactionChart } from "@/components/dashboard/transaction-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { LiveActivityFeed } from "@/components/dashboard/live-activity-feed";
 import { ApprovalQueue } from "@/components/dashboard/approval-queue";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SimpananVerifyPage } from "./admin.simpanan";
+import { AdminAngsuranPage } from "./admin.angsuran";
+import { PinjamanApprovalPage } from "./admin.pinjaman";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Dashboard — T-COOL Koperasi" }] }),
