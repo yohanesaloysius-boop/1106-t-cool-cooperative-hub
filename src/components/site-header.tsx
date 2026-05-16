@@ -45,13 +45,21 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link to="/auth">
-          <Button size="sm" className="rounded-full shadow-sm">
-            <LogIn className="h-4 w-4" />
-            <span className="hidden sm:inline">Login</span>
-          </Button>
-        </Link>
-
+        {user ? (
+          <Link to="/dashboard">
+            <Button size="sm" className="rounded-full shadow-sm">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </Button>
+          </Link>
+        ) : (
+          <Link to="/auth">
+            <Button size="sm" className="rounded-full shadow-sm">
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Login</span>
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );
