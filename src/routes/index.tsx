@@ -97,6 +97,22 @@ function Landing() {
     staleTime: 30_000,
   });
 
+  const { data: produkMP } = useQuery({
+    queryKey: ["public-marketplace-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("marketplace_products")
+        .select("id,nama_produk,harga,diskon_persen,gambar_produk,marketplace_stores!inner(nama_toko,status_toko)")
+        .eq("status_produk", "active")
+        .eq("marketplace_stores.status_toko", "active")
+        .order("created_at", { ascending: false })
+        .limit(12);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
   const { data: lowongan, refetch: refetchLowongan } = useQuery({
     queryKey: ["public-lowongan"],
     queryFn: async () => {
