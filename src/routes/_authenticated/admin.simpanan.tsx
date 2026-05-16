@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/admin/simpanan")({
 const fmt = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
 const jenisLabel: Record<string, string> = { pokok: "Pokok", wajib: "Wajib", sukarela: "Sukarela" };
 
-function SimpananVerifyPage() {
+export function SimpananVerifyPage() {
   const qc = useQueryClient();
   const { user } = useAuth();
 

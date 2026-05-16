@@ -29,7 +29,7 @@ const nextStatusFromStage: Record<string, "pending_bendahara" | "pending_ketua" 
   pending_ketua: "approved",
 };
 
-function PinjamanApprovalPage() {
+export function PinjamanApprovalPage() {
   const { user, roles } = useAuth();
   const qc = useQueryClient();
   const isSuper = roles.includes("super_admin");
