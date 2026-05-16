@@ -219,6 +219,21 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
               placeholder="Ceritakan keunggulan produk, bahan, ukuran, dll."
             />
           </div>
+
+          <div className="grid gap-4 rounded-2xl border border-border bg-muted/30 p-4 sm:grid-cols-2">
+            <div>
+              <Label>Diskon (%)</Label>
+              <Input type="number" min={0} max={90} value={diskon} onChange={(e) => setDiskon(e.target.value)} placeholder="0" />
+              <p className="mt-1 text-[11px] text-muted-foreground">Maks 90%. Isi 0 jika tidak ada diskon.</p>
+            </div>
+            <div className="flex items-center justify-between rounded-xl bg-background/60 p-3">
+              <div>
+                <Label className="text-sm">Produk Unggulan</Label>
+                <p className="text-[11px] text-muted-foreground">Tampil di banner promo toko</p>
+              </div>
+              <Switch checked={isFeatured} onCheckedChange={setIsFeatured} />
+            </div>
+          </div>
         </div>
 
         <DialogFooter>
