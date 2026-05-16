@@ -1,0 +1,1 @@
+ALTER TABLE public.lowongan_kerja DROP CONSTRAINT IF EXISTS lowongan_kerja_created_by_fkey;
