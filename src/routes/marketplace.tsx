@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ShoppingCart, Star, UserPlus } from "lucide-react";
 import {
-  cartItemEffectivePrice,
   fmtIDR,
   listCategories,
   listProducts,
@@ -16,7 +15,7 @@ import {
   type DbProduct,
   type DbStore,
 } from "@/lib/marketplace-api";
-import { useCart } from "@/lib/cart";
+import { cartItemEffectivePrice, useCart } from "@/lib/cart";
 
 type Search = { kategori?: string };
 
