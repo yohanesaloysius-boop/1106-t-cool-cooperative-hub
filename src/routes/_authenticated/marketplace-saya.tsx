@@ -510,3 +510,80 @@ function MarketplaceSayaPage() {
     </div>
   );
 }
+
+function PromoBannerUploader({
+  userId,
+  currentBanner,
+  currentText,
+  onSave,
+}: {
+  userId: string;
+  currentBanner: string | null;
+  currentText: string;
+  onSave: (banner: string | null, text: string) => Promise<void>;
+}) {
+  const [banner, setBanner] = useState<string | null>(currentBanner);
+  const [text, setText] = useState(currentText);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadMarketplaceFile(userId, file, "banner");
+      setBanner(url);
+    } catch (e: any) { toast.error(e.message); }
+    finally { setUploading(false); }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div
+        onClick={() => fileRef.current?.click()}
+        className="relative flex h-36 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted/30 hover:bg-muted"
+      >
+        {banner ? (
+          <>
+            <img src={banner} alt="" className="h-full w-full object-cover" />
+            {text && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-4 text-center text-sm font-bold text-white">
+                {text}
+              </div>
+            )}
+          </>
+        ) : uploading ? (
+          <span className="text-xs text-muted-foreground">Mengupload…</span>
+        ) : (
+          <div className="flex flex-col items-center text-xs text-muted-foreground">
+            <ImagePlus className="mb-1 h-6 w-6" /> Klik untuk upload banner promo (1200x400)
+          </div>
+        )}
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0])} />
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        maxLength={80}
+        placeholder="Teks overlay banner (opsional). Mis. Diskon 25% Hari Ini!"
+        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={async () => { setSaving(true); try { await onSave(banner, text); } finally { setSaving(false); } }}
+          disabled={saving}
+          className="rounded-full"
+        >
+          {saving ? "Menyimpan…" : "Simpan Banner"}
+        </Button>
+        {banner && (
+          <Button variant="outline" className="rounded-full" onClick={() => { setBanner(null); }}>
+            Hapus Banner
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
