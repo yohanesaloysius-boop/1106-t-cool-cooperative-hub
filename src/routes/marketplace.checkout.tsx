@@ -169,6 +169,12 @@ function CheckoutPage() {
                 <CheckCircle2 className="mt-0.5 h-3 w-3 text-primary" />
                 Pesanan akan tercatat di "Transaksi Saya". Penjual akan menghubungi Anda via WhatsApp.
               </p>
+              <div className="mt-4 rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-3 text-[11px]">
+                <p className="font-semibold text-primary">💳 Bayar pakai Saldo Koperasi</p>
+                <p className="mt-0.5 text-muted-foreground">
+                  Segera hadir — gunakan saldo simpanan sukarela & dapatkan cashback ke SHU.
+                </p>
+              </div>
             </div>
           </aside>
         </div>

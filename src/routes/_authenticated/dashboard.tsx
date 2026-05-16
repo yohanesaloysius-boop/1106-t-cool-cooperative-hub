@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { MarketplaceActivityCard } from "@/components/marketplace/marketplace-activity-card";
 import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
   PieChart, Pie, Cell, Legend,
@@ -278,6 +279,43 @@ function DashboardPage() {
             <QuickRow label="Bayar Angsuran" desc="Upload bukti transfer" onClick={() => navigate({ to: "/angsuran" })} />
             <QuickRow label="Buka Toko" desc="Marketplace komunitas" onClick={() => navigate({ to: "/marketplace-saya" })} />
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
+          </CardContent>
+        </Card>
+      </motion.section>
+
+      {/* Aktivitas Marketplace anggota — integrasi marketplace ↔ dashboard */}
+      <motion.section
+        variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+        className="grid gap-6 lg:grid-cols-3"
+      >
+        <div className="lg:col-span-2">
+          <MarketplaceActivityCard limit={5} />
+        </div>
+        <Card className="hover-lift rounded-3xl border-border/50" style={{ boxShadow: "var(--shadow-card)" }}>
+          <CardHeader>
+            <CardTitle className="text-base">Saldo Koperasi</CardTitle>
+            <CardDescription>Integrasi pembayaran marketplace</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div
+              className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4 text-sm"
+            >
+              <p className="font-semibold text-primary">Bayar pakai Saldo Simpanan</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Segera hadir — gunakan saldo simpanan sukarela untuk bayar belanja marketplace
+                & dapatkan cashback otomatis ke SHU.
+              </p>
+              <Badge variant="secondary" className="mt-2 rounded-full bg-warning/15 text-warning border-0">
+                Coming soon
+              </Badge>
+            </div>
+            <Button
+              variant="outline"
+              className="w-full rounded-full"
+              onClick={() => navigate({ to: "/marketplace" })}
+            >
+              Belanja di Marketplace
+            </Button>
           </CardContent>
         </Card>
       </motion.section>

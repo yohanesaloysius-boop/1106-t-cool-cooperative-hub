@@ -1503,6 +1503,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_featured_products: {
+        Args: { _limit?: number }
+        Returns: {
+          diskon_persen: number
+          gambar_produk: string[]
+          harga: number
+          id: string
+          nama_produk: string
+          slug: string
+          store_id: string
+          store_nama: string
+          store_slug: string
+        }[]
+      }
+      get_marketplace_stats: { Args: never; Returns: Json }
       get_public_koperasi_stats: { Args: never; Returns: Json }
       get_public_recent_activity: {
         Args: { limit_count?: number }
@@ -1511,6 +1526,23 @@ export type Database = {
           kind: string
           title: string
           ts: string
+        }[]
+      }
+      get_user_marketplace_activity: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: {
+          created_at: string
+          gambar: string
+          id: string
+          nama_produk: string
+          product_id: string
+          qty: number
+          role: string
+          status: string
+          store_id: string
+          store_nama: string
+          store_slug: string
+          total: number
         }[]
       }
       has_role: {
@@ -1524,6 +1556,7 @@ export type Database = {
         Args: { _product_id: string }
         Returns: undefined
       }
+      is_active_seller: { Args: { _user_id: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {

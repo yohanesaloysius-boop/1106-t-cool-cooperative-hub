@@ -329,6 +329,12 @@ function RealProductCard({ product }: { product: DbProduct & { marketplace_store
           <span>·</span>
           <span className="truncate">{product.marketplace_stores?.nama_toko}</span>
         </div>
+        {product.marketplace_stores?.status_toko === "active" && (
+          <div className="flex items-center gap-1 pt-0.5 text-[10px] font-semibold text-primary">
+            <span aria-hidden>✓</span>
+            <span>Anggota Aktif Koperasi</span>
+          </div>
+        )}
       </div>
     </Link>
   );
