@@ -25,7 +25,7 @@ type Row = {
   profiles: { nama_lengkap: string | null; nomor_anggota: string | null } | null;
 };
 
-function AdminAngsuranPage() {
+export function AdminAngsuranPage() {
   const qc = useQueryClient();
   const { user } = useAuth();
   const [tab, setTab] = useState("pending");
