@@ -31,6 +31,12 @@ export type DbStore = {
   alamat: string | null;
   status_toko: StoreStatus;
   created_at: string;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  shopee?: string | null;
+  promo_banner?: string | null;
+  promo_text?: string | null;
 };
 
 export type DbProduct = {
@@ -45,6 +51,9 @@ export type DbProduct = {
   gambar_produk: string[];
   status_produk: ProductStatus;
   created_at: string;
+  view_count?: number;
+  diskon_persen?: number;
+  is_featured?: boolean;
 };
 
 export type DbTransaction = {
