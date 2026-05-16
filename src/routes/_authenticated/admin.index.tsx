@@ -13,7 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpananVerifyPage } from "./admin.simpanan";
 import { AdminAngsuranPage } from "./admin.angsuran";
 import { PinjamanApprovalPage } from "./admin.pinjaman";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck } from "lucide-react";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Dashboard — T-COOL Koperasi" }] }),
@@ -89,6 +91,11 @@ function AdminDashboard() {
             <h1 className="mt-2 text-2xl md:text-3xl font-bold">Dashboard Pengurus</h1>
             <p className="mt-1 text-sm text-white/80">Halo, {profile?.nama_lengkap ?? "Pengurus"} · pantau koperasi secara realtime.</p>
           </div>
+          <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-white hover:bg-white/25 backdrop-blur border border-white/20">
+            <Link to="/admin/pengaturan">
+              <SettingsIcon className="h-4 w-4" /> Pengaturan
+            </Link>
+          </Button>
         </div>
       </div>
 
