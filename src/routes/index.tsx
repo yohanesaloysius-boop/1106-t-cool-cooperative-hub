@@ -9,7 +9,7 @@ import {
   UserPlus,
   Star,
   Clock,
-  Calculator,
+  
   Wallet,
   ShieldAlert,
   UserCog,
