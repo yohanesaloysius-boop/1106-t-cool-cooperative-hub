@@ -103,7 +103,7 @@ function MarketplaceSayaPage() {
   const totalTransaksi = sales.length;
   const totalTerjual = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + s.qty, 0);
   const totalPendapatan = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + Number(s.total), 0);
-  const totalDilihat = products.reduce((sum, p) => sum + (p as any).views ?? 0, 0); // placeholder hingga ada kolom views
+  
 
   const stats = [
     { label: "Total Produk", value: totalProduk.toString(), icon: Package, tint: "from-sky-300 to-blue-500" },
