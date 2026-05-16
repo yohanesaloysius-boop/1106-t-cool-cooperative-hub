@@ -31,6 +31,12 @@ export type DbStore = {
   alamat: string | null;
   status_toko: StoreStatus;
   created_at: string;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  shopee?: string | null;
+  promo_banner?: string | null;
+  promo_text?: string | null;
 };
 
 export type DbProduct = {
@@ -45,6 +51,9 @@ export type DbProduct = {
   gambar_produk: string[];
   status_produk: ProductStatus;
   created_at: string;
+  view_count?: number;
+  diskon_persen?: number;
+  is_featured?: boolean;
 };
 
 export type DbTransaction = {
@@ -128,6 +137,10 @@ export async function createMyStore(input: {
   deskripsi?: string;
   logo?: string;
   banner?: string;
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
+  shopee?: string;
 }) {
   const base = slugify(input.nama_toko) || `toko-${Date.now()}`;
   const slug = `${base}-${Math.random().toString(36).slice(2, 6)}`;
@@ -230,6 +243,13 @@ export async function updateProduct(id: string, patch: Partial<DbProduct>) {
     .single();
   if (error) throw error;
   return data as DbProduct;
+}
+
+export async function incrementProductView(productId: string) {
+  // Best-effort; ignore errors
+  try {
+    await supabase.rpc("increment_product_view" as any, { _product_id: productId });
+  } catch {}
 }
 
 export async function deleteProduct(id: string) {

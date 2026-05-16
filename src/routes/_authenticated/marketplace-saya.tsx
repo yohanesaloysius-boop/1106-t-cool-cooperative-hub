@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,16 +10,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import {
   Plus, Store as StoreIcon, Package, TrendingUp, Eye, Pencil, Trash2, ShoppingBag,
-  Wallet, Megaphone, Phone, MapPin, Sparkles,
+  Wallet, Megaphone, Phone, MapPin, Sparkles, Instagram, Facebook, Music2, Star, Percent,
+  ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fmtIDR, getMyStore, listStoreProducts, listCategories, listMySales,
-  updateStore, deleteProduct, updateProduct, type DbProduct,
+  updateStore, deleteProduct, updateProduct, uploadMarketplaceFile, type DbProduct,
 } from "@/lib/marketplace-api";
 import { ProductFormDialog } from "@/components/marketplace/product-form-dialog";
 import { StoreFormDialog } from "@/components/marketplace/store-form-dialog";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/marketplace-saya")({
   component: MarketplaceSayaPage,
@@ -103,14 +105,36 @@ function MarketplaceSayaPage() {
   const totalTransaksi = sales.length;
   const totalTerjual = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + s.qty, 0);
   const totalPendapatan = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + Number(s.total), 0);
-  
+  const totalViews = products.reduce((sum, p) => sum + (Number((p as any).view_count) || 0), 0);
+  const featuredProducts = products.filter((p) => (p as any).is_featured);
 
   const stats = [
     { label: "Total Produk", value: totalProduk.toString(), icon: Package, tint: "from-sky-300 to-blue-500" },
     { label: "Transaksi", value: totalTransaksi.toString(), icon: ShoppingBag, tint: "from-violet-300 to-fuchsia-500" },
-    { label: "Terjual", value: totalTerjual.toString(), icon: TrendingUp, tint: "from-emerald-300 to-emerald-500" },
+    { label: "Total Dilihat", value: totalViews.toLocaleString("id-ID"), icon: Eye, tint: "from-rose-300 to-pink-500" },
     { label: "Pendapatan", value: fmtIDR(totalPendapatan), icon: Wallet, tint: "from-amber-300 to-orange-500" },
   ];
+
+  // Sales chart — last 14 days
+  const chartData = (() => {
+    const map = new Map<string, { hari: string; pendapatan: number; transaksi: number }>();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+      map.set(key, { hari: label, pendapatan: 0, transaksi: 0 });
+    }
+    for (const s of sales as any[]) {
+      const key = String(s.created_at).slice(0, 10);
+      const row = map.get(key);
+      if (row) {
+        row.transaksi += 1;
+        if (s.status === "completed") row.pendapatan += Number(s.total) || 0;
+      }
+    }
+    return Array.from(map.values());
+  })();
 
   async function toggleStoreStatus(active: boolean) {
     try {
@@ -161,6 +185,10 @@ function MarketplaceSayaPage() {
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               {store.alamat && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{store.alamat}</span>}
               {store.whatsapp && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{store.whatsapp}</span>}
+              {(store as any).instagram && <a href={`https://instagram.com/${(store as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-pink-500"><Instagram className="h-3 w-3" />{(store as any).instagram}</a>}
+              {(store as any).facebook && <a href={`https://facebook.com/${(store as any).facebook}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-blue-600"><Facebook className="h-3 w-3" />{(store as any).facebook}</a>}
+              {(store as any).tiktok && <a href={`https://tiktok.com/@${(store as any).tiktok.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1"><Music2 className="h-3 w-3" />{(store as any).tiktok}</a>}
+              {(store as any).shopee && <a href={`https://shopee.co.id/${(store as any).shopee}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-orange-500"><ShoppingBag className="h-3 w-3" />{(store as any).shopee}</a>}
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Badge variant={store.status_toko === "active" ? "default" : "secondary"} className="rounded-full">
@@ -200,7 +228,38 @@ function MarketplaceSayaPage() {
         ))}
       </div>
 
-      {/* Tabs */}
+      {/* Sales chart */}
+      <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 to-emerald-500 text-white shadow-md">
+            <TrendingUp className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold">Statistik Penjualan</h2>
+            <p className="text-xs text-muted-foreground">14 hari terakhir · {totalTerjual} item terjual total</p>
+          </div>
+        </div>
+        <div className="h-56 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="hari" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+              <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
+              <Tooltip
+                contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }}
+                formatter={(v: any, name) => name === "pendapatan" ? fmtIDR(Number(v)) : v}
+              />
+              <Area type="monotone" dataKey="pendapatan" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#salesFill)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <Tabs defaultValue="produk" className="space-y-4">
         <TabsList className="rounded-full">
           <TabsTrigger value="produk" className="rounded-full"><Package className="mr-2 h-4 w-4" />Produk</TabsTrigger>
@@ -241,9 +300,17 @@ function MarketplaceSayaPage() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
-                      <p className="text-sm font-bold text-primary">{fmtIDR(Number(p.harga))}</p>
-                      <p className="text-[11px] text-muted-foreground">Stok {p.stok} · {p.status_produk}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                        {(p as any).is_featured && <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-primary">{fmtIDR(Number(p.harga))}</p>
+                        {Number((p as any).diskon_persen) > 0 && (
+                          <Badge variant="destructive" className="rounded-full px-1.5 py-0 text-[10px]">-{(p as any).diskon_persen}%</Badge>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">Stok {p.stok} · {p.status_produk} · <Eye className="inline h-3 w-3" /> {(p as any).view_count ?? 0}</p>
                     </div>
                     <div className="hidden items-center gap-2 sm:flex">
                       <Switch
@@ -297,18 +364,111 @@ function MarketplaceSayaPage() {
         </TabsContent>
 
         {/* PROMO */}
-        <TabsContent value="promo">
+        <TabsContent value="promo" className="space-y-4">
+          {/* Banner promo */}
           <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
             <div className="mb-4 flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <div>
-                <h2 className="text-lg font-bold">Promo & Produk Unggulan</h2>
-                <p className="text-xs text-muted-foreground">Fitur promo (diskon, banner, produk unggulan) segera hadir.</p>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-400 to-orange-500 text-white shadow-md">
+                <Megaphone className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-bold">Banner Promo Toko</h2>
+                <p className="text-xs text-muted-foreground">Tampil di atas etalase tokomu</p>
               </div>
             </div>
-            <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-              🎁 Promo, diskon, dan produk unggulan akan tersedia di update berikutnya.
+
+            <PromoBannerUploader
+              userId={userId}
+              currentBanner={(store as any).promo_banner ?? null}
+              currentText={(store as any).promo_text ?? ""}
+              onSave={async (promo_banner, promo_text) => {
+                await updateStore(store.id, { promo_banner, promo_text } as any);
+                toast.success("Banner promo disimpan");
+                qc.invalidateQueries({ queryKey: ["mp-my-store"] });
+              }}
+            />
+          </div>
+
+          {/* Produk Unggulan */}
+          <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow-md">
+                <Star className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold">Produk Unggulan</h2>
+                <p className="text-xs text-muted-foreground">Tandai produk untuk ditampilkan paling depan</p>
+              </div>
             </div>
+            {products.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada produk untuk dipromosikan.</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {products.map((p) => (
+                  <label key={p.id} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/60 bg-background/60 p-3 hover:border-primary">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+                      {p.gambar_produk?.[0] ? (
+                        <img src={p.gambar_produk[0]} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center"><Package className="h-4 w-4 text-muted-foreground" /></div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                      <p className="text-xs text-muted-foreground">{fmtIDR(Number(p.harga))}</p>
+                    </div>
+                    <Switch
+                      checked={!!(p as any).is_featured}
+                      onCheckedChange={async (v) => {
+                        try {
+                          await updateProduct(p.id, { is_featured: v } as any);
+                          qc.invalidateQueries({ queryKey: ["mp-my-products"] });
+                        } catch (e: any) { toast.error(e.message); }
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Daftar Diskon */}
+          <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 text-white shadow-md">
+                <Percent className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold">Produk Diskon Aktif</h2>
+                <p className="text-xs text-muted-foreground">Atur persen diskon di form edit produk</p>
+              </div>
+            </div>
+            {products.filter((p: any) => Number(p.diskon_persen) > 0).length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada produk diskon. Buka edit produk dan atur diskon (%).</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {products.filter((p: any) => Number(p.diskon_persen) > 0).map((p: any) => {
+                  const hargaDiskon = Math.round(Number(p.harga) * (1 - p.diskon_persen / 100));
+                  return (
+                    <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 p-3">
+                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+                        {p.gambar_produk?.[0] && <img src={p.gambar_produk[0]} alt="" className="h-full w-full object-cover" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                        <p className="text-xs"><span className="font-bold text-primary">{fmtIDR(hargaDiskon)}</span> <span className="text-muted-foreground line-through">{fmtIDR(Number(p.harga))}</span></p>
+                      </div>
+                      <Badge variant="destructive" className="rounded-full">-{p.diskon_persen}%</Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {featuredProducts.length > 0 && (
+              <p className="mt-4 inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
+                <Sparkles className="h-3 w-3" /> {featuredProducts.length} produk unggulan aktif
+              </p>
+            )}
           </div>
         </TabsContent>
       </Tabs>
@@ -350,3 +510,80 @@ function MarketplaceSayaPage() {
     </div>
   );
 }
+
+function PromoBannerUploader({
+  userId,
+  currentBanner,
+  currentText,
+  onSave,
+}: {
+  userId: string;
+  currentBanner: string | null;
+  currentText: string;
+  onSave: (banner: string | null, text: string) => Promise<void>;
+}) {
+  const [banner, setBanner] = useState<string | null>(currentBanner);
+  const [text, setText] = useState(currentText);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadMarketplaceFile(userId, file, "banner");
+      setBanner(url);
+    } catch (e: any) { toast.error(e.message); }
+    finally { setUploading(false); }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div
+        onClick={() => fileRef.current?.click()}
+        className="relative flex h-36 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted/30 hover:bg-muted"
+      >
+        {banner ? (
+          <>
+            <img src={banner} alt="" className="h-full w-full object-cover" />
+            {text && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-4 text-center text-sm font-bold text-white">
+                {text}
+              </div>
+            )}
+          </>
+        ) : uploading ? (
+          <span className="text-xs text-muted-foreground">Mengupload…</span>
+        ) : (
+          <div className="flex flex-col items-center text-xs text-muted-foreground">
+            <ImagePlus className="mb-1 h-6 w-6" /> Klik untuk upload banner promo (1200x400)
+          </div>
+        )}
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0])} />
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        maxLength={80}
+        placeholder="Teks overlay banner (opsional). Mis. Diskon 25% Hari Ini!"
+        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={async () => { setSaving(true); try { await onSave(banner, text); } finally { setSaving(false); } }}
+          disabled={saving}
+          className="rounded-full"
+        >
+          {saving ? "Menyimpan…" : "Simpan Banner"}
+        </Button>
+        {banner && (
+          <Button variant="outline" className="rounded-full" onClick={() => { setBanner(null); }}>
+            Hapus Banner
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+

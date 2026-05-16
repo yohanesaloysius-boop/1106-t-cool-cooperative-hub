@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +36,8 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
   const [categoryId, setCategoryId] = useState<string>("");
   const [status, setStatus] = useState<ProductStatus>("active");
   const [images, setImages] = useState<string[]>([]);
+  const [diskon, setDiskon] = useState("0");
+  const [isFeatured, setIsFeatured] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -48,6 +51,8 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
       setCategoryId(product?.category_id ?? "");
       setStatus(product?.status_produk ?? "active");
       setImages(product?.gambar_produk ?? []);
+      setDiskon(String(product?.diskon_persen ?? 0));
+      setIsFeatured(!!product?.is_featured);
     }
   }, [open, product]);
 
@@ -76,6 +81,7 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
     if (!Number.isFinite(hargaNum) || hargaNum < 0) return toast.error("Harga tidak valid");
     if (!Number.isFinite(stokNum) || stokNum < 0) return toast.error("Stok tidak valid");
 
+    const diskonNum = Math.min(90, Math.max(0, Number(diskon) || 0));
     setSaving(true);
     try {
       if (editing && product) {
@@ -87,7 +93,9 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           category_id: categoryId || null,
           gambar_produk: images,
           status_produk: status,
-        });
+          diskon_persen: diskonNum,
+          is_featured: isFeatured,
+        } as any);
         toast.success("Produk diperbarui");
       } else {
         await createProduct({
@@ -99,7 +107,9 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           category_id: categoryId || null,
           gambar_produk: images,
           status_produk: status,
-        });
+          diskon_persen: diskonNum,
+          is_featured: isFeatured,
+        } as any);
         toast.success("Produk ditambahkan");
       }
       onSaved();
@@ -208,6 +218,21 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
               maxLength={2000}
               placeholder="Ceritakan keunggulan produk, bahan, ukuran, dll."
             />
+          </div>
+
+          <div className="grid gap-4 rounded-2xl border border-border bg-muted/30 p-4 sm:grid-cols-2">
+            <div>
+              <Label>Diskon (%)</Label>
+              <Input type="number" min={0} max={90} value={diskon} onChange={(e) => setDiskon(e.target.value)} placeholder="0" />
+              <p className="mt-1 text-[11px] text-muted-foreground">Maks 90%. Isi 0 jika tidak ada diskon.</p>
+            </div>
+            <div className="flex items-center justify-between rounded-xl bg-background/60 p-3">
+              <div>
+                <Label className="text-sm">Produk Unggulan</Label>
+                <p className="text-[11px] text-muted-foreground">Tampil di banner promo toko</p>
+              </div>
+              <Switch checked={isFeatured} onCheckedChange={setIsFeatured} />
+            </div>
           </div>
         </div>
 

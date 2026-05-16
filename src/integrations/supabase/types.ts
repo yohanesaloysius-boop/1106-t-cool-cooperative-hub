@@ -389,43 +389,52 @@ export type Database = {
           category_id: string | null
           created_at: string
           deskripsi: string | null
+          diskon_persen: number
           gambar_produk: string[]
           harga: number
           id: string
+          is_featured: boolean
           nama_produk: string
           slug: string
           status_produk: Database["public"]["Enums"]["product_status"]
           stok: number
           store_id: string
           updated_at: string
+          view_count: number
         }
         Insert: {
           category_id?: string | null
           created_at?: string
           deskripsi?: string | null
+          diskon_persen?: number
           gambar_produk?: string[]
           harga?: number
           id?: string
+          is_featured?: boolean
           nama_produk: string
           slug: string
           status_produk?: Database["public"]["Enums"]["product_status"]
           stok?: number
           store_id: string
           updated_at?: string
+          view_count?: number
         }
         Update: {
           category_id?: string | null
           created_at?: string
           deskripsi?: string | null
+          diskon_persen?: number
           gambar_produk?: string[]
           harga?: number
           id?: string
+          is_featured?: boolean
           nama_produk?: string
           slug?: string
           status_produk?: Database["public"]["Enums"]["product_status"]
           stok?: number
           store_id?: string
           updated_at?: string
+          view_count?: number
         }
         Relationships: [
           {
@@ -495,12 +504,18 @@ export type Database = {
           banner: string | null
           created_at: string
           deskripsi: string | null
+          facebook: string | null
           id: string
+          instagram: string | null
           logo: string | null
           member_id: string
           nama_toko: string
+          promo_banner: string | null
+          promo_text: string | null
+          shopee: string | null
           slug: string
           status_toko: Database["public"]["Enums"]["store_status"]
+          tiktok: string | null
           updated_at: string
           whatsapp: string | null
         }
@@ -509,12 +524,18 @@ export type Database = {
           banner?: string | null
           created_at?: string
           deskripsi?: string | null
+          facebook?: string | null
           id?: string
+          instagram?: string | null
           logo?: string | null
           member_id: string
           nama_toko: string
+          promo_banner?: string | null
+          promo_text?: string | null
+          shopee?: string | null
           slug: string
           status_toko?: Database["public"]["Enums"]["store_status"]
+          tiktok?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -523,12 +544,18 @@ export type Database = {
           banner?: string | null
           created_at?: string
           deskripsi?: string | null
+          facebook?: string | null
           id?: string
+          instagram?: string | null
           logo?: string | null
           member_id?: string
           nama_toko?: string
+          promo_banner?: string | null
+          promo_text?: string | null
+          shopee?: string | null
           slug?: string
           status_toko?: Database["public"]["Enums"]["store_status"]
+          tiktok?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -1492,6 +1519,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_product_view: {
+        Args: { _product_id: string }
+        Returns: undefined
       }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
     }

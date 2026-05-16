@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, Instagram, Facebook, Music2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import {
   createMyStore,
@@ -29,6 +29,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
   const [alamat, setAlamat] = useState("");
   const [logo, setLogo] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [shopee, setShopee] = useState("");
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,6 +47,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
       setAlamat(store?.alamat ?? "");
       setLogo(store?.logo ?? null);
       setBanner(store?.banner ?? null);
+      setInstagram(store?.instagram ?? "");
+      setFacebook(store?.facebook ?? "");
+      setTiktok(store?.tiktok ?? "");
+      setShopee(store?.shopee ?? "");
     }
   }, [open, store]);
 
@@ -74,6 +82,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
           alamat: alamat.trim() || null,
           logo,
           banner,
+          instagram: instagram.trim() || null,
+          facebook: facebook.trim() || null,
+          tiktok: tiktok.trim() || null,
+          shopee: shopee.trim() || null,
         });
         toast.success("Profil toko diperbarui");
       } else {
@@ -85,6 +97,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
           alamat: alamat.trim() || undefined,
           logo: logo ?? undefined,
           banner: banner ?? undefined,
+          instagram: instagram.trim() || undefined,
+          facebook: facebook.trim() || undefined,
+          tiktok: tiktok.trim() || undefined,
+          shopee: shopee.trim() || undefined,
         });
         toast.success("Toko berhasil dibuka 🎉");
       }
@@ -165,6 +181,29 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
             <div>
               <Label>Alamat</Label>
               <Input value={alamat} onChange={(e) => setAlamat(e.target.value)} maxLength={200} placeholder="Kota / Kecamatan" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-muted/30 p-4">
+            <Label className="text-sm font-semibold">Sosial Media (opsional)</Label>
+            <p className="mb-3 text-xs text-muted-foreground">Username tanpa @, atau link lengkap</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center gap-2">
+                <Instagram className="h-4 w-4 shrink-0 text-pink-500" />
+                <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="instagram" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Facebook className="h-4 w-4 shrink-0 text-blue-600" />
+                <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="facebook" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Music2 className="h-4 w-4 shrink-0" />
+                <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="tiktok" maxLength={80} />
+              </div>
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 shrink-0 text-orange-500" />
+                <Input value={shopee} onChange={(e) => setShopee(e.target.value)} placeholder="shopee" maxLength={80} />
+              </div>
             </div>
           </div>
         </div>
