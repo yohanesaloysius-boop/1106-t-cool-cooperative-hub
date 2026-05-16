@@ -17,6 +17,9 @@ import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketplaceKeranjangRouteImport } from './routes/marketplace.keranjang'
+import { Route as MarketplaceCheckoutRouteImport } from './routes/marketplace.checkout'
+import { Route as AuthenticatedTransaksiSayaRouteImport } from './routes/_authenticated/transaksi-saya'
 import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
@@ -26,6 +29,7 @@ import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_authenticated/marketplace-saya'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
+import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticated/favorit'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
@@ -87,6 +91,22 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceKeranjangRoute = MarketplaceKeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
+  getParentRoute: () => MarketplaceRoute,
+} as any)
+const MarketplaceCheckoutRoute = MarketplaceCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => MarketplaceRoute,
+} as any)
+const AuthenticatedTransaksiSayaRoute =
+  AuthenticatedTransaksiSayaRouteImport.update({
+    id: '/transaksi-saya',
+    path: '/transaksi-saya',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedTabunganBerjangkaRoute =
   AuthenticatedTabunganBerjangkaRouteImport.update({
     id: '/tabungan-berjangka',
@@ -132,6 +152,11 @@ const AuthenticatedMarketplaceSayaRoute =
 const AuthenticatedKalkulatorRoute = AuthenticatedKalkulatorRouteImport.update({
   id: '/kalkulator',
   path: '/kalkulator',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFavoritRoute = AuthenticatedFavoritRouteImport.update({
+  id: '/favorit',
+  path: '/favorit',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDokumenRoute = AuthenticatedDokumenRouteImport.update({
@@ -264,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
+  '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -273,6 +299,9 @@ export interface FileRoutesByFullPath {
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
+  '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/marketplace/checkout': typeof MarketplaceCheckoutRoute
+  '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -302,6 +331,7 @@ export interface FileRoutesByTo {
   '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
+  '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -311,6 +341,9 @@ export interface FileRoutesByTo {
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
+  '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/marketplace/checkout': typeof MarketplaceCheckoutRoute
+  '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -343,6 +376,7 @@ export interface FileRoutesById {
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
+  '/_authenticated/favorit': typeof AuthenticatedFavoritRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -352,6 +386,9 @@ export interface FileRoutesById {
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
+  '/_authenticated/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/marketplace/checkout': typeof MarketplaceCheckoutRoute
+  '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -384,6 +421,7 @@ export interface FileRouteTypes {
     | '/approval'
     | '/dashboard'
     | '/dokumen'
+    | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
     | '/pinjaman'
@@ -393,6 +431,9 @@ export interface FileRouteTypes {
     | '/shu'
     | '/simpanan'
     | '/tabungan-berjangka'
+    | '/transaksi-saya'
+    | '/marketplace/checkout'
+    | '/marketplace/keranjang'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -422,6 +463,7 @@ export interface FileRouteTypes {
     | '/approval'
     | '/dashboard'
     | '/dokumen'
+    | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
     | '/pinjaman'
@@ -431,6 +473,9 @@ export interface FileRouteTypes {
     | '/shu'
     | '/simpanan'
     | '/tabungan-berjangka'
+    | '/transaksi-saya'
+    | '/marketplace/checkout'
+    | '/marketplace/keranjang'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -462,6 +507,7 @@ export interface FileRouteTypes {
     | '/_authenticated/approval'
     | '/_authenticated/dashboard'
     | '/_authenticated/dokumen'
+    | '/_authenticated/favorit'
     | '/_authenticated/kalkulator'
     | '/_authenticated/marketplace-saya'
     | '/_authenticated/pinjaman'
@@ -471,6 +517,9 @@ export interface FileRouteTypes {
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
     | '/_authenticated/tabungan-berjangka'
+    | '/_authenticated/transaksi-saya'
+    | '/marketplace/checkout'
+    | '/marketplace/keranjang'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
@@ -559,6 +608,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/keranjang': {
+      id: '/marketplace/keranjang'
+      path: '/keranjang'
+      fullPath: '/marketplace/keranjang'
+      preLoaderRoute: typeof MarketplaceKeranjangRouteImport
+      parentRoute: typeof MarketplaceRoute
+    }
+    '/marketplace/checkout': {
+      id: '/marketplace/checkout'
+      path: '/checkout'
+      fullPath: '/marketplace/checkout'
+      preLoaderRoute: typeof MarketplaceCheckoutRouteImport
+      parentRoute: typeof MarketplaceRoute
+    }
+    '/_authenticated/transaksi-saya': {
+      id: '/_authenticated/transaksi-saya'
+      path: '/transaksi-saya'
+      fullPath: '/transaksi-saya'
+      preLoaderRoute: typeof AuthenticatedTransaksiSayaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/tabungan-berjangka': {
       id: '/_authenticated/tabungan-berjangka'
       path: '/tabungan-berjangka'
@@ -620,6 +690,13 @@ declare module '@tanstack/react-router' {
       path: '/kalkulator'
       fullPath: '/kalkulator'
       preLoaderRoute: typeof AuthenticatedKalkulatorRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/favorit': {
+      id: '/_authenticated/favorit'
+      path: '/favorit'
+      fullPath: '/favorit'
+      preLoaderRoute: typeof AuthenticatedFavoritRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dokumen': {
@@ -812,6 +889,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
+  AuthenticatedFavoritRoute: typeof AuthenticatedFavoritRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedMarketplaceSayaRoute: typeof AuthenticatedMarketplaceSayaRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
@@ -821,6 +899,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
   AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
+  AuthenticatedTransaksiSayaRoute: typeof AuthenticatedTransaksiSayaRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -829,6 +908,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
+  AuthenticatedFavoritRoute: AuthenticatedFavoritRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedMarketplaceSayaRoute: AuthenticatedMarketplaceSayaRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
@@ -838,6 +918,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
   AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
+  AuthenticatedTransaksiSayaRoute: AuthenticatedTransaksiSayaRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -845,11 +926,15 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface MarketplaceRouteChildren {
+  MarketplaceCheckoutRoute: typeof MarketplaceCheckoutRoute
+  MarketplaceKeranjangRoute: typeof MarketplaceKeranjangRoute
   MarketplaceProdukIdRoute: typeof MarketplaceProdukIdRoute
   MarketplaceTokoSlugRoute: typeof MarketplaceTokoSlugRoute
 }
 
 const MarketplaceRouteChildren: MarketplaceRouteChildren = {
+  MarketplaceCheckoutRoute: MarketplaceCheckoutRoute,
+  MarketplaceKeranjangRoute: MarketplaceKeranjangRoute,
   MarketplaceProdukIdRoute: MarketplaceProdukIdRoute,
   MarketplaceTokoSlugRoute: MarketplaceTokoSlugRoute,
 }
