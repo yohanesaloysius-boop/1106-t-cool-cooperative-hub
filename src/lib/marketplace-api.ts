@@ -241,6 +241,13 @@ export async function updateProduct(id: string, patch: Partial<DbProduct>) {
   return data as DbProduct;
 }
 
+export async function incrementProductView(productId: string) {
+  // Best-effort; ignore errors
+  try {
+    await supabase.rpc("increment_product_view" as any, { _product_id: productId });
+  } catch {}
+}
+
 export async function deleteProduct(id: string) {
   const { error } = await supabase.from("marketplace_products").delete().eq("id", id);
   if (error) throw error;
