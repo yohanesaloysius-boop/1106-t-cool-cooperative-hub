@@ -364,18 +364,111 @@ function MarketplaceSayaPage() {
         </TabsContent>
 
         {/* PROMO */}
-        <TabsContent value="promo">
+        <TabsContent value="promo" className="space-y-4">
+          {/* Banner promo */}
           <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
             <div className="mb-4 flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <div>
-                <h2 className="text-lg font-bold">Promo & Produk Unggulan</h2>
-                <p className="text-xs text-muted-foreground">Fitur promo (diskon, banner, produk unggulan) segera hadir.</p>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-400 to-orange-500 text-white shadow-md">
+                <Megaphone className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-bold">Banner Promo Toko</h2>
+                <p className="text-xs text-muted-foreground">Tampil di atas etalase tokomu</p>
               </div>
             </div>
-            <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-              🎁 Promo, diskon, dan produk unggulan akan tersedia di update berikutnya.
+
+            <PromoBannerUploader
+              userId={userId}
+              currentBanner={(store as any).promo_banner ?? null}
+              currentText={(store as any).promo_text ?? ""}
+              onSave={async (promo_banner, promo_text) => {
+                await updateStore(store.id, { promo_banner, promo_text } as any);
+                toast.success("Banner promo disimpan");
+                qc.invalidateQueries({ queryKey: ["mp-my-store"] });
+              }}
+            />
+          </div>
+
+          {/* Produk Unggulan */}
+          <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow-md">
+                <Star className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold">Produk Unggulan</h2>
+                <p className="text-xs text-muted-foreground">Tandai produk untuk ditampilkan paling depan</p>
+              </div>
             </div>
+            {products.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada produk untuk dipromosikan.</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {products.map((p) => (
+                  <label key={p.id} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/60 bg-background/60 p-3 hover:border-primary">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+                      {p.gambar_produk?.[0] ? (
+                        <img src={p.gambar_produk[0]} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center"><Package className="h-4 w-4 text-muted-foreground" /></div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                      <p className="text-xs text-muted-foreground">{fmtIDR(Number(p.harga))}</p>
+                    </div>
+                    <Switch
+                      checked={!!(p as any).is_featured}
+                      onCheckedChange={async (v) => {
+                        try {
+                          await updateProduct(p.id, { is_featured: v } as any);
+                          qc.invalidateQueries({ queryKey: ["mp-my-products"] });
+                        } catch (e: any) { toast.error(e.message); }
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Daftar Diskon */}
+          <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 text-white shadow-md">
+                <Percent className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold">Produk Diskon Aktif</h2>
+                <p className="text-xs text-muted-foreground">Atur persen diskon di form edit produk</p>
+              </div>
+            </div>
+            {products.filter((p: any) => Number(p.diskon_persen) > 0).length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada produk diskon. Buka edit produk dan atur diskon (%).</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {products.filter((p: any) => Number(p.diskon_persen) > 0).map((p: any) => {
+                  const hargaDiskon = Math.round(Number(p.harga) * (1 - p.diskon_persen / 100));
+                  return (
+                    <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 p-3">
+                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+                        {p.gambar_produk?.[0] && <img src={p.gambar_produk[0]} alt="" className="h-full w-full object-cover" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                        <p className="text-xs"><span className="font-bold text-primary">{fmtIDR(hargaDiskon)}</span> <span className="text-muted-foreground line-through">{fmtIDR(Number(p.harga))}</span></p>
+                      </div>
+                      <Badge variant="destructive" className="rounded-full">-{p.diskon_persen}%</Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {featuredProducts.length > 0 && (
+              <p className="mt-4 inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
+                <Sparkles className="h-3 w-3" /> {featuredProducts.length} produk unggulan aktif
+              </p>
+            )}
           </div>
         </TabsContent>
       </Tabs>
