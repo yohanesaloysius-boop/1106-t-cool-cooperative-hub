@@ -147,6 +147,22 @@ function Landing() {
     };
   }, [refetchStats, refetchActivity, refetchLowongan]);
 
+  const DUMMY_LOWONGAN = [
+    { id: "d1", judul: "Kasir Toko Retail", perusahaan: "Toko Berkah Jaya", posisi: "Kasir", gender: "Wanita", lokasi: "Batam Center", kontak_nama: "Ibu Sari", kontak_telepon: "081234567890", deskripsi: "Dibutuhkan kasir berpengalaman, jujur, dan teliti. Shift pagi & sore." },
+    { id: "d2", judul: "Admin Gudang", perusahaan: "CV Maju Bersama", posisi: "Admin", gender: "Pria", lokasi: "Batu Ampar", kontak_nama: "Pak Budi", kontak_telepon: "082233445566", deskripsi: "Mengelola stok barang, input data, minimal SMA/SMK." },
+    { id: "d3", judul: "Driver Pengantar", perusahaan: "Logistik Cepat", posisi: "Driver", gender: "Pria", lokasi: "Nagoya", kontak_nama: "Pak Andi", kontak_telepon: "081377889900", deskripsi: "Punya SIM A, siap kerja shift, area Batam." },
+    { id: "d4", judul: "Barista Coffee Shop", perusahaan: "Kopi Kita", posisi: "Barista", gender: "Wanita", lokasi: "Bengkong", kontak_nama: "Mbak Rina", kontak_telepon: "085611223344", deskripsi: "Pengalaman minimal 6 bulan, ramah, suka kopi." },
+  ];
+  const DUMMY_ACTIVITIES = [
+    { kind: "member", title: "Anggota baru bergabung", descr: "Siti Aminah mendaftar sebagai anggota", ts: new Date(Date.now() - 5 * 60_000).toISOString() },
+    { kind: "simpanan", title: "Setoran simpanan wajib", descr: "Budi Santoso menyetor Rp 100.000", ts: new Date(Date.now() - 25 * 60_000).toISOString() },
+    { kind: "pinjaman", title: "Pengajuan pinjaman", descr: "Andi Pratama mengajukan Rp 5.000.000", ts: new Date(Date.now() - 60 * 60_000).toISOString() },
+    { kind: "simpanan", title: "Setoran simpanan sukarela", descr: "Rina Wijaya menyetor Rp 250.000", ts: new Date(Date.now() - 3 * 60 * 60_000).toISOString() },
+    { kind: "member", title: "Verifikasi anggota", descr: "Dewi Lestari diverifikasi pengurus", ts: new Date(Date.now() - 6 * 60 * 60_000).toISOString() },
+  ];
+  const lowonganList = (lowongan && lowongan.length > 0) ? lowongan : DUMMY_LOWONGAN;
+  const activitiesList = (activities && activities.length > 0) ? activities : DUMMY_ACTIVITIES;
+
   const growthData = (stats?.growth ?? []).map((g) => ({ m: g.m, v: g.v }));
   const sparkFromGrowth = (stats?.growth ?? []).map((g) => g.v);
   const sparkBaru = (stats?.growth ?? []).map((g) => g.baru);
