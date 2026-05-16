@@ -36,6 +36,8 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
   const [categoryId, setCategoryId] = useState<string>("");
   const [status, setStatus] = useState<ProductStatus>("active");
   const [images, setImages] = useState<string[]>([]);
+  const [diskon, setDiskon] = useState("0");
+  const [isFeatured, setIsFeatured] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -49,6 +51,8 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
       setCategoryId(product?.category_id ?? "");
       setStatus(product?.status_produk ?? "active");
       setImages(product?.gambar_produk ?? []);
+      setDiskon(String(product?.diskon_persen ?? 0));
+      setIsFeatured(!!product?.is_featured);
     }
   }, [open, product]);
 
