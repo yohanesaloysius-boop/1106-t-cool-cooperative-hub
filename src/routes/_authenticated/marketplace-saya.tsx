@@ -300,9 +300,17 @@ function MarketplaceSayaPage() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
-                      <p className="text-sm font-bold text-primary">{fmtIDR(Number(p.harga))}</p>
-                      <p className="text-[11px] text-muted-foreground">Stok {p.stok} · {p.status_produk}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="truncate text-sm font-semibold">{p.nama_produk}</p>
+                        {(p as any).is_featured && <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-primary">{fmtIDR(Number(p.harga))}</p>
+                        {Number((p as any).diskon_persen) > 0 && (
+                          <Badge variant="destructive" className="rounded-full px-1.5 py-0 text-[10px]">-{(p as any).diskon_persen}%</Badge>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">Stok {p.stok} · {p.status_produk} · <Eye className="inline h-3 w-3" /> {(p as any).view_count ?? 0}</p>
                     </div>
                     <div className="hidden items-center gap-2 sm:flex">
                       <Switch
