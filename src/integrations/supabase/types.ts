@@ -1528,6 +1528,23 @@ export type Database = {
           ts: string
         }[]
       }
+      get_user_marketplace_activity: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: {
+          created_at: string
+          gambar: string
+          id: string
+          nama_produk: string
+          product_id: string
+          qty: number
+          role: string
+          status: string
+          store_id: string
+          store_nama: string
+          store_slug: string
+          total: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
