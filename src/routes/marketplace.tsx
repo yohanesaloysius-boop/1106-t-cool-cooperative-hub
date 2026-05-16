@@ -47,7 +47,7 @@ function MarketplacePage() {
   useEffect(() => {
     const t = setTimeout(() => {
       const next = term.trim() || undefined;
-      if (next !== q) navigate({ search: (prev) => ({ ...prev, q: next }) });
+      if (next !== q) navigate({ search: (prev: Search) => ({ ...prev, q: next }) });
     }, 350);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,13 +140,13 @@ function MarketplacePage() {
               <p className="text-sm text-muted-foreground">Temukan produk sesuai kebutuhanmu</p>
             </div>
             <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
-              <Link to="/marketplace" search={(p) => ({ ...p, kategori: undefined })}>
+              <Link to="/marketplace" search={(p: Search) => ({ ...p, kategori: undefined })}>
                 <Badge variant={!kategori ? "default" : "secondary"} className="cursor-pointer whitespace-nowrap rounded-full px-4 py-1.5">
                   Semua
                 </Badge>
               </Link>
               {categories.map((c: DbCategory) => (
-                <Link key={c.slug} to="/marketplace" search={(p) => ({ ...p, kategori: c.slug })}>
+                <Link key={c.slug} to="/marketplace" search={(p: Search) => ({ ...p, kategori: c.slug })}>
                   <Badge
                     variant={kategori === c.slug ? "default" : "secondary"}
                     className="cursor-pointer whitespace-nowrap rounded-full px-4 py-1.5"
