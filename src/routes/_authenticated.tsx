@@ -42,6 +42,9 @@ const memberNav = [
   { to: "/rapat", label: "Rapat", icon: CalendarDays },
   { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
   { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
+  { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
+  { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
+  { to: "/favorit", label: "Favorit", icon: Heart },
 ];
 
 const adminNav = [

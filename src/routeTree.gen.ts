@@ -31,6 +31,7 @@ import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_auth
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticated/favorit'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
+import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_authenticated/dashboard-belanja'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
@@ -164,6 +165,12 @@ const AuthenticatedDokumenRoute = AuthenticatedDokumenRouteImport.update({
   path: '/dokumen',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDashboardBelanjaRoute =
+  AuthenticatedDashboardBelanjaRouteImport.update({
+    id: '/dashboard-belanja',
+    path: '/dashboard-belanja',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -288,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -330,6 +338,7 @@ export interface FileRoutesByTo {
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -375,6 +384,7 @@ export interface FileRoutesById {
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/favorit': typeof AuthenticatedFavoritRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/angsuran'
     | '/approval'
     | '/dashboard'
+    | '/dashboard-belanja'
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/angsuran'
     | '/approval'
     | '/dashboard'
+    | '/dashboard-belanja'
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
@@ -506,6 +518,7 @@ export interface FileRouteTypes {
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard-belanja'
     | '/_authenticated/dokumen'
     | '/_authenticated/favorit'
     | '/_authenticated/kalkulator'
@@ -706,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDokumenRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dashboard-belanja': {
+      id: '/_authenticated/dashboard-belanja'
+      path: '/dashboard-belanja'
+      fullPath: '/dashboard-belanja'
+      preLoaderRoute: typeof AuthenticatedDashboardBelanjaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -888,6 +908,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardBelanjaRoute: typeof AuthenticatedDashboardBelanjaRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedFavoritRoute: typeof AuthenticatedFavoritRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
@@ -907,6 +928,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardBelanjaRoute: AuthenticatedDashboardBelanjaRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedFavoritRoute: AuthenticatedFavoritRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
