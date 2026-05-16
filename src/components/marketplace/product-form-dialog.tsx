@@ -81,6 +81,7 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
     if (!Number.isFinite(hargaNum) || hargaNum < 0) return toast.error("Harga tidak valid");
     if (!Number.isFinite(stokNum) || stokNum < 0) return toast.error("Stok tidak valid");
 
+    const diskonNum = Math.min(90, Math.max(0, Number(diskon) || 0));
     setSaving(true);
     try {
       if (editing && product) {
@@ -92,7 +93,9 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           category_id: categoryId || null,
           gambar_produk: images,
           status_produk: status,
-        });
+          diskon_persen: diskonNum,
+          is_featured: isFeatured,
+        } as any);
         toast.success("Produk diperbarui");
       } else {
         await createProduct({
@@ -104,7 +107,9 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           category_id: categoryId || null,
           gambar_produk: images,
           status_produk: status,
-        });
+          diskon_persen: diskonNum,
+          is_featured: isFeatured,
+        } as any);
         toast.success("Produk ditambahkan");
       }
       onSaved();
