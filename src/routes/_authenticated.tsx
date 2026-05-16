@@ -31,7 +31,6 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
 const memberNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
-  { to: "/tabungan-berjangka", label: "Tabungan Berjangka", icon: TrendingUp },
   { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
   { to: "/angsuran", label: "Angsuran", icon: Receipt },
   { to: "/riwayat", label: "Riwayat", icon: History },
@@ -46,10 +45,6 @@ const memberNav = [
 const adminNav = [
   { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
   { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
-  { to: "/admin/simpanan", label: "Verifikasi Simpanan", icon: PiggyBank },
-  { to: "/admin/tabungan-berjangka", label: "Tabungan Berjangka", icon: TrendingUp },
-  { to: "/admin/angsuran", label: "Verifikasi Angsuran", icon: Receipt },
-  { to: "/admin/pinjaman", label: "Approval Pinjaman", icon: ClipboardCheck },
   { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
   { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
   { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
