@@ -6,7 +6,7 @@ import { MarketplaceHero } from "@/components/marketplace/marketplace-hero";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Loader2, Search, ShoppingCart, UserPlus, X } from "lucide-react";
+import { ArrowRight, Search, ShoppingCart, UserPlus, X } from "lucide-react";
 import {
   fmtIDR,
   listCategories,
