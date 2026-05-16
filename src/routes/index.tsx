@@ -9,7 +9,7 @@ import {
   UserPlus,
   Star,
   Clock,
-  Calculator,
+  
   Wallet,
   ShieldAlert,
   UserCog,
@@ -199,14 +199,6 @@ function Landing() {
                   Daftar Sekarang <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full border-border bg-card px-6"
-              >
-                <Calculator className="mr-2 h-4 w-4" />
-                Kalkulator Pinjaman
-              </Button>
             </div>
           </div>
 
