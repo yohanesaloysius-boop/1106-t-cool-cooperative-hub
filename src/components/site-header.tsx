@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Phone, Mail, MapPin, LogIn } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const links = [
   { to: "/", label: "Beranda" },
