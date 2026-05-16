@@ -134,26 +134,34 @@ function AuthLayout() {
               <div
                 role="tablist"
                 aria-label="Mode tampilan"
-                className="hidden sm:inline-flex items-center rounded-full border border-border bg-muted/60 p-0.5 text-xs font-semibold shadow-inner"
+                className="inline-flex items-center rounded-full border border-border bg-muted/60 p-0.5 text-xs font-semibold shadow-inner"
               >
                 <button
                   role="tab"
                   aria-selected={!viewAsMember}
+                  title="Mode Admin / Pengurus"
                   onClick={() => {
                     if (!viewAsMember) return;
                     setViewAsMember(false);
                     toast.success("Mode Pengurus aktif", { description: "Akses pengurus dipulihkan." });
                   }}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
-                    !viewAsMember ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                    "relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                    !viewAsMember
+                      ? "bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-300"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  <ShieldCheck className="h-3.5 w-3.5" /> Pengurus
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Admin</span>
+                  {!viewAsMember && (
+                    <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  )}
                 </button>
                 <button
                   role="tab"
                   aria-selected={viewAsMember}
+                  title="Mode Anggota"
                   onClick={() => {
                     if (viewAsMember) return;
                     setViewAsMember(true);
@@ -161,11 +169,17 @@ function AuthLayout() {
                     if (pathname.startsWith("/admin")) navigate({ to: "/dashboard" });
                   }}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
-                    viewAsMember ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                    "relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                    viewAsMember
+                      ? "bg-rose-500 text-white shadow-sm ring-2 ring-rose-300"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  <UserIcon className="h-3.5 w-3.5" /> Anggota
+                  <UserIcon className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Anggota</span>
+                  {viewAsMember && (
+                    <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  )}
                 </button>
               </div>
             )}
