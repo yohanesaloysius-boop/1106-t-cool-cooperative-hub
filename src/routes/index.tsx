@@ -186,7 +186,7 @@ function Landing() {
         {/* HERO ROW */}
         <section className="grid gap-6 lg:grid-cols-12 lg:items-stretch">
           {/* Left copy */}
-          <div className="lg:col-span-4 flex flex-col justify-center">
+          <div className="lg:col-span-7 flex flex-col justify-center">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground/70">
               <ShieldCheck className="h-3.5 w-3.5 text-primary" />
               Terdaftar &amp; Aman
@@ -217,70 +217,19 @@ function Landing() {
             </div>
           </div>
 
-          {/* Center 3D illustration */}
-          <div className="lg:col-span-4 relative flex items-center justify-center">
+          {/* Marketplace Komunitas — placeholder (segera hadir) */}
+          <div className="lg:col-span-5">
             <div
-              className="absolute inset-6 rounded-[3rem] blur-3xl opacity-60"
-              style={{ background: "var(--gradient-mint)" }}
-            />
-            <img
-              src={hero3d}
-              alt="Ilustrasi 3D koperasi: gedung bank mini, brankas, dan tumpukan koin"
-              className="relative w-full max-w-[420px] drop-shadow-[0_20px_40px_rgba(20,184,166,0.18)]"
-            />
-          </div>
-
-          {/* Right growth chart */}
-          <div className="lg:col-span-4">
-            <div
-              className="h-full rounded-3xl border border-border bg-card p-6"
+              className="h-full rounded-3xl border border-dashed border-primary/40 bg-gradient-to-br from-primary/5 to-transparent p-6 flex flex-col items-center justify-center text-center"
               style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <div className="flex items-start justify-between">
-                <h3 className="text-lg font-semibold">Pertumbuhan Anggota</h3>
-                <button className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
-                  6 Bulan Terakhir <ChevronDown className="h-3 w-3" />
-                </button>
-              </div>
-              <div className="mt-4 h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={growthData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="m" tickLine={false} axisLine={false} stroke="var(--muted-foreground)" fontSize={12} />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      stroke="var(--muted-foreground)"
-                      fontSize={12}
-                      tickFormatter={(v) => (v >= 1000 ? `${v / 1000}K` : `${v}`)}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid var(--border)",
-                        background: "var(--card)",
-                        boxShadow: "var(--shadow-card)",
-                      }}
-                      labelStyle={{ color: "var(--muted-foreground)", fontSize: 12 }}
-                      formatter={(v: number) => [`${v.toLocaleString("id-ID")} Anggota`, ""]}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="v"
-                      stroke="var(--primary)"
-                      strokeWidth={3}
-                      fill="url(#growthFill)"
-                      dot={{ r: 4, fill: "var(--primary)", strokeWidth: 0 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                Segera Hadir
+              </span>
+              <h3 className="mt-4 text-2xl font-bold tracking-tight">Marketplace Komunitas</h3>
+              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                Tempat anggota koperasi saling jual-beli produk & jasa dalam komunitas T-COOL.
+              </p>
             </div>
           </div>
         </section>
