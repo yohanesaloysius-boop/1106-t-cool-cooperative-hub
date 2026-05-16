@@ -39,7 +39,7 @@ export function MarketplaceHero() {
                 <Store className="mr-2 h-4 w-4" /> Buka Toko Sekarang
               </Button>
             </Link>
-            <a href="#produk-unggulan" onClick={scrollToProduk}>
+            <a href="#semua-produk" onClick={scrollToProduk}>
               <Button size="lg" variant="outline" className="rounded-full bg-card/80 backdrop-blur">
                 Jelajahi Produk
               </Button>
