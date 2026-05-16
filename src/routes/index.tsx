@@ -218,7 +218,7 @@ function Landing() {
               <ShieldCheck className="h-3.5 w-3.5 text-primary" />
               Terdaftar &amp; Aman
             </span>
-            <h1 className="mt-5 text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+            <h1 className="mt-5 text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] text-[#372f2f]">
               Koperasi Modern di
               <br />
               <span className="text-primary">Genggaman Anda</span>
