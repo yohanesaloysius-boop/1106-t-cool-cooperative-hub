@@ -105,14 +105,36 @@ function MarketplaceSayaPage() {
   const totalTransaksi = sales.length;
   const totalTerjual = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + s.qty, 0);
   const totalPendapatan = sales.filter((s: any) => s.status === "completed").reduce((sum: number, s: any) => sum + Number(s.total), 0);
-  
+  const totalViews = products.reduce((sum, p) => sum + (Number((p as any).view_count) || 0), 0);
+  const featuredProducts = products.filter((p) => (p as any).is_featured);
 
   const stats = [
     { label: "Total Produk", value: totalProduk.toString(), icon: Package, tint: "from-sky-300 to-blue-500" },
     { label: "Transaksi", value: totalTransaksi.toString(), icon: ShoppingBag, tint: "from-violet-300 to-fuchsia-500" },
-    { label: "Terjual", value: totalTerjual.toString(), icon: TrendingUp, tint: "from-emerald-300 to-emerald-500" },
+    { label: "Total Dilihat", value: totalViews.toLocaleString("id-ID"), icon: Eye, tint: "from-rose-300 to-pink-500" },
     { label: "Pendapatan", value: fmtIDR(totalPendapatan), icon: Wallet, tint: "from-amber-300 to-orange-500" },
   ];
+
+  // Sales chart — last 14 days
+  const chartData = (() => {
+    const map = new Map<string, { hari: string; pendapatan: number; transaksi: number }>();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+      map.set(key, { hari: label, pendapatan: 0, transaksi: 0 });
+    }
+    for (const s of sales as any[]) {
+      const key = String(s.created_at).slice(0, 10);
+      const row = map.get(key);
+      if (row) {
+        row.transaksi += 1;
+        if (s.status === "completed") row.pendapatan += Number(s.total) || 0;
+      }
+    }
+    return Array.from(map.values());
+  })();
 
   async function toggleStoreStatus(active: boolean) {
     try {
