@@ -10,16 +10,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import {
   Plus, Store as StoreIcon, Package, TrendingUp, Eye, Pencil, Trash2, ShoppingBag,
-  Wallet, Megaphone, Phone, MapPin, Sparkles,
+  Wallet, Megaphone, Phone, MapPin, Sparkles, Instagram, Facebook, Music2, Star, Percent,
+  ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fmtIDR, getMyStore, listStoreProducts, listCategories, listMySales,
-  updateStore, deleteProduct, updateProduct, type DbProduct,
+  updateStore, deleteProduct, updateProduct, uploadMarketplaceFile, type DbProduct,
 } from "@/lib/marketplace-api";
 import { ProductFormDialog } from "@/components/marketplace/product-form-dialog";
 import { StoreFormDialog } from "@/components/marketplace/store-form-dialog";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/marketplace-saya")({
   component: MarketplaceSayaPage,
