@@ -381,9 +381,6 @@ function Landing() {
           >
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Aktivitas Terbaru</h3>
-              <button className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
-                Lihat Semua
-              </button>
             </div>
             {false ? (
               <p className="py-10 text-center text-sm text-muted-foreground">Belum ada aktivitas.</p>
