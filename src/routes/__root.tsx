@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 import { AiAssistant } from "@/components/dashboard/ai-assistant";
+import { CartProvider } from "@/lib/cart";
 
 function GlobalAiAssistant() {
   const { user } = useAuth();
@@ -129,9 +130,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Outlet />
-        <GlobalAiAssistant />
-        <Toaster richColors position="top-right" />
+        <CartProvider>
+          <Outlet />
+          <GlobalAiAssistant />
+          <Toaster richColors position="top-right" />
+        </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
