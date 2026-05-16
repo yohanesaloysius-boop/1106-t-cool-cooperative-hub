@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, Instagram, Facebook, Music2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import {
   createMyStore,
@@ -29,6 +29,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
   const [alamat, setAlamat] = useState("");
   const [logo, setLogo] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [shopee, setShopee] = useState("");
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,6 +47,10 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
       setAlamat(store?.alamat ?? "");
       setLogo(store?.logo ?? null);
       setBanner(store?.banner ?? null);
+      setInstagram(store?.instagram ?? "");
+      setFacebook(store?.facebook ?? "");
+      setTiktok(store?.tiktok ?? "");
+      setShopee(store?.shopee ?? "");
     }
   }, [open, store]);
 
