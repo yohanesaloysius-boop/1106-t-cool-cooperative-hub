@@ -421,6 +421,43 @@ const toneMap = {
   muted: "from-muted to-transparent text-muted-foreground",
 } as const;
 
+function FinTile({
+  label, value, icon: Icon, tone, hint, onClick,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Users;
+  tone: keyof typeof toneMap;
+  hint?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 14, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } } }}
+      whileHover={{ y: -4, scale: 1.015 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+    >
+      <Card
+        onClick={onClick}
+        className="group relative cursor-pointer overflow-hidden rounded-3xl border-border/40"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
+        <CardContent className="relative p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className={`rounded-xl bg-white/70 p-2 backdrop-blur transition-transform duration-300 group-hover:scale-110 ${toneMap[tone].split(" ").pop()}`}>
+              <Icon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="mt-3 text-2xl font-bold tracking-tight tabular-nums text-foreground">{value}</p>
+          {hint && <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">{hint}</p>}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 function StatTile({
   label, value, icon: Icon, tone, hint, loading,
 }: {
