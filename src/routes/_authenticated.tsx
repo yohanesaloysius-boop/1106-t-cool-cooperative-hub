@@ -125,23 +125,56 @@ function AuthLayout() {
           <div className="h-8 w-8 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
           <span className="font-bold tracking-tight">T-COOL <span className="text-primary">Koperasi</span></span>
         </Link>
-        <nav className="flex-1 space-y-1 p-4">
-          {nav.map((n) => {
-            const active = pathname === n.to;
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  active ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground/70 hover:bg-muted hover:text-foreground",
-                )}
-              >
-                <n.icon className="h-4 w-4" />
-                {n.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto p-3">
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue={visibleGroups.find((g) => g.items.some((i) => pathname === i.to))?.id ?? visibleGroups[0]?.id}
+            className="space-y-1"
+          >
+            {visibleGroups.map((group) => {
+              const groupActive = group.items.some((i) => pathname === i.to);
+              return (
+                <AccordionItem key={group.id} value={group.id} className="border-none">
+                  <AccordionTrigger
+                    className={cn(
+                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold no-underline hover:no-underline transition-colors",
+                      groupActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                    )}
+                  >
+                    <span className="flex flex-1 items-center gap-3">
+                      <group.icon className="h-4 w-4" />
+                      {group.label}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-1 pt-1">
+                    <div className="ml-3 space-y-0.5 border-l border-border/60 pl-2">
+                      {group.items.map((n) => {
+                        const active = pathname === n.to;
+                        return (
+                          <Link
+                            key={n.to}
+                            to={n.to}
+                            className={cn(
+                              "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
+                              active
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-foreground/70 hover:bg-muted hover:text-foreground",
+                            )}
+                          >
+                            <n.icon className="h-3.5 w-3.5" />
+                            {n.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         </nav>
         <div className="border-t border-border p-4">
           <div className="flex items-center gap-3">
