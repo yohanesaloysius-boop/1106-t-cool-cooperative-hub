@@ -11,10 +11,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send } from "lucide-react";
 import { MemberCardPrint } from "@/components/member-card-print";
 import { useServerFn } from "@tanstack/react-start";
 import { importMembersCsv, deleteDemoMembers } from "@/lib/admin-members.functions";
+import { Textarea } from "@/components/ui/textarea";
+import { normalizePhone, openWhatsApp, waUrl, WA_TEMPLATES } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/_authenticated/admin/anggota")({
   head: () => ({ meta: [{ title: "Kelola Anggota — T-COOL Koperasi" }] }),
