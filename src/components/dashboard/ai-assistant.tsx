@@ -54,7 +54,7 @@ export function AiAssistant() {
     const content = text.trim();
     if (!content || loading) return;
     if (content.toLowerCase() === "hubungi admin") {
-      window.open(ADMIN_WA_URL, "_blank", "noopener,noreferrer");
+      openWhatsApp();
       return;
     }
     const next: Msg[] = [...messages, { role: "user", content }];
