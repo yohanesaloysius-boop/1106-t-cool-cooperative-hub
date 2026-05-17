@@ -281,7 +281,7 @@ function AuthLayout() {
         {/* Mobile bottom nav */}
         <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card lg:hidden">
           <div className="grid grid-cols-5">
-            {nav.slice(0, 5).map((n) => {
+            {mobileNav.map((n) => {
               const active = pathname === n.to;
               return (
                 <Link key={n.to} to={n.to} className={cn("flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
