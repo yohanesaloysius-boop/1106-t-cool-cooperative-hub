@@ -202,6 +202,53 @@ function DashboardPage() {
         </div>
       </motion.section>
 
+      {/* Ringkasan keuangan pribadi anggota */}
+      <motion.section
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <FinTile
+          label="Total Simpanan"
+          value={fmtRp(myFin?.totalSimpanan ?? 0)}
+          icon={PiggyBank}
+          tone="primary"
+          hint={`Pokok ${fmtRp(myFin?.pokok ?? 0)} • Wajib ${fmtRp(myFin?.wajib ?? 0)}`}
+          onClick={() => navigate({ to: "/simpanan" })}
+        />
+        <FinTile
+          label="Simpanan Sukarela"
+          value={fmtRp(myFin?.sukarela ?? 0)}
+          icon={Wallet}
+          tone="success"
+          hint="Saldo fleksibel Anda"
+          onClick={() => navigate({ to: "/simpanan" })}
+        />
+        <FinTile
+          label="Sisa Pinjaman"
+          value={fmtRp(myFin?.sisaPinjaman ?? 0)}
+          icon={HandCoins}
+          tone="warning"
+          hint={
+            (myFin?.pinjamanAktifCount ?? 0) > 0
+              ? `${myFin?.pinjamanAktifCount} pinjaman aktif`
+              : "Belum ada pinjaman aktif"
+          }
+          onClick={() => navigate({ to: "/pinjaman" })}
+        />
+        <FinTile
+          label="Angsuran Berikutnya"
+          value={myFin?.nextAngsuran ? fmtRp(Number(myFin.nextAngsuran.nominal)) : "—"}
+          icon={CalendarClock}
+          tone="muted"
+          hint={
+            myFin?.nextAngsuran
+              ? `Cicilan ke-${myFin.nextAngsuran.cicilan_ke} • jatuh tempo ${new Date(myFin.nextAngsuran.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}`
+              : "Tidak ada angsuran tertunggak"
+          }
+          onClick={() => navigate({ to: "/angsuran" })}
+        />
+      </motion.section>
+
       {/* 5. 4 Kartu statistik anggota — hanya pengurus */}
       {isPengurus && (
       <motion.section
