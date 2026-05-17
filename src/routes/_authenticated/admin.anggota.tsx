@@ -168,6 +168,11 @@ function AnggotaPage() {
                               <XCircle className="h-4 w-4 text-destructive" />
                             </Button>
                           )}
+                          {isSuperAdmin && (
+                            <Button size="sm" variant="ghost" onClick={() => setRoleMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Jadikan Pengurus">
+                              <ShieldCheck className="h-4 w-4 text-primary" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
