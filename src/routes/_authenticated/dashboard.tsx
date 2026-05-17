@@ -13,8 +13,10 @@ import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { Users, UserCheck, UserPlus, UserX, Sparkles, ArrowUpRight, TrendingUp } from "lucide-react";
+import { Users, UserCheck, UserPlus, UserX, Sparkles, ArrowUpRight, TrendingUp, PiggyBank, HandCoins, CalendarClock, Wallet } from "lucide-react";
 import hero3d from "@/assets/hero-3d.png";
+
+const fmtRp = (n: number) => "Rp " + new Intl.NumberFormat("id-ID").format(Math.round(n || 0));
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — T-Cool Koperasi" }] }),
