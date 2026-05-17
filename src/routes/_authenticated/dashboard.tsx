@@ -87,6 +87,48 @@ function DashboardPage() {
     return () => { supabase.removeChannel(ch); };
   }, [refetch]);
 
+  // Ringkasan keuangan pribadi anggota
+  const { data: myFin } = useQuery({
+    enabled: !!user?.id,
+    queryKey: ["dashboard-my-fin", user?.id],
+    queryFn: async () => {
+      const uid = user!.id;
+      const [simpRes, pinjRes, angsRes] = await Promise.all([
+        supabase.from("simpanan").select("jenis,nominal,status").eq("user_id", uid).is("deleted_at", null),
+        supabase.from("pinjaman").select("id,nominal,total_bayar,status").eq("user_id", uid).is("deleted_at", null),
+        supabase.from("angsuran").select("id,nominal,jatuh_tempo,status,cicilan_ke").eq("user_id", uid).eq("status", "unpaid").is("deleted_at", null).order("jatuh_tempo", { ascending: true }).limit(1),
+      ]);
+      const simp = simpRes.data ?? [];
+      const verified = simp.filter((s: any) => s.status === "verified");
+      const byJenis = (j: string) => verified.filter((s: any) => s.jenis === j).reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      const totalSimpanan = verified.reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      const pokok = byJenis("pokok");
+      const wajib = byJenis("wajib");
+      const sukarela = byJenis("sukarela");
+
+      const pinj = pinjRes.data ?? [];
+      const pinjamanAktif = pinj.filter((p: any) => ["approved", "disbursed", "active"].includes(p.status));
+      const totalPinjamanAktif = pinjamanAktif.reduce((a: number, b: any) => a + Number(b.total_bayar || b.nominal || 0), 0);
+
+      // Sisa = total_bayar pinjaman aktif − total nominal angsuran yang sudah paid
+      const pinjIds = pinjamanAktif.map((p: any) => p.id);
+      let dibayar = 0;
+      if (pinjIds.length) {
+        const { data: paid } = await supabase
+          .from("angsuran")
+          .select("nominal")
+          .in("pinjaman_id", pinjIds)
+          .eq("status", "paid")
+          .is("deleted_at", null);
+        dibayar = (paid ?? []).reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      }
+      const sisaPinjaman = Math.max(0, totalPinjamanAktif - dibayar);
+
+      const next = angsRes.data?.[0];
+      return { pokok, wajib, sukarela, totalSimpanan, sisaPinjaman, pinjamanAktifCount: pinjamanAktif.length, nextAngsuran: next };
+    },
+  });
+
   const pieColors = useMemo(() => ["var(--primary)", "var(--primary-glow)", "var(--warning)", "var(--destructive)"], []);
 
   return (
