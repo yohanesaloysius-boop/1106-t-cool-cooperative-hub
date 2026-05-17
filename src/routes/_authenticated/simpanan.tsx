@@ -43,7 +43,7 @@ const tabjangkaSchema = z.object({
 });
 
 function SimpananPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ jenis: "wajib" as Jenis, nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
