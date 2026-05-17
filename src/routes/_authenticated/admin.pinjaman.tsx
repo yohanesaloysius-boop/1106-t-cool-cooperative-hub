@@ -38,13 +38,22 @@ export function PinjamanApprovalPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-pinjaman"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: rows, error } = await supabase
         .from("pinjaman")
-        .select("id,user_id,nominal,tenor_bulan,bunga_persen,bunga_jenis,tujuan,status,created_at,cicilan_per_bulan,total_bayar, profiles:user_id(nama_lengkap,nomor_anggota)")
+        .select("id,user_id,nominal,tenor_bulan,bunga_persen,bunga_jenis,tujuan,status,created_at,cicilan_per_bulan,total_bayar")
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data ?? [];
+      const ids = Array.from(new Set((rows ?? []).map((r) => r.user_id)));
+      let map = new Map<string, { nama_lengkap: string | null; nomor_anggota: string | null }>();
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id,nama_lengkap,nomor_anggota")
+          .in("id", ids);
+        map = new Map((profs ?? []).map((p) => [p.id, { nama_lengkap: p.nama_lengkap, nomor_anggota: p.nomor_anggota }]));
+      }
+      return (rows ?? []).map((r) => ({ ...r, profiles: map.get(r.user_id) ?? null }));
     },
   });
 
