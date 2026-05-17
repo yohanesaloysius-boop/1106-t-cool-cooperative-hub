@@ -13,8 +13,10 @@ import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { Users, UserCheck, UserPlus, UserX, Sparkles, ArrowUpRight, TrendingUp } from "lucide-react";
+import { Users, UserCheck, UserPlus, UserX, Sparkles, ArrowUpRight, TrendingUp, PiggyBank, HandCoins, CalendarClock, Wallet } from "lucide-react";
 import hero3d from "@/assets/hero-3d.png";
+
+const fmtRp = (n: number) => "Rp " + new Intl.NumberFormat("id-ID").format(Math.round(n || 0));
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — T-Cool Koperasi" }] }),
@@ -84,6 +86,48 @@ function DashboardPage() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [refetch]);
+
+  // Ringkasan keuangan pribadi anggota
+  const { data: myFin } = useQuery({
+    enabled: !!user?.id,
+    queryKey: ["dashboard-my-fin", user?.id],
+    queryFn: async () => {
+      const uid = user!.id;
+      const [simpRes, pinjRes, angsRes] = await Promise.all([
+        supabase.from("simpanan").select("jenis,nominal,status").eq("user_id", uid).is("deleted_at", null),
+        supabase.from("pinjaman").select("id,nominal,total_bayar,status").eq("user_id", uid).is("deleted_at", null),
+        supabase.from("angsuran").select("id,nominal,jatuh_tempo,status,cicilan_ke").eq("user_id", uid).eq("status", "unpaid").is("deleted_at", null).order("jatuh_tempo", { ascending: true }).limit(1),
+      ]);
+      const simp = simpRes.data ?? [];
+      const verified = simp.filter((s: any) => s.status === "verified");
+      const byJenis = (j: string) => verified.filter((s: any) => s.jenis === j).reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      const totalSimpanan = verified.reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      const pokok = byJenis("pokok");
+      const wajib = byJenis("wajib");
+      const sukarela = byJenis("sukarela");
+
+      const pinj = pinjRes.data ?? [];
+      const pinjamanAktif = pinj.filter((p: any) => ["approved", "disbursed", "active"].includes(p.status));
+      const totalPinjamanAktif = pinjamanAktif.reduce((a: number, b: any) => a + Number(b.total_bayar || b.nominal || 0), 0);
+
+      // Sisa = total_bayar pinjaman aktif − total nominal angsuran yang sudah paid
+      const pinjIds = pinjamanAktif.map((p: any) => p.id);
+      let dibayar = 0;
+      if (pinjIds.length) {
+        const { data: paid } = await supabase
+          .from("angsuran")
+          .select("nominal")
+          .in("pinjaman_id", pinjIds)
+          .eq("status", "paid")
+          .is("deleted_at", null);
+        dibayar = (paid ?? []).reduce((a: number, b: any) => a + Number(b.nominal || 0), 0);
+      }
+      const sisaPinjaman = Math.max(0, totalPinjamanAktif - dibayar);
+
+      const next = angsRes.data?.[0];
+      return { pokok, wajib, sukarela, totalSimpanan, sisaPinjaman, pinjamanAktifCount: pinjamanAktif.length, nextAngsuran: next };
+    },
+  });
 
   const pieColors = useMemo(() => ["var(--primary)", "var(--primary-glow)", "var(--warning)", "var(--destructive)"], []);
 
@@ -156,6 +200,53 @@ function DashboardPage() {
             />
           </div>
         </div>
+      </motion.section>
+
+      {/* Ringkasan keuangan pribadi anggota */}
+      <motion.section
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <FinTile
+          label="Total Simpanan"
+          value={fmtRp(myFin?.totalSimpanan ?? 0)}
+          icon={PiggyBank}
+          tone="primary"
+          hint={`Pokok ${fmtRp(myFin?.pokok ?? 0)} • Wajib ${fmtRp(myFin?.wajib ?? 0)}`}
+          onClick={() => navigate({ to: "/simpanan" })}
+        />
+        <FinTile
+          label="Simpanan Sukarela"
+          value={fmtRp(myFin?.sukarela ?? 0)}
+          icon={Wallet}
+          tone="success"
+          hint="Saldo fleksibel Anda"
+          onClick={() => navigate({ to: "/simpanan" })}
+        />
+        <FinTile
+          label="Sisa Pinjaman"
+          value={fmtRp(myFin?.sisaPinjaman ?? 0)}
+          icon={HandCoins}
+          tone="warning"
+          hint={
+            (myFin?.pinjamanAktifCount ?? 0) > 0
+              ? `${myFin?.pinjamanAktifCount} pinjaman aktif`
+              : "Belum ada pinjaman aktif"
+          }
+          onClick={() => navigate({ to: "/pinjaman" })}
+        />
+        <FinTile
+          label="Angsuran Berikutnya"
+          value={myFin?.nextAngsuran ? fmtRp(Number(myFin.nextAngsuran.nominal)) : "—"}
+          icon={CalendarClock}
+          tone="muted"
+          hint={
+            myFin?.nextAngsuran
+              ? `Cicilan ke-${myFin.nextAngsuran.cicilan_ke} • jatuh tempo ${new Date(myFin.nextAngsuran.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}`
+              : "Tidak ada angsuran tertunggak"
+          }
+          onClick={() => navigate({ to: "/angsuran" })}
+        />
       </motion.section>
 
       {/* 5. 4 Kartu statistik anggota — hanya pengurus */}
@@ -329,6 +420,43 @@ const toneMap = {
   warning: "from-warning/25 to-transparent text-warning",
   muted: "from-muted to-transparent text-muted-foreground",
 } as const;
+
+function FinTile({
+  label, value, icon: Icon, tone, hint, onClick,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Users;
+  tone: keyof typeof toneMap;
+  hint?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 14, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } } }}
+      whileHover={{ y: -4, scale: 1.015 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+    >
+      <Card
+        onClick={onClick}
+        className="group relative cursor-pointer overflow-hidden rounded-3xl border-border/40"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${toneMap[tone]}`} />
+        <CardContent className="relative p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className={`rounded-xl bg-white/70 p-2 backdrop-blur transition-transform duration-300 group-hover:scale-110 ${toneMap[tone].split(" ").pop()}`}>
+              <Icon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="mt-3 text-2xl font-bold tracking-tight tabular-nums text-foreground">{value}</p>
+          {hint && <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">{hint}</p>}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
 
 function StatTile({
   label, value, icon: Icon, tone, hint, loading,

@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, HandCoins, Loader2, Calculator, Eye } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye, Download } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { FileUpload } from "@/components/file-upload";
 import { LoanDetailDialog } from "@/components/loan-detail-dialog";
+import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -43,7 +44,7 @@ const schema = z.object({
 });
 
 function PinjamanPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const qc = useQueryClient();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
@@ -213,6 +214,35 @@ function PinjamanPage() {
                         pinjamanId={r.id}
                         trigger={<Button size="sm" variant="ghost" className="mt-1 h-7 gap-1 text-xs"><Eye className="h-3 w-3" /> Detail</Button>}
                       />
+                      {["approved", "disbursed", "active", "completed"].includes(String(r.status)) && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="mt-1 h-7 gap-1 text-xs"
+                          onClick={() =>
+                            downloadSuratPinjaman({
+                              id: r.id,
+                              nominal: Number(r.nominal),
+                              tenor_bulan: Number(r.tenor_bulan),
+                              bunga_persen: Number(r.bunga_persen),
+                              cicilan_per_bulan: r.cicilan_per_bulan as any,
+                              total_bayar: r.total_bayar as any,
+                              status: String(r.status),
+                              approved_at: (r as any).approved_at ?? null,
+                              disbursed_at: (r as any).disbursed_at ?? null,
+                              tujuan: r.tujuan ?? null,
+                              anggota: {
+                                nama: profile?.nama_lengkap ?? "—",
+                                nomor: profile?.nomor_anggota ?? null,
+                                email: profile?.email ?? null,
+                                alamat: (profile as any)?.alamat ?? null,
+                              },
+                            })
+                          }
+                        >
+                          <Download className="h-3 w-3" /> Surat
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

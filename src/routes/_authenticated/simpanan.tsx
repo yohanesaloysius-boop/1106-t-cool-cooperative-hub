@@ -13,9 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp } from "lucide-react";
+import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload } from "@/components/file-upload";
+import { downloadBuktiSimpanan } from "@/lib/bukti-pdf";
 
 export const Route = createFileRoute("/_authenticated/simpanan")({
   head: () => ({ meta: [{ title: "Simpanan Saya — T-COOL Koperasi" }] }),
@@ -42,7 +43,7 @@ const tabjangkaSchema = z.object({
 });
 
 function SimpananPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ jenis: "wajib" as Jenis, nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
@@ -238,6 +239,7 @@ function SimpananPage() {
                     <th className="p-3 text-right">Nominal</th>
                     <th className="p-3 text-left">Catatan</th>
                     <th className="p-3 text-left">Status</th>
+                    <th className="p-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -248,6 +250,33 @@ function SimpananPage() {
                       <td className="p-3 text-right font-medium">{fmt.format(Number(r.nominal))}</td>
                       <td className="p-3 text-muted-foreground">{r.catatan ?? "—"}</td>
                       <td className="p-3"><StatusBadge status={r.status} /></td>
+                      <td className="p-3 text-right">
+                        {r.status === "verified" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              downloadBuktiSimpanan({
+                                id: r.id,
+                                jenis: String(r.jenis),
+                                nominal: Number(r.nominal),
+                                tanggal: r.created_at,
+                                catatan: r.catatan,
+                                verified_at: (r as any).verified_at ?? null,
+                                anggota: {
+                                  nama: profile?.nama_lengkap ?? "—",
+                                  nomor: profile?.nomor_anggota ?? null,
+                                  email: profile?.email ?? null,
+                                },
+                              })
+                            }
+                          >
+                            <Download className="mr-1 h-3.5 w-3.5" /> Bukti
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
