@@ -153,6 +153,15 @@ function AnggotaPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={!normalizePhone(m.no_hp)}
+                            onClick={() => openWhatsApp(m.no_hp, `Halo ${m.nama_lengkap}, salam dari pengurus Koperasi T-COOL 🌿`)}
+                            title={normalizePhone(m.no_hp) ? "Chat WhatsApp" : "Nomor HP belum diisi"}
+                          >
+                            <MessageCircle className="h-4 w-4 text-success" />
+                          </Button>
                           <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)} title="Detail">
                             <Eye className="h-4 w-4" />
                           </Button>
