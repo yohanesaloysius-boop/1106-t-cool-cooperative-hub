@@ -16,7 +16,25 @@ const QUICK_PROMPTS = [
   "Hubungi admin",
 ];
 
-const ADMIN_WA_URL = "https://wa.me/6281959171997?text=" + encodeURIComponent("Selamat datang di TCool Koperasi");
+const ADMIN_PHONE = "6281959171997";
+const ADMIN_WA_TEXT = encodeURIComponent("Selamat datang di TCool Koperasi");
+const ADMIN_WA_APP = `whatsapp://send?phone=${ADMIN_PHONE}&text=${ADMIN_WA_TEXT}`;
+const ADMIN_WA_WEB = `https://web.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${ADMIN_WA_TEXT}`;
+
+function openWhatsApp() {
+  // Coba buka aplikasi WhatsApp langsung; jika gagal (mis. di desktop tanpa app), fallback ke WhatsApp Web.
+  const timer = setTimeout(() => {
+    window.open(ADMIN_WA_WEB, "_blank", "noopener,noreferrer");
+  }, 800);
+  try {
+    window.location.href = ADMIN_WA_APP;
+    // Jika berhasil membuka app, tab tetap di halaman ini; jika tidak, fallback akan jalan.
+    window.addEventListener("blur", () => clearTimeout(timer), { once: true });
+  } catch {
+    clearTimeout(timer);
+    window.open(ADMIN_WA_WEB, "_blank", "noopener,noreferrer");
+  }
+}
 
 export function AiAssistant() {
   const [open, setOpen] = useState(false);
@@ -36,7 +54,7 @@ export function AiAssistant() {
     const content = text.trim();
     if (!content || loading) return;
     if (content.toLowerCase() === "hubungi admin") {
-      window.open(ADMIN_WA_URL, "_blank", "noopener,noreferrer");
+      openWhatsApp();
       return;
     }
     const next: Msg[] = [...messages, { role: "user", content }];
