@@ -29,40 +29,77 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
   return ROLE_LABEL[r];
 }
 
-const memberNav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
-  { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
-  { to: "/angsuran", label: "Angsuran", icon: Receipt },
-  { to: "/riwayat", label: "Riwayat", icon: History },
-  { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
-  { to: "/profil", label: "Profil", icon: UserIcon },
-  { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
-  { to: "/shu", label: "SHU & Reward", icon: Wallet },
-  { to: "/approval", label: "Status Approval", icon: FileSignature },
-  { to: "/rapat", label: "Rapat", icon: CalendarDays },
-  { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
-  { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
-  { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
-  { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
-  { to: "/favorit", label: "Favorit", icon: Heart },
-];
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
+type NavGroup = { id: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean; items: NavItem[] };
 
-const adminNav = [
-  { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
-  { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
-  { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
-  { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
-  { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
-  { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
-  { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
-  { to: "/admin/audit", label: "Audit Log", icon: Activity },
+const navGroups: NavGroup[] = [
+  {
+    id: "dasbor",
+    label: "Dasbor Utama",
+    icon: Home,
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/profil", label: "Profil", icon: UserIcon },
+      { to: "/riwayat", label: "Riwayat", icon: History },
+      { to: "/favorit", label: "Favorit", icon: Heart },
+    ],
+  },
+  {
+    id: "keuangan",
+    label: "Koperasi Keuangan",
+    icon: Landmark,
+    items: [
+      { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
+      { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
+      { to: "/angsuran", label: "Angsuran", icon: Receipt },
+      { to: "/shu", label: "SHU & Reward", icon: Wallet },
+      { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
+    ],
+  },
+  {
+    id: "marketplace",
+    label: "Marketplace Komunitas",
+    icon: ShoppingBag,
+    items: [
+      { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+      { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
+      { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
+      { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
+    ],
+  },
+  {
+    id: "komunitas",
+    label: "Komunitas & Kegiatan",
+    icon: UsersRound,
+    items: [
+      { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
+      { to: "/rapat", label: "Rapat", icon: CalendarDays },
+    ],
+  },
+  {
+    id: "admin",
+    label: "Panel Admin",
+    icon: ShieldCheck,
+    adminOnly: true,
+    items: [
+      { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
+      { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
+      { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
+      { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
+      { to: "/approval", label: "Status Approval", icon: FileSignature },
+      { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
+      { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
+      { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
+      { to: "/admin/audit", label: "Audit Log", icon: Activity },
+    ],
+  },
 ];
 
 function AuthLayout() {
   const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
-  const nav = isPengurus ? [...memberNav, ...adminNav] : memberNav;
+  const visibleGroups = navGroups.filter((g) => !g.adminOnly || isPengurus);
+  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
