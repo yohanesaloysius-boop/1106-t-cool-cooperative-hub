@@ -13,9 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp } from "lucide-react";
+import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload } from "@/components/file-upload";
+import { downloadBuktiSimpanan } from "@/lib/bukti-pdf";
 
 export const Route = createFileRoute("/_authenticated/simpanan")({
   head: () => ({ meta: [{ title: "Simpanan Saya — T-COOL Koperasi" }] }),
