@@ -13,7 +13,10 @@ const QUICK_PROMPTS = [
   "Simulasi pinjaman 10 juta tenor 12 bulan",
   "Apa itu simpanan wajib?",
   "Kapan SHU dibagikan?",
+  "Hubungi admin",
 ];
+
+const ADMIN_WA_URL = "https://wa.me/6281959171997?text=" + encodeURIComponent("Selamat datang di TCool Koperasi");
 
 export function AiAssistant() {
   const [open, setOpen] = useState(false);
@@ -32,6 +35,10 @@ export function AiAssistant() {
   async function send(text: string) {
     const content = text.trim();
     if (!content || loading) return;
+    if (content.toLowerCase() === "hubungi admin") {
+      window.open(ADMIN_WA_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
     const next: Msg[] = [...messages, { role: "user", content }];
     setMessages(next);
     setInput("");
@@ -70,7 +77,7 @@ export function AiAssistant() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold">T-Cool Assistant</p>
-              <p className="text-xs text-muted-foreground">AI koperasi · selalu siap</p>
+              <p className="text-xs text-muted-foreground">Selalu siap membantu</p>
             </div>
           </div>
 
