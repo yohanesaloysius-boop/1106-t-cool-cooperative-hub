@@ -41,6 +41,7 @@ function AnggotaPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [roleMember, setRoleMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
   const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-members"],
