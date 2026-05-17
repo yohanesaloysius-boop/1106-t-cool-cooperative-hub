@@ -4,9 +4,10 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
 
 
@@ -28,40 +29,77 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
   return ROLE_LABEL[r];
 }
 
-const memberNav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
-  { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
-  { to: "/angsuran", label: "Angsuran", icon: Receipt },
-  { to: "/riwayat", label: "Riwayat", icon: History },
-  { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
-  { to: "/profil", label: "Profil", icon: UserIcon },
-  { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
-  { to: "/shu", label: "SHU & Reward", icon: Wallet },
-  { to: "/approval", label: "Status Approval", icon: FileSignature },
-  { to: "/rapat", label: "Rapat", icon: CalendarDays },
-  { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
-  { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
-  { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
-  { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
-  { to: "/favorit", label: "Favorit", icon: Heart },
-];
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
+type NavGroup = { id: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean; items: NavItem[] };
 
-const adminNav = [
-  { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
-  { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
-  { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
-  { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
-  { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
-  { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
-  { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
-  { to: "/admin/audit", label: "Audit Log", icon: Activity },
+const navGroups: NavGroup[] = [
+  {
+    id: "dasbor",
+    label: "Dasbor Utama",
+    icon: Home,
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/profil", label: "Profil", icon: UserIcon },
+      { to: "/riwayat", label: "Riwayat", icon: History },
+      { to: "/favorit", label: "Favorit", icon: Heart },
+    ],
+  },
+  {
+    id: "keuangan",
+    label: "Koperasi Keuangan",
+    icon: Landmark,
+    items: [
+      { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
+      { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
+      { to: "/angsuran", label: "Angsuran", icon: Receipt },
+      { to: "/shu", label: "SHU & Reward", icon: Wallet },
+      { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
+    ],
+  },
+  {
+    id: "marketplace",
+    label: "Marketplace Komunitas",
+    icon: ShoppingBag,
+    items: [
+      { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+      { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
+      { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
+      { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
+    ],
+  },
+  {
+    id: "komunitas",
+    label: "Komunitas & Kegiatan",
+    icon: UsersRound,
+    items: [
+      { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
+      { to: "/rapat", label: "Rapat", icon: CalendarDays },
+    ],
+  },
+  {
+    id: "admin",
+    label: "Panel Admin",
+    icon: ShieldCheck,
+    adminOnly: true,
+    items: [
+      { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
+      { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
+      { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
+      { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
+      { to: "/approval", label: "Status Approval", icon: FileSignature },
+      { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
+      { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
+      { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
+      { to: "/admin/audit", label: "Audit Log", icon: Activity },
+    ],
+  },
 ];
 
 function AuthLayout() {
   const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
-  const nav = isPengurus ? [...memberNav, ...adminNav] : memberNav;
+  const visibleGroups = navGroups.filter((g) => !g.adminOnly || isPengurus);
+  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -87,23 +125,56 @@ function AuthLayout() {
           <div className="h-8 w-8 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
           <span className="font-bold tracking-tight">T-COOL <span className="text-primary">Koperasi</span></span>
         </Link>
-        <nav className="flex-1 space-y-1 p-4">
-          {nav.map((n) => {
-            const active = pathname === n.to;
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  active ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground/70 hover:bg-muted hover:text-foreground",
-                )}
-              >
-                <n.icon className="h-4 w-4" />
-                {n.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto p-3">
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue={visibleGroups.find((g) => g.items.some((i) => pathname === i.to))?.id ?? visibleGroups[0]?.id}
+            className="space-y-1"
+          >
+            {visibleGroups.map((group) => {
+              const groupActive = group.items.some((i) => pathname === i.to);
+              return (
+                <AccordionItem key={group.id} value={group.id} className="border-none">
+                  <AccordionTrigger
+                    className={cn(
+                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold no-underline hover:no-underline transition-colors",
+                      groupActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                    )}
+                  >
+                    <span className="flex flex-1 items-center gap-3">
+                      <group.icon className="h-4 w-4" />
+                      {group.label}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-1 pt-1">
+                    <div className="ml-3 space-y-0.5 border-l border-border/60 pl-2">
+                      {group.items.map((n) => {
+                        const active = pathname === n.to;
+                        return (
+                          <Link
+                            key={n.to}
+                            to={n.to}
+                            className={cn(
+                              "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
+                              active
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-foreground/70 hover:bg-muted hover:text-foreground",
+                            )}
+                          >
+                            <n.icon className="h-3.5 w-3.5" />
+                            {n.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         </nav>
         <div className="border-t border-border p-4">
           <div className="flex items-center gap-3">
@@ -210,7 +281,7 @@ function AuthLayout() {
         {/* Mobile bottom nav */}
         <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card lg:hidden">
           <div className="grid grid-cols-5">
-            {nav.slice(0, 5).map((n) => {
+            {mobileNav.map((n) => {
               const active = pathname === n.to;
               return (
                 <Link key={n.to} to={n.to} className={cn("flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
