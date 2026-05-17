@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, HandCoins, Loader2, Calculator, Eye } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye, Download } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { FileUpload } from "@/components/file-upload";
 import { LoanDetailDialog } from "@/components/loan-detail-dialog";
+import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
