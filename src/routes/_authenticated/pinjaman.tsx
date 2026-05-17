@@ -235,7 +235,7 @@ function PinjamanPage() {
                                 nama: profile?.nama_lengkap ?? "—",
                                 nomor: profile?.nomor_anggota ?? null,
                                 email: profile?.email ?? null,
-                                alamat: profile?.alamat ?? null,
+                                alamat: (profile as any)?.alamat ?? null,
                               },
                             })
                           }
