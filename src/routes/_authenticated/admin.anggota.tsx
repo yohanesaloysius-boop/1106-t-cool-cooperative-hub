@@ -444,3 +444,171 @@ function DeleteDemoButton() {
     </Button>
   );
 }
+
+type MemberRow = {
+  id: string;
+  nomor_anggota: string | null;
+  nama_lengkap: string;
+  email: string | null;
+  no_hp: string | null;
+  status: string;
+  foto_url: string | null;
+  joined_at: string;
+};
+
+type FilterKind = "all" | "active" | "pending" | "pengurus" | "tunggakan";
+
+function BroadcastWaDialog({ open, onClose, members }: { open: boolean; onClose: () => void; members: MemberRow[] }) {
+  const [filter, setFilter] = useState<FilterKind>("active");
+  const [templateId, setTemplateId] = useState<string>(WA_TEMPLATES[0].id);
+  const [customMsg, setCustomMsg] = useState("");
+  const [useCustom, setUseCustom] = useState(false);
+
+  // Ambil daftar id pengurus
+  const { data: pengurusIds } = useQuery({
+    queryKey: ["broadcast-pengurus-ids"],
+    enabled: open && filter === "pengurus",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .in("role", ["super_admin", "ketua", "sekretaris", "bendahara"])
+        .is("deleted_at", null);
+      if (error) throw error;
+      return new Set((data ?? []).map((r) => r.user_id as string));
+    },
+  });
+
+  // Ambil daftar id user yang punya angsuran belum lunas
+  const { data: tunggakanIds } = useQuery({
+    queryKey: ["broadcast-tunggakan-ids"],
+    enabled: open && filter === "tunggakan",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("angsuran")
+        .select("user_id")
+        .in("status", ["unpaid", "overdue"]);
+      if (error) throw error;
+      return new Set((data ?? []).map((r) => r.user_id as string));
+    },
+  });
+
+  const targets = members.filter((m) => {
+    if (!normalizePhone(m.no_hp)) return false;
+    if (filter === "all") return true;
+    if (filter === "active") return m.status === "active";
+    if (filter === "pending") return m.status === "pending";
+    if (filter === "pengurus") return pengurusIds?.has(m.id) ?? false;
+    if (filter === "tunggakan") return tunggakanIds?.has(m.id) ?? false;
+    return false;
+  });
+
+  const buildMsg = (nama: string) => {
+    if (useCustom) return customMsg.replace(/\{nama\}/g, nama);
+    const tpl = WA_TEMPLATES.find((t) => t.id === templateId)!;
+    return tpl.build(nama);
+  };
+
+  // Buka WA satu per satu dengan delay agar tidak terblokir popup blocker
+  const sendAll = async () => {
+    if (targets.length === 0) {
+      toast.error("Tidak ada penerima dengan nomor HP valid.");
+      return;
+    }
+    if (targets.length > 1 && !confirm(`Kirim WA ke ${targets.length} anggota? Browser akan membuka tab WhatsApp satu per satu.`)) return;
+    let ok = 0;
+    for (const m of targets) {
+      const phone = normalizePhone(m.no_hp);
+      if (!phone) continue;
+      const url = waUrl(phone, buildMsg(m.nama_lengkap));
+      window.open(url, "_blank", "noopener,noreferrer");
+      ok++;
+      // Beri jeda agar popup tidak diblokir browser
+      await new Promise((r) => setTimeout(r, 600));
+    }
+    toast.success(`${ok} tab WhatsApp dibuka. Kirim pesannya di masing-masing tab.`);
+    onClose();
+  };
+
+  const previewMsg = targets[0] ? buildMsg(targets[0].nama_lengkap) : buildMsg("Anggota");
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Send className="h-4 w-4 text-success" /> Broadcast WhatsApp</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <p className="mb-1.5 text-xs font-semibold">Kirim ke:</p>
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                { v: "active", l: "Anggota Aktif" },
+                { v: "pending", l: "Menunggu Verifikasi" },
+                { v: "pengurus", l: "Pengurus" },
+                { v: "tunggakan", l: "Punya Tunggakan" },
+                { v: "all", l: "Semua" },
+              ] as { v: FilterKind; l: string }[]).map((opt) => (
+                <button
+                  key={opt.v}
+                  type="button"
+                  onClick={() => setFilter(opt.v)}
+                  className={`rounded-full border px-3 py-1 text-xs transition ${filter === opt.v ? "border-primary bg-primary text-primary-foreground" : "border-border bg-muted/40 hover:bg-muted"}`}
+                >
+                  {opt.l}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {targets.length} penerima dengan nomor HP valid.
+            </p>
+          </div>
+
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <p className="text-xs font-semibold">Pesan:</p>
+              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <input type="checkbox" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} />
+                Tulis pesan sendiri
+              </label>
+            </div>
+            {useCustom ? (
+              <Textarea
+                rows={5}
+                value={customMsg}
+                onChange={(e) => setCustomMsg(e.target.value)}
+                placeholder="Tulis pesan. Gunakan {nama} untuk menyisipkan nama anggota."
+                maxLength={1000}
+              />
+            ) : (
+              <select
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+              >
+                {WA_TEMPLATES.map((t) => (
+                  <option key={t.id} value={t.id}>{t.label}</option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
+            <p className="mb-1 font-semibold text-foreground">Pratinjau:</p>
+            <p className="whitespace-pre-wrap text-muted-foreground">{previewMsg}</p>
+          </div>
+
+          <div className="rounded-lg border border-warning/30 bg-warning/10 p-2.5 text-[11px] text-warning-foreground">
+            ⚠️ WhatsApp akan terbuka satu tab per anggota. Anda harus menekan tombol kirim di tiap tab (kebijakan WhatsApp untuk mencegah spam).
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Batal</Button>
+          <Button onClick={sendAll} disabled={targets.length === 0 || (useCustom && !customMsg.trim())} className="gap-1.5">
+            <Send className="h-3.5 w-3.5" /> Kirim ke {targets.length} Anggota
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
