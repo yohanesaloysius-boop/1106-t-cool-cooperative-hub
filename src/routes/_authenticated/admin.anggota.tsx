@@ -107,6 +107,9 @@ function AnggotaPage() {
           <p className="text-sm text-muted-foreground">Aktivasi, tangguhkan, atau tolak permohonan keanggotaan.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="default" className="gap-1.5" onClick={() => setBroadcastOpen(true)}>
+            <Send className="h-3.5 w-3.5" /> Broadcast WA
+          </Button>
           <ImportCsvButton />
           <DeleteDemoButton />
           <div className="relative">
