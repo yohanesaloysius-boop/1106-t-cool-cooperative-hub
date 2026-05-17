@@ -239,6 +239,7 @@ function SimpananPage() {
                     <th className="p-3 text-right">Nominal</th>
                     <th className="p-3 text-left">Catatan</th>
                     <th className="p-3 text-left">Status</th>
+                    <th className="p-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,6 +250,33 @@ function SimpananPage() {
                       <td className="p-3 text-right font-medium">{fmt.format(Number(r.nominal))}</td>
                       <td className="p-3 text-muted-foreground">{r.catatan ?? "—"}</td>
                       <td className="p-3"><StatusBadge status={r.status} /></td>
+                      <td className="p-3 text-right">
+                        {r.status === "verified" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              downloadBuktiSimpanan({
+                                id: r.id,
+                                jenis: String(r.jenis),
+                                nominal: Number(r.nominal),
+                                tanggal: r.created_at,
+                                catatan: r.catatan,
+                                verified_at: (r as any).verified_at ?? null,
+                                anggota: {
+                                  nama: profile?.nama_lengkap ?? "—",
+                                  nomor: profile?.nomor_anggota ?? null,
+                                  email: profile?.email ?? null,
+                                },
+                              })
+                            }
+                          >
+                            <Download className="mr-1 h-3.5 w-3.5" /> Bukti
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
