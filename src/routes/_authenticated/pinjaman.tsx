@@ -214,6 +214,35 @@ function PinjamanPage() {
                         pinjamanId={r.id}
                         trigger={<Button size="sm" variant="ghost" className="mt-1 h-7 gap-1 text-xs"><Eye className="h-3 w-3" /> Detail</Button>}
                       />
+                      {["approved", "disbursed", "active", "completed"].includes(String(r.status)) && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="mt-1 h-7 gap-1 text-xs"
+                          onClick={() =>
+                            downloadSuratPinjaman({
+                              id: r.id,
+                              nominal: Number(r.nominal),
+                              tenor_bulan: Number(r.tenor_bulan),
+                              bunga_persen: Number(r.bunga_persen),
+                              cicilan_per_bulan: r.cicilan_per_bulan as any,
+                              total_bayar: r.total_bayar as any,
+                              status: String(r.status),
+                              approved_at: (r as any).approved_at ?? null,
+                              disbursed_at: (r as any).disbursed_at ?? null,
+                              tujuan: r.tujuan ?? null,
+                              anggota: {
+                                nama: profile?.nama_lengkap ?? "—",
+                                nomor: profile?.nomor_anggota ?? null,
+                                email: profile?.email ?? null,
+                                alamat: profile?.alamat ?? null,
+                              },
+                            })
+                          }
+                        >
+                          <Download className="h-3 w-3" /> Surat
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
