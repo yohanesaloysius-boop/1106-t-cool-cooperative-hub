@@ -186,7 +186,99 @@ function AnggotaPage() {
 
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
       <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
+      <AssignRoleDialog member={roleMember} onClose={() => setRoleMember(null)} />
     </div>
+  );
+}
+
+const ROLE_OPTIONS: { value: "ketua" | "sekretaris" | "bendahara"; label: string; desc: string }[] = [
+  { value: "ketua", label: "Ketua", desc: "Memimpin koperasi, menyetujui keputusan strategis & approval final." },
+  { value: "sekretaris", label: "Sekretaris", desc: "Mengelola administrasi, notulensi rapat & verifikasi anggota." },
+  { value: "bendahara", label: "Bendahara", desc: "Mengelola keuangan, verifikasi simpanan/pinjaman & laporan kas." },
+];
+
+function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_lengkap: string } | null; onClose: () => void }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const { data: currentRoles, refetch } = useQuery({
+    queryKey: ["member-roles", member?.id],
+    enabled: !!member?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", member!.id).is("deleted_at", null);
+      if (error) throw error;
+      return (data ?? []).map((r) => r.role as string);
+    },
+  });
+
+  const toggleRole = async (role: "ketua" | "sekretaris" | "bendahara", assign: boolean) => {
+    if (!member) return;
+    setBusy(true);
+    try {
+      if (assign) {
+        const { error } = await supabase.from("user_roles").upsert(
+          { user_id: member.id, role, deleted_at: null, created_by: user?.id },
+          { onConflict: "user_id,role" },
+        );
+        if (error) throw error;
+        await supabase.from("notifications").insert({
+          user_id: member.id,
+          judul: `🎖️ Anda diangkat sebagai ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+          pesan: `Selamat! Super Admin telah mengangkat Anda sebagai ${role} koperasi T-COOL.`,
+          kategori: "sukses",
+          url: "/admin",
+          ref_table: "user_roles",
+          ref_id: member.id,
+        });
+        toast.success(`${member.nama_lengkap} diangkat sebagai ${role}`);
+      } else {
+        const { error } = await supabase.from("user_roles").delete().eq("user_id", member.id).eq("role", role);
+        if (error) throw error;
+        toast.success(`Jabatan ${role} dicabut`);
+      }
+      await supabase.from("audit_logs").insert({
+        actor_id: user?.id, entity: "user_roles", entity_id: member.id,
+        action: assign ? `assign_${role}` : `revoke_${role}`, new_data: { role },
+      });
+      refetch();
+      qc.invalidateQueries({ queryKey: ["admin-members"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open={!!member} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Kelola Jabatan Pengurus</DialogTitle>
+        </DialogHeader>
+        {member && (
+          <div className="space-y-3">
+            <p className="text-sm">Pilih jabatan untuk <span className="font-semibold">{member.nama_lengkap}</span>. Jabatan dapat diaktifkan/dicabut kapan saja.</p>
+            <div className="space-y-2">
+              {ROLE_OPTIONS.map((opt) => {
+                const has = currentRoles?.includes(opt.value);
+                return (
+                  <div key={opt.value} className="flex items-start justify-between gap-3 rounded-lg border border-border p-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">{opt.label}{has && <span className="ml-2 rounded-full bg-success/15 px-2 py-0.5 text-[10px] text-success">Aktif</span>}</p>
+                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                    </div>
+                    <Button size="sm" variant={has ? "outline" : "default"} disabled={busy} onClick={() => toggleRole(opt.value, !has)}>
+                      {has ? "Cabut" : "Angkat"}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <DialogFooter><Button variant="outline" onClick={onClose}>Tutup</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
