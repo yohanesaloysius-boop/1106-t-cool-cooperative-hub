@@ -44,7 +44,7 @@ const schema = z.object({
 });
 
 function PinjamanPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const qc = useQueryClient();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
