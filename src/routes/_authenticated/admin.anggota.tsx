@@ -33,9 +33,11 @@ const statusCls: Record<string, string> = {
 
 function AnggotaPage() {
   const qc = useQueryClient();
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  const isSuperAdmin = roles.includes("super_admin");
   const [q, setQ] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [roleMember, setRoleMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
   const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
 
   const { data, isLoading } = useQuery({
