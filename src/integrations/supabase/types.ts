@@ -261,6 +261,66 @@ export type Database = {
         }
         Relationships: []
       }
+      loan_verifications: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          face_match_score: number | null
+          id: string
+          ip_address: string | null
+          ktp_image_path: string | null
+          location: Json | null
+          ocr_data: Json | null
+          pinjaman_id: string | null
+          rejected_reason: string | null
+          selfie_image_path: string | null
+          status: Database["public"]["Enums"]["verif_status"]
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          face_match_score?: number | null
+          id?: string
+          ip_address?: string | null
+          ktp_image_path?: string | null
+          location?: Json | null
+          ocr_data?: Json | null
+          pinjaman_id?: string | null
+          rejected_reason?: string | null
+          selfie_image_path?: string | null
+          status?: Database["public"]["Enums"]["verif_status"]
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          face_match_score?: number | null
+          id?: string
+          ip_address?: string | null
+          ktp_image_path?: string | null
+          location?: Json | null
+          ocr_data?: Json | null
+          pinjaman_id?: string | null
+          rejected_reason?: string | null
+          selfie_image_path?: string | null
+          status?: Database["public"]["Enums"]["verif_status"]
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       lowongan_kerja: {
         Row: {
           approved_at: string | null
@@ -1109,6 +1169,7 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           user_id: string
+          verification_id: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -1130,6 +1191,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           user_id: string
+          verification_id?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -1151,8 +1213,17 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           user_id?: string
+          verification_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pinjaman_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "loan_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1633,6 +1704,44 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          catatan: string | null
+          created_at: string
+          id: string
+          meta: Json | null
+          verification_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          verification_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_logs_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "loan_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallet_transactions: {
         Row: {
           arah: string
@@ -1817,6 +1926,10 @@ export type Database = {
         Args: { _action: string; _catatan: string; _complaint_id: string }
         Returns: undefined
       }
+      mp_review_loan_verification: {
+        Args: { _action: string; _catatan: string; _id: string }
+        Returns: undefined
+      }
       mp_set_store_status: {
         Args: {
           _alasan: string
@@ -1896,6 +2009,7 @@ export type Database = {
         | "biaya_admin"
         | "pendapatan_bunga"
         | "lainnya"
+      verif_status: "pending" | "verified" | "rejected"
       withdrawal_status: "pending" | "approved" | "rejected" | "paid"
     }
     CompositeTypes: {
@@ -2089,6 +2203,7 @@ export const Constants = {
         "pendapatan_bunga",
         "lainnya",
       ],
+      verif_status: ["pending", "verified", "rejected"],
       withdrawal_status: ["pending", "approved", "rejected", "paid"],
     },
   },
