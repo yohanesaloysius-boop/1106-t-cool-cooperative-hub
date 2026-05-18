@@ -42,6 +42,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as MarketplaceTokoSlugRouteImport } from './routes/marketplace.toko.$slug'
 import { Route as MarketplaceProdukIdRouteImport } from './routes/marketplace.produk.$id'
 import { Route as AuthenticatedAdminTabunganBerjangkaRouteImport } from './routes/_authenticated/admin.tabungan-berjangka'
+import { Route as AuthenticatedAdminStatistikRouteImport } from './routes/_authenticated/admin.statistik'
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
@@ -227,6 +228,12 @@ const AuthenticatedAdminTabunganBerjangkaRoute =
     path: '/tabungan-berjangka',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminStatistikRoute =
+  AuthenticatedAdminStatistikRouteImport.update({
+    id: '/statistik',
+    path: '/statistik',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSimpananRoute =
   AuthenticatedAdminSimpananRouteImport.update({
     id: '/simpanan',
@@ -358,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/admin/statistik': typeof AuthenticatedAdminStatistikRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
@@ -406,6 +414,7 @@ export interface FileRoutesByTo {
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/admin/statistik': typeof AuthenticatedAdminStatistikRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
@@ -457,6 +466,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
+  '/_authenticated/admin/statistik': typeof AuthenticatedAdminStatistikRoute
   '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
@@ -508,6 +518,7 @@ export interface FileRouteTypes {
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
+    | '/admin/statistik'
     | '/admin/tabungan-berjangka'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
@@ -556,6 +567,7 @@ export interface FileRouteTypes {
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
+    | '/admin/statistik'
     | '/admin/tabungan-berjangka'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
@@ -606,6 +618,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/seller-verify'
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
+    | '/_authenticated/admin/statistik'
     | '/_authenticated/admin/tabungan-berjangka'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTabunganBerjangkaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/statistik': {
+      id: '/_authenticated/admin/statistik'
+      path: '/statistik'
+      fullPath: '/admin/statistik'
+      preLoaderRoute: typeof AuthenticatedAdminStatistikRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/simpanan': {
       id: '/_authenticated/admin/simpanan'
       path: '/simpanan'
@@ -982,6 +1002,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
   AuthenticatedAdminSimpananRoute: typeof AuthenticatedAdminSimpananRoute
+  AuthenticatedAdminStatistikRoute: typeof AuthenticatedAdminStatistikRoute
   AuthenticatedAdminTabunganBerjangkaRoute: typeof AuthenticatedAdminTabunganBerjangkaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -1001,6 +1022,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
   AuthenticatedAdminSimpananRoute: AuthenticatedAdminSimpananRoute,
+  AuthenticatedAdminStatistikRoute: AuthenticatedAdminStatistikRoute,
   AuthenticatedAdminTabunganBerjangkaRoute:
     AuthenticatedAdminTabunganBerjangkaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
