@@ -228,3 +228,40 @@ function TrxRow({ trx: t, onChanged }: { trx: any; onChanged: () => void }) {
     </div>
   );
 }
+
+function ComplaintButton({ trxId }: { trxId: string }) {
+  const [open, setOpen] = useState(false);
+  const [alasan, setAlasan] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    if (!alasan.trim()) return toast.error("Alasan wajib diisi");
+    setBusy(true);
+    try {
+      await fileComplaint(trxId, alasan);
+      toast.success("Komplain dikirim. Pengurus akan meninjau.");
+      setOpen(false); setAlasan("");
+    } catch (e: any) {
+      toast.error(e.message ?? "Gagal kirim komplain");
+    } finally { setBusy(false); }
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline" className="rounded-full text-destructive hover:bg-destructive/10">
+          <AlertTriangle className="mr-1.5 h-3.5 w-3.5" /> Komplain
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Ajukan Komplain</DialogTitle>
+          <DialogDescription>Jelaskan masalah pesanan. Pengurus akan memproses refund jika valid.</DialogDescription>
+        </DialogHeader>
+        <Textarea placeholder="Contoh: barang tidak sesuai, rusak, tidak sampai…" value={alasan} onChange={(e) => setAlasan(e.target.value)} rows={4} />
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Batal</Button>
+          <Button onClick={submit} disabled={busy}>Kirim Komplain</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
