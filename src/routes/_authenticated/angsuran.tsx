@@ -62,6 +62,7 @@ function AngsuranPage() {
 
   const sisaTotal = enriched.filter((r) => r.status !== "paid").reduce((s, r) => s + Number(r.nominal), 0);
   const overdueRows = enriched.filter((r) => r.displayStatus === "overdue");
+  const totalDenda = enriched.filter((r) => r.status !== "paid").reduce((s, r) => s + Number(r.denda ?? 0), 0);
   const next = enriched.find((r) => r.status === "unpaid");
 
   // Group per pinjaman for sisa hutang otomatis
