@@ -205,9 +205,12 @@ function TrxRow({ trx: t, onChanged }: { trx: any; onChanged: () => void }) {
         )}
 
         {(t.status === "paid" || t.status === "shipped") && (
-          <Button size="sm" className="rounded-full" onClick={doConfirm} disabled={busy}>
-            <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Konfirmasi Terima
-          </Button>
+          <>
+            <Button size="sm" className="rounded-full" onClick={doConfirm} disabled={busy}>
+              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Konfirmasi Terima
+            </Button>
+            <ComplaintButton trxId={t.id} />
+          </>
         )}
 
         {t.status === "completed" && (
