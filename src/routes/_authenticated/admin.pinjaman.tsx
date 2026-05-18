@@ -9,7 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { SignaturePadDialog, type SignatureResult } from "@/components/signature-pad";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
-import { Loader2, PenLine, XCircle, Banknote } from "lucide-react";
+import { Loader2, PenLine, XCircle, Banknote, FileSignature } from "lucide-react";
+import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/pinjaman")({
   head: () => ({ meta: [{ title: "Approval Pinjaman — T-COOL Koperasi" }] }),
@@ -49,11 +50,19 @@ export function PinjamanApprovalPage() {
       if (ids.length) {
         const { data: profs } = await supabase
           .from("profiles")
-          .select("id,nama_lengkap,nomor_anggota")
+          .select("id,nama_lengkap,nomor_anggota,nik,alamat")
           .in("id", ids);
-        map = new Map((profs ?? []).map((p) => [p.id, { nama_lengkap: p.nama_lengkap, nomor_anggota: p.nomor_anggota }]));
+        map = new Map((profs ?? []).map((p: any) => [p.id, p]));
       }
-      return (rows ?? []).map((r) => ({ ...r, profiles: map.get(r.user_id) ?? null }));
+      const pids = (rows ?? []).map((r) => r.id);
+      let akadMap = new Map<string, any>();
+      if (pids.length) {
+        const { data: akads } = await (supabase.from("loan_agreements" as any)
+          .select("pinjaman_id,id,status,pdf_path,member_signed_at,pengurus_signed_at")
+          .in("pinjaman_id", pids));
+        akadMap = new Map(((akads as any[]) ?? []).map((a) => [a.pinjaman_id, a]));
+      }
+      return (rows ?? []).map((r) => ({ ...r, profiles: map.get(r.user_id) ?? null, akad: akadMap.get(r.id) ?? null }));
     },
   });
 
@@ -237,6 +246,21 @@ export function PinjamanApprovalPage() {
                               trigger={<Button size="sm" variant="outline" className="gap-1 text-xs"><Banknote className="h-3 w-3" /> Cairkan</Button>}
                             />
                           )}
+                          {r.akad?.status === "pending_pengurus" && (
+                            <AkadSignDialog
+                              role="pengurus"
+                              jabatan="Ketua/Bendahara"
+                              pinjaman={r}
+                              profile={{
+                                nama: r.profiles?.nama_lengkap ?? "—",
+                                nomor: r.profiles?.nomor_anggota ?? null,
+                                nik: (r.profiles as any)?.nik ?? null,
+                                alamat: (r.profiles as any)?.alamat ?? null,
+                              }}
+                              trigger={<Button size="sm" variant="outline" className="gap-1 text-xs"><FileSignature className="h-3 w-3" /> TTD Akad</Button>}
+                            />
+                          )}
+                          {r.akad?.pdf_path && <AkadDownloadButton pdfPath={r.akad.pdf_path} />}
                         </div>
                       </TableCell>
                     </TableRow>

@@ -15,6 +15,8 @@ import { useLoanEligibility } from "@/hooks/use-loan-eligibility";
 import { useLoanScoring } from "@/hooks/use-loan-scoring";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp } from "lucide-react";
+import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
+import { FileSignature } from "lucide-react";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -52,7 +54,15 @@ function PinjamanPage() {
         .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason)")
         .eq("user_id", user!.id).order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      const ids = (data ?? []).map((r: any) => r.id);
+      let akadMap = new Map<string, any>();
+      if (ids.length) {
+        const { data: akads } = await (supabase.from("loan_agreements" as any)
+          .select("pinjaman_id,id,status,pdf_path,member_signed_at,pengurus_signed_at")
+          .in("pinjaman_id", ids));
+        akadMap = new Map(((akads as any[]) ?? []).map((a) => [a.pinjaman_id, a]));
+      }
+      return (data ?? []).map((r: any) => ({ ...r, akad: akadMap.get(r.id) ?? null }));
     },
   });
 
@@ -262,6 +272,29 @@ function PinjamanPage() {
                         >
                           <Download className="h-3 w-3" /> Surat
                         </Button>
+                      )}
+                      {String(r.status) === "approved" && (!r.akad || r.akad.status === "pending_member") && (
+                        <AkadSignDialog
+                          role="member"
+                          pinjaman={r}
+                          profile={{
+                            nama: profile?.nama_lengkap ?? "—",
+                            nomor: profile?.nomor_anggota ?? null,
+                            nik: (profile as any)?.nik ?? null,
+                            alamat: (profile as any)?.alamat ?? null,
+                          }}
+                          trigger={
+                            <Button size="sm" variant="default" className="mt-1 h-7 gap-1 text-xs">
+                              <FileSignature className="h-3 w-3" /> Tanda Tangani Akad
+                            </Button>
+                          }
+                        />
+                      )}
+                      {r.akad?.status === "pending_pengurus" && (
+                        <p className="mt-1 text-[10px] text-warning">Menunggu TTD pengurus</p>
+                      )}
+                      {r.akad?.pdf_path && (
+                        <div className="mt-1"><AkadDownloadButton pdfPath={r.akad.pdf_path} /></div>
                       )}
                     </div>
                   </div>

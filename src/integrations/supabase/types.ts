@@ -213,6 +213,66 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_mutations: {
+        Row: {
+          bank_name: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          jenis: string
+          keterangan: string
+          matched_at: string | null
+          matched_by: string | null
+          matched_id: string | null
+          matched_table: string | null
+          nominal: number
+          raw_row: Json | null
+          saldo: number | null
+          source_file: string | null
+          status: string
+          tanggal: string
+          updated_at: string
+        }
+        Insert: {
+          bank_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          jenis: string
+          keterangan: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_id?: string | null
+          matched_table?: string | null
+          nominal: number
+          raw_row?: Json | null
+          saldo?: number | null
+          source_file?: string | null
+          status?: string
+          tanggal: string
+          updated_at?: string
+        }
+        Update: {
+          bank_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          jenis?: string
+          keterangan?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_id?: string | null
+          matched_table?: string | null
+          nominal?: number
+          raw_row?: Json | null
+          saldo?: number | null
+          source_file?: string | null
+          status?: string
+          tanggal?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string
@@ -264,6 +324,60 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      loan_agreements: {
+        Row: {
+          content_hash: string | null
+          created_at: string
+          id: string
+          member_signature_id: string | null
+          member_signed_at: string | null
+          pdf_path: string | null
+          pengurus_id: string | null
+          pengurus_signature_id: string | null
+          pengurus_signed_at: string | null
+          pinjaman_id: string
+          snapshot: Json | null
+          status: string
+          terms_version: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_hash?: string | null
+          created_at?: string
+          id?: string
+          member_signature_id?: string | null
+          member_signed_at?: string | null
+          pdf_path?: string | null
+          pengurus_id?: string | null
+          pengurus_signature_id?: string | null
+          pengurus_signed_at?: string | null
+          pinjaman_id: string
+          snapshot?: Json | null
+          status?: string
+          terms_version?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_hash?: string | null
+          created_at?: string
+          id?: string
+          member_signature_id?: string | null
+          member_signed_at?: string | null
+          pdf_path?: string | null
+          pengurus_id?: string | null
+          pengurus_signature_id?: string | null
+          pengurus_signed_at?: string | null
+          pinjaman_id?: string
+          snapshot?: Json | null
+          status?: string
+          terms_version?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
