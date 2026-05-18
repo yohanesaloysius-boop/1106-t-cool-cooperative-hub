@@ -140,7 +140,9 @@ function AngsuranPage() {
           <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
           <div className="flex-1 text-sm">
             <p className="font-semibold text-destructive">Anda memiliki {overdueRows.length} angsuran terlambat</p>
-            <p className="text-foreground/80">Total tunggakan: <span className="font-semibold">{fmt.format(overdueRows.reduce((s, r) => s + Number(r.nominal), 0))}</span>. Segera lakukan pembayaran untuk menghindari sanksi.</p>
+            <p className="text-foreground/80">Total tunggakan: <span className="font-semibold">{fmt.format(overdueRows.reduce((s, r) => s + Number(r.nominal), 0))}</span>
+              {totalDenda > 0 && (<> · Denda berjalan: <span className="font-semibold text-destructive">{fmt.format(totalDenda)}</span></>)}
+              . Segera lakukan pembayaran untuk menghentikan akumulasi denda.</p>
           </div>
         </div>
       )}
