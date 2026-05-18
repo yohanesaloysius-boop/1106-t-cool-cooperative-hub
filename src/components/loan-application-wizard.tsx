@@ -145,10 +145,6 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
           location,
           user_agent: navigator.userAgent,
         })
-          face_match_score: null,
-          location,
-          user_agent: navigator.userAgent,
-        })
         .select("id")
         .single();
       if (vErr) throw vErr;
