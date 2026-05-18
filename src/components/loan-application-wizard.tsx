@@ -186,7 +186,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   const canNext1 = (() => {
     try { schema.parse(form); return form.agree; } catch { return false; }
   })();
-  const canNext2 = !!ktp && !!selfie;
+  const canNext2 = !!ktp && !!selfie && !!privy && privy.status === "verified" && privy.face_match_score >= 0.75;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
@@ -313,6 +313,57 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
               <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
                 🔒 Foto Anda disimpan secara privat. Akses hanya untuk pengurus koperasi terverifikasi.
               </div>
+
+              {/* e-KYC Privy */}
+              <Card className="overflow-hidden border-primary/30">
+                <div className="flex items-start justify-between gap-3 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-primary/10 p-2 text-primary"><ShieldCheck className="h-5 w-5" /></div>
+                    <div>
+                      <p className="font-semibold flex items-center gap-2">
+                        e-KYC Privy
+                        {privy?.mode === "mock" && <Badge variant="outline" className="text-[10px]">Simulasi</Badge>}
+                        {privy?.mode === "live" && <Badge className="text-[10px]">Live</Badge>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Verifikasi NIK ke Dukcapil + pencocokan wajah (Privy).</p>
+                    </div>
+                  </div>
+                  {privy?.status === "verified" && <CheckCircle2 className="h-5 w-5 text-success" />}
+                </div>
+
+                {privy ? (
+                  <div className="space-y-2 border-t bg-muted/30 p-4 text-xs">
+                    <div className="grid grid-cols-2 gap-y-1">
+                      <span className="text-muted-foreground">NIK</span><span className="text-right font-mono">{privy.nik}</span>
+                      <span className="text-muted-foreground">Nama</span><span className="text-right font-medium">{privy.nama}</span>
+                      <span className="text-muted-foreground">Tgl Lahir</span><span className="text-right">{privy.tgl_lahir}</span>
+                      <span className="text-muted-foreground">Liveness</span><span className="text-right">{privy.liveness}</span>
+                      <span className="text-muted-foreground">Face Match</span>
+                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-destructive"}`}>
+                        {(privy.face_match_score * 100).toFixed(1)}%
+                      </span>
+                      <span className="text-muted-foreground">Ref</span><span className="text-right font-mono text-[10px]">{privy.referenceId}</span>
+                    </div>
+                  </div>
+                ) : null}
+
+                {privyErr && (
+                  <div className="border-t bg-destructive/10 p-3 text-xs text-destructive">⚠ {privyErr}</div>
+                )}
+
+                <div className="border-t p-3">
+                  <Button
+                    onClick={runPrivy}
+                    disabled={!ktp || !selfie || privyBusy}
+                    variant={privy?.status === "verified" ? "outline" : "default"}
+                    size="sm"
+                    className="w-full gap-2"
+                  >
+                    {privyBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                    {privy ? "Verifikasi ulang" : "Verifikasi via Privy"}
+                  </Button>
+                </div>
+              </Card>
             </div>
           )}
 
