@@ -8,6 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { shipOrder } from "@/lib/escrow-api";
+import { Truck } from "lucide-react";
 import {
   Plus, Store as StoreIcon, Package, TrendingUp, Eye, Pencil, Trash2, ShoppingBag,
   Wallet, Megaphone, Phone, MapPin, Sparkles, Instagram, Facebook, Music2, Star, Percent,
