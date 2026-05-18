@@ -65,6 +65,7 @@ const navGroups: NavGroup[] = [
       { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
       { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
       { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
+      { to: "/saldo", label: "Saldo & Pencairan", icon: Wallet },
     ],
   },
   {
