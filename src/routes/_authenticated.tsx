@@ -65,6 +65,7 @@ const navGroups: NavGroup[] = [
       { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
       { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
       { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
+      { to: "/saldo", label: "Saldo & Pencairan", icon: Wallet },
     ],
   },
   {
@@ -89,6 +90,7 @@ const navGroups: NavGroup[] = [
       { to: "/approval", label: "Status Approval", icon: FileSignature },
       { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
       { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
+      { to: "/admin/escrow", label: "Escrow & Pencairan", icon: Wallet },
       { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
       { to: "/admin/audit", label: "Audit Log", icon: Activity },
     ],

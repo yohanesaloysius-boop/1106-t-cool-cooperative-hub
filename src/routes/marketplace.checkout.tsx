@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { cartItemEffectivePrice, useCart, type CartItem } from "@/lib/cart";
 import { createTransaction, fmtIDR } from "@/lib/marketplace-api";
-import { ArrowLeft, MessageCircle, CheckCircle2 } from "lucide-react";
+import { getMarketplaceRekening } from "@/lib/escrow-api";
+import { ArrowLeft, CheckCircle2, Copy, Landmark, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/marketplace/checkout")({
@@ -59,7 +61,6 @@ function CheckoutPage() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      const waLinks: { store: string; url: string }[] = [];
       for (const [storeId, items] of Object.entries(groups)) {
         const catatan = notes[storeId]?.trim() || undefined;
         for (const it of items) {
@@ -70,26 +71,9 @@ function CheckoutPage() {
             catatan,
           });
         }
-        const totalStore = items.reduce((s, it) => s + cartItemEffectivePrice(it) * it.qty, 0);
-        const lines = items
-          .map((it) => `• ${it.nama_produk} x${it.qty} — ${fmtIDR(cartItemEffectivePrice(it) * it.qty)}`)
-          .join("\n");
-        const msg = `*Pesanan Marketplace T-COOL*\n\nDari: ${profile?.nama_lengkap ?? user.email}\n${
-          profile?.nomor_anggota ? `No. Anggota: ${profile.nomor_anggota}\n` : ""
-        }\n${lines}\n\n*Total: ${fmtIDR(totalStore)}*${catatan ? `\n\nCatatan: ${catatan}` : ""}`;
-        const wa = items[0].store_whatsapp;
-        if (wa) {
-          waLinks.push({
-            store: items[0].store_nama,
-            url: `https://wa.me/${String(wa).replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`,
-          });
-        }
       }
       cart.clear();
-      toast.success("Pesanan dibuat! Konfirmasi via WhatsApp ke penjual.");
-
-      // Open first WA link; show others on transaksi-saya
-      if (waLinks[0]) window.open(waLinks[0].url, "_blank");
+      toast.success("Pesanan dibuat! Lanjut transfer ke rekening koperasi & upload bukti.");
       navigate({ to: "/transaksi-saya" });
     } catch (e: any) {
       toast.error(e.message);
@@ -150,7 +134,18 @@ function CheckoutPage() {
             })}
           </div>
 
-          <aside className="lg:col-span-4">
+          <aside className="lg:col-span-4 space-y-4">
+            <div className="rounded-3xl border border-primary/30 bg-primary/5 p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <Landmark className="h-4 w-4" />
+                <p className="text-sm font-bold">Rekening Koperasi</p>
+              </div>
+              <RekeningInfo />
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                Transfer ke rekening koperasi → upload bukti di halaman <strong>Transaksi Saya</strong>. Dana ditahan koperasi (escrow) sampai Anda konfirmasi barang diterima.
+              </p>
+            </div>
+
             <div className="sticky top-24 rounded-3xl border border-border bg-card p-5" style={{ boxShadow: "var(--shadow-card)" }}>
               <h2 className="text-base font-semibold">Total Pembayaran</h2>
               <div className="mt-3 flex justify-between text-sm">
@@ -158,23 +153,17 @@ function CheckoutPage() {
                 <span className="font-semibold">{cart.count}</span>
               </div>
               <div className="mt-3 border-t border-border pt-3 flex justify-between">
-                <span className="font-semibold">Total</span>
+                <span className="font-semibold">Total Transfer</span>
                 <span className="text-lg font-bold text-primary">{fmtIDR(cart.total)}</span>
               </div>
               <Button className="mt-4 w-full rounded-full" onClick={submit} disabled={submitting}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                {submitting ? "Memproses…" : "Buat Pesanan & Chat Penjual"}
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                {submitting ? "Memproses…" : "Buat Pesanan (Bayar via Koperasi)"}
               </Button>
               <p className="mt-3 inline-flex items-start gap-1.5 text-[11px] text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-3 w-3 text-primary" />
-                Pesanan akan tercatat di "Transaksi Saya". Penjual akan menghubungi Anda via WhatsApp.
+                Sistem escrow: dana ditahan koperasi sampai barang diterima. Aman untuk pembeli &amp; penjual.
               </p>
-              <div className="mt-4 rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-3 text-[11px]">
-                <p className="font-semibold text-primary">💳 Bayar pakai Saldo Koperasi</p>
-                <p className="mt-0.5 text-muted-foreground">
-                  Segera hadir — gunakan saldo simpanan sukarela & dapatkan cashback ke SHU.
-                </p>
-              </div>
             </div>
           </aside>
         </div>
@@ -183,3 +172,22 @@ function CheckoutPage() {
     </div>
   );
 }
+
+function RekeningInfo() {
+  const { data } = useQuery({ queryKey: ["mp-rekening"], queryFn: getMarketplaceRekening });
+  if (!data) return <p className="mt-2 text-xs text-muted-foreground">Memuat…</p>;
+  return (
+    <div className="mt-2 space-y-1 text-sm">
+      <p><strong>{data.bank}</strong></p>
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-base">{data.no_rek}</span>
+        <Button size="sm" variant="ghost" className="h-7 rounded-full px-2"
+          onClick={() => { navigator.clipboard.writeText(data.no_rek); toast.success("Disalin"); }}>
+          <Copy className="h-3 w-3" />
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">a.n. {data.atas_nama}</p>
+    </div>
+  );
+}
+

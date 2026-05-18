@@ -23,6 +23,7 @@ import { Route as AuthenticatedTransaksiSayaRouteImport } from './routes/_authen
 import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
 import { Route as AuthenticatedSimpananRouteImport } from './routes/_authenticated/simpanan'
 import { Route as AuthenticatedShuRouteImport } from './routes/_authenticated/shu'
+import { Route as AuthenticatedSaldoRouteImport } from './routes/_authenticated/saldo'
 import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticated/riwayat'
 import { Route as AuthenticatedRapatRouteImport } from './routes/_authenticated/rapat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
@@ -47,6 +48,7 @@ import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
+import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenticated/admin.escrow'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
@@ -122,6 +124,11 @@ const AuthenticatedSimpananRoute = AuthenticatedSimpananRouteImport.update({
 const AuthenticatedShuRoute = AuthenticatedShuRouteImport.update({
   id: '/shu',
   path: '/shu',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSaldoRoute = AuthenticatedSaldoRouteImport.update({
+  id: '/saldo',
+  path: '/saldo',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedRiwayatRoute = AuthenticatedRiwayatRouteImport.update({
@@ -252,6 +259,12 @@ const AuthenticatedAdminLaporanRoute =
     path: '/laporan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminEscrowRoute =
+  AuthenticatedAdminEscrowRouteImport.update({
+    id: '/escrow',
+    path: '/escrow',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -304,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
+  '/saldo': typeof AuthenticatedSaldoRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
@@ -314,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -347,6 +362,7 @@ export interface FileRoutesByTo {
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
   '/riwayat': typeof AuthenticatedRiwayatRoute
+  '/saldo': typeof AuthenticatedSaldoRoute
   '/shu': typeof AuthenticatedShuRoute
   '/simpanan': typeof AuthenticatedSimpananRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
@@ -357,6 +373,7 @@ export interface FileRoutesByTo {
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -393,6 +410,7 @@ export interface FileRoutesById {
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/rapat': typeof AuthenticatedRapatRoute
   '/_authenticated/riwayat': typeof AuthenticatedRiwayatRoute
+  '/_authenticated/saldo': typeof AuthenticatedSaldoRoute
   '/_authenticated/shu': typeof AuthenticatedShuRoute
   '/_authenticated/simpanan': typeof AuthenticatedSimpananRoute
   '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
@@ -403,6 +421,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -439,6 +458,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/rapat'
     | '/riwayat'
+    | '/saldo'
     | '/shu'
     | '/simpanan'
     | '/tabungan-berjangka'
@@ -449,6 +469,7 @@ export interface FileRouteTypes {
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
+    | '/admin/escrow'
     | '/admin/laporan'
     | '/admin/marketplace'
     | '/admin/pengaturan'
@@ -482,6 +503,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/rapat'
     | '/riwayat'
+    | '/saldo'
     | '/shu'
     | '/simpanan'
     | '/tabungan-berjangka'
@@ -492,6 +514,7 @@ export interface FileRouteTypes {
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
+    | '/admin/escrow'
     | '/admin/laporan'
     | '/admin/marketplace'
     | '/admin/pengaturan'
@@ -527,6 +550,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profil'
     | '/_authenticated/rapat'
     | '/_authenticated/riwayat'
+    | '/_authenticated/saldo'
     | '/_authenticated/shu'
     | '/_authenticated/simpanan'
     | '/_authenticated/tabungan-berjangka'
@@ -537,6 +561,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
     | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/escrow'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
@@ -661,6 +686,13 @@ declare module '@tanstack/react-router' {
       path: '/shu'
       fullPath: '/shu'
       preLoaderRoute: typeof AuthenticatedShuRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/saldo': {
+      id: '/_authenticated/saldo'
+      path: '/saldo'
+      fullPath: '/saldo'
+      preLoaderRoute: typeof AuthenticatedSaldoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/riwayat': {
@@ -831,6 +863,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLaporanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/escrow': {
+      id: '/_authenticated/admin/escrow'
+      path: '/escrow'
+      fullPath: '/admin/escrow'
+      preLoaderRoute: typeof AuthenticatedAdminEscrowRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/audit': {
       id: '/_authenticated/admin/audit'
       path: '/audit'
@@ -874,6 +913,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
   AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminEscrowRoute: typeof AuthenticatedAdminEscrowRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
@@ -889,6 +929,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
   AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminEscrowRoute: AuthenticatedAdminEscrowRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
@@ -917,6 +958,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRapatRoute: typeof AuthenticatedRapatRoute
   AuthenticatedRiwayatRoute: typeof AuthenticatedRiwayatRoute
+  AuthenticatedSaldoRoute: typeof AuthenticatedSaldoRoute
   AuthenticatedShuRoute: typeof AuthenticatedShuRoute
   AuthenticatedSimpananRoute: typeof AuthenticatedSimpananRoute
   AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
@@ -937,6 +979,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRapatRoute: AuthenticatedRapatRoute,
   AuthenticatedRiwayatRoute: AuthenticatedRiwayatRoute,
+  AuthenticatedSaldoRoute: AuthenticatedSaldoRoute,
   AuthenticatedShuRoute: AuthenticatedShuRoute,
   AuthenticatedSimpananRoute: AuthenticatedSimpananRoute,
   AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
