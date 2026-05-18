@@ -589,3 +589,80 @@ function PromoBannerUploader({
   );
 }
 
+
+const SELLER_STATUS: Record<string, { label: string; cls: string }> = {
+  pending: { label: "Menunggu Bayar", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
+  confirmed: { label: "Bukti Dikirim", cls: "bg-sky-500/15 text-sky-700 dark:text-sky-300" },
+  paid: { label: "Dana di Escrow — Siap Kirim", cls: "bg-primary/15 text-primary" },
+  shipped: { label: "Dikirim", cls: "bg-violet-500/15 text-violet-700 dark:text-violet-300" },
+  completed: { label: "Selesai", cls: "bg-success/15 text-success" },
+  cancelled: { label: "Dibatalkan", cls: "bg-destructive/15 text-destructive" },
+};
+
+function SellerTrxRow({ trx: t, onChanged }: { trx: any; onChanged: () => void }) {
+  const s = SELLER_STATUS[t.status] ?? { label: t.status, cls: "bg-muted" };
+  const [open, setOpen] = useState(false);
+  const [resi, setResi] = useState("");
+  const [kurir, setKurir] = useState("JNE");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    if (!resi || !kurir) { toast.error("Lengkapi kurir & resi"); return; }
+    setBusy(true);
+    try {
+      await shipOrder(t.id, resi, kurir);
+      toast.success("Pengiriman dicatat. Pembeli sudah diberi tahu.");
+      setOpen(false); setResi("");
+      onChanged();
+    } catch (e: any) {
+      toast.error(e.message ?? "Gagal");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/60 p-3 sm:flex-row sm:items-center">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{t.marketplace_products?.nama_produk}</p>
+        <p className="text-xs text-muted-foreground">
+          {t.qty} × {fmtIDR(Number(t.harga_satuan))} · fee {fmtIDR(Number(t.fee_nominal ?? 0))}
+        </p>
+        {t.resi && <p className="text-[11px] font-mono text-muted-foreground">{t.kurir} {t.resi}</p>}
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-bold tabular-nums text-primary">{fmtIDR(Number(t.seller_amount ?? t.total))}</p>
+        <Badge className={`rounded-full ${s.cls}`}>{s.label}</Badge>
+      </div>
+      {t.status === "paid" && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="rounded-full">
+              <Truck className="mr-1.5 h-3.5 w-3.5" /> Input Resi
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Input Nomor Resi</DialogTitle>
+              <DialogDescription>Pesanan #{t.id.slice(0, 8)} akan ditandai dikirim.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium">Kurir</label>
+                <Input value={kurir} onChange={(e) => setKurir(e.target.value)} placeholder="JNE / J&T / SiCepat / dll" />
+              </div>
+              <div>
+                <label className="text-xs font-medium">Nomor Resi</label>
+                <Input value={resi} onChange={(e) => setResi(e.target.value)} placeholder="Contoh: 1234567890" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Batal</Button>
+              <Button onClick={submit} disabled={busy}>{busy ? "Menyimpan…" : "Kirim"}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
