@@ -60,6 +60,7 @@ import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
+import { Route as ApiPublicHooksAccrueFeesRouteImport } from './routes/api/public/hooks/accrue-fees'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -335,6 +336,12 @@ const ApiPublicHooksAutoReleaseEscrowRoute =
     path: '/api/public/hooks/auto-release-escrow',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAccrueFeesRoute =
+  ApiPublicHooksAccrueFeesRouteImport.update({
+    id: '/api/public/hooks/accrue-fees',
+    path: '/api/public/hooks/accrue-fees',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -385,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -436,6 +444,7 @@ export interface FileRoutesByTo {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -490,6 +499,7 @@ export interface FileRoutesById {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -544,6 +554,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -595,6 +606,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   id:
@@ -648,6 +660,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
@@ -662,6 +675,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
+  ApiPublicHooksAccrueFeesRoute: typeof ApiPublicHooksAccrueFeesRoute
   ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
   ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -1025,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAutoReleaseEscrowRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/accrue-fees': {
+      id: '/api/public/hooks/accrue-fees'
+      path: '/api/public/hooks/accrue-fees'
+      fullPath: '/api/public/hooks/accrue-fees'
+      preLoaderRoute: typeof ApiPublicHooksAccrueFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1149,6 +1170,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
+  ApiPublicHooksAccrueFeesRoute: ApiPublicHooksAccrueFeesRoute,
   ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
   ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
