@@ -145,7 +145,7 @@ function RekonsiliasiPage() {
         }).eq("id", target.id);
         if (error) throw error;
         await supabase.from("transaksi").insert({
-          user_id: target.user_id, jenis: "angsuran_bayar", arah: "kredit",
+          user_id: target.user_id, jenis: "angsuran_masuk", arah: "kredit",
           nominal: mut.nominal, ref_table: "angsuran", ref_id: target.id,
           keterangan: "Pembayaran angsuran (rekonsiliasi bank)",
         });
