@@ -28,6 +28,7 @@ import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedRapatRouteImport } from './routes/_authenticated/rapat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
+import { Route as AuthenticatedPenjaminRouteImport } from './routes/_authenticated/penjamin'
 import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_authenticated/marketplace-saya'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticated/favorit'
@@ -158,6 +159,11 @@ const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
 const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
   id: '/pinjaman',
   path: '/pinjaman',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPenjaminRoute = AuthenticatedPenjaminRouteImport.update({
+  id: '/penjamin',
+  path: '/penjamin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedMarketplaceSayaRoute =
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -486,6 +494,7 @@ export interface FileRoutesById {
   '/_authenticated/favorit': typeof AuthenticatedFavoritRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/_authenticated/penjamin': typeof AuthenticatedPenjaminRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/rapat': typeof AuthenticatedRapatRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
+    | '/penjamin'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
+    | '/penjamin'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -653,6 +664,7 @@ export interface FileRouteTypes {
     | '/_authenticated/favorit'
     | '/_authenticated/kalkulator'
     | '/_authenticated/marketplace-saya'
+    | '/_authenticated/penjamin'
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
     | '/_authenticated/rapat'
@@ -839,6 +851,13 @@ declare module '@tanstack/react-router' {
       path: '/pinjaman'
       fullPath: '/pinjaman'
       preLoaderRoute: typeof AuthenticatedPinjamanRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/penjamin': {
+      id: '/_authenticated/penjamin'
+      path: '/penjamin'
+      fullPath: '/penjamin'
+      preLoaderRoute: typeof AuthenticatedPenjaminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/marketplace-saya': {
@@ -1150,6 +1169,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFavoritRoute: typeof AuthenticatedFavoritRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedMarketplaceSayaRoute: typeof AuthenticatedMarketplaceSayaRoute
+  AuthenticatedPenjaminRoute: typeof AuthenticatedPenjaminRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRapatRoute: typeof AuthenticatedRapatRoute
@@ -1171,6 +1191,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFavoritRoute: AuthenticatedFavoritRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedMarketplaceSayaRoute: AuthenticatedMarketplaceSayaRoute,
+  AuthenticatedPenjaminRoute: AuthenticatedPenjaminRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRapatRoute: AuthenticatedRapatRoute,

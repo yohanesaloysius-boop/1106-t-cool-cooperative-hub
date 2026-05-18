@@ -74,7 +74,7 @@ function PenjaminPage() {
 
   const act = useMutation({
     mutationFn: async ({ id, action, reason }: { id: string; action: "approve" | "reject"; reason?: string }) => {
-      const { error } = await supabase.rpc("act_on_guarantor_request", { _id: id, _action: action, _reason: reason ?? null });
+      const { error } = await supabase.rpc("act_on_guarantor_request", { _id: id, _action: action, _reason: reason ?? undefined });
       if (error) throw error;
     },
     onSuccess: () => {
