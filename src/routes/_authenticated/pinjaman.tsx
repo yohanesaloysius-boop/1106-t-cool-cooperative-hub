@@ -5,11 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, HandCoins, Loader2, Calculator, Eye, Download, ShieldCheck } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye, Download, ShieldCheck, Lock, CheckCircle2 } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { LoanDetailDialog } from "@/components/loan-detail-dialog";
 import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
 import { LoanApplicationWizard } from "@/components/loan-application-wizard";
+import { Progress } from "@/components/ui/progress";
+import { useLoanEligibility } from "@/hooks/use-loan-eligibility";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
