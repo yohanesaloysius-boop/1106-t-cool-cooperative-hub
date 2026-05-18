@@ -211,36 +211,44 @@ function AngsuranPage() {
                     <th className="p-3 text-left">Cicilan</th>
                     <th className="p-3 text-left">Jatuh Tempo</th>
                     <th className="p-3 text-right">Nominal</th>
+                    <th className="p-3 text-right">Denda</th>
+                    <th className="p-3 text-right">Total Bayar</th>
                     <th className="p-3 text-left">Status</th>
                     <th className="p-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {enriched.map((r) => (
-                    <tr key={r.id} className="border-t border-border">
-                      <td className="p-3 font-medium">#{r.cicilan_ke}</td>
-                      <td className="p-3">{new Date(r.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                      <td className="p-3 text-right font-medium tabular-nums">{fmt.format(Number(r.nominal))}</td>
-                      <td className="p-3"><StatusBadge status={r.displayStatus} /></td>
-                      <td className="p-3">
-                        <div className="flex justify-end gap-1">
-                          {r.bukti_url && (
-                            <Button size="sm" variant="ghost" onClick={() => viewBukti(r.bukti_url!)}>
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                          {r.status === "paid" && (
-                            <Button size="sm" variant="ghost" onClick={() => downloadReceipt(r)}>
-                              <FileDown className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                          {(r.status === "unpaid" || r.displayStatus === "overdue") && (
-                            <Button size="sm" variant="outline" onClick={() => { setPayRow(r); setBukti(null); }}>Bayar</Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {enriched.map((r) => {
+                    const denda = Number(r.denda ?? 0);
+                    const total = Number(r.nominal) + denda;
+                    return (
+                      <tr key={r.id} className="border-t border-border">
+                        <td className="p-3 font-medium">#{r.cicilan_ke}</td>
+                        <td className="p-3">{new Date(r.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                        <td className="p-3 text-right tabular-nums">{fmt.format(Number(r.nominal))}</td>
+                        <td className={`p-3 text-right tabular-nums ${denda > 0 ? "text-destructive font-medium" : "text-muted-foreground"}`}>{denda > 0 ? fmt.format(denda) : "—"}</td>
+                        <td className="p-3 text-right font-semibold tabular-nums">{fmt.format(total)}</td>
+                        <td className="p-3"><StatusBadge status={r.displayStatus} /></td>
+                        <td className="p-3">
+                          <div className="flex justify-end gap-1">
+                            {r.bukti_url && (
+                              <Button size="sm" variant="ghost" onClick={() => viewBukti(r.bukti_url!)}>
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {r.status === "paid" && (
+                              <Button size="sm" variant="ghost" onClick={() => downloadReceipt(r)}>
+                                <FileDown className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {(r.status === "unpaid" || r.displayStatus === "overdue") && (
+                              <Button size="sm" variant="outline" onClick={() => { setPayRow(r); setBukti(null); }}>Bayar</Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
