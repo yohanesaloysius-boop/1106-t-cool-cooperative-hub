@@ -47,8 +47,8 @@ export function MemberCard(p: MemberCardProps) {
     try {
       setBusy(true);
       const doc = await buildMemberCardPdf({ ...p, koperasi });
-      const blobUrl = doc.output("bloburl");
-      const w = window.open(blobUrl as string, "_blank");
+      const blobUrl = doc.output("bloburl") as unknown as string;
+      const w = window.open(blobUrl, "_blank");
       if (w) setTimeout(() => w.print(), 500);
     } catch (e: any) {
       toast.error("Gagal mencetak kartu", { description: e.message });
