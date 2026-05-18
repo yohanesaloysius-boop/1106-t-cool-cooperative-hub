@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { fmtIDR, listMyPurchases } from "@/lib/marketplace-api";
 import {
   confirmReceived,
+  fileComplaint,
   getMarketplaceRekening,
   uploadBuktiFile,
   uploadBuktiTransfer,
@@ -14,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  ShoppingBag, Upload, CheckCircle2, Copy, Truck, Hourglass, PackageCheck, Banknote,
+  ShoppingBag, Upload, CheckCircle2, Copy, Truck, Hourglass, PackageCheck, Banknote, AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 
