@@ -50,6 +50,7 @@ import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
+import { Route as AuthenticatedAdminLaporanRatRouteImport } from './routes/_authenticated/admin.laporan-rat'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
 import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
 import { Route as AuthenticatedAdminFeeRouteImport } from './routes/_authenticated/admin.fee'
@@ -60,6 +61,7 @@ import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
+import { Route as ApiPublicHooksAccrueFeesRouteImport } from './routes/api/public/hooks/accrue-fees'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -277,6 +279,12 @@ const AuthenticatedAdminMarketplaceRoute =
     path: '/marketplace',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminLaporanRatRoute =
+  AuthenticatedAdminLaporanRatRouteImport.update({
+    id: '/laporan-rat',
+    path: '/laporan-rat',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminLaporanRoute =
   AuthenticatedAdminLaporanRouteImport.update({
     id: '/laporan',
@@ -335,6 +343,12 @@ const ApiPublicHooksAutoReleaseEscrowRoute =
     path: '/api/public/hooks/auto-release-escrow',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAccrueFeesRoute =
+  ApiPublicHooksAccrueFeesRouteImport.update({
+    id: '/api/public/hooks/accrue-fees',
+    path: '/api/public/hooks/accrue-fees',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -373,6 +387,7 @@ export interface FileRoutesByFullPath {
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -385,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -424,6 +440,7 @@ export interface FileRoutesByTo {
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -436,6 +453,7 @@ export interface FileRoutesByTo {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -478,6 +496,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
+  '/_authenticated/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -490,6 +509,7 @@ export interface FileRoutesById {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -532,6 +552,7 @@ export interface FileRouteTypes {
     | '/admin/fee'
     | '/admin/komplain'
     | '/admin/laporan'
+    | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
@@ -544,6 +565,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -583,6 +605,7 @@ export interface FileRouteTypes {
     | '/admin/fee'
     | '/admin/komplain'
     | '/admin/laporan'
+    | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
@@ -595,6 +618,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   id:
@@ -636,6 +660,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/fee'
     | '/_authenticated/admin/komplain'
     | '/_authenticated/admin/laporan'
+    | '/_authenticated/admin/laporan-rat'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/pinjaman'
@@ -648,6 +673,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
+    | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
@@ -662,6 +688,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
+  ApiPublicHooksAccrueFeesRoute: typeof ApiPublicHooksAccrueFeesRoute
   ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
   ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -955,6 +982,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMarketplaceRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/laporan-rat': {
+      id: '/_authenticated/admin/laporan-rat'
+      path: '/laporan-rat'
+      fullPath: '/admin/laporan-rat'
+      preLoaderRoute: typeof AuthenticatedAdminLaporanRatRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/laporan': {
       id: '/_authenticated/admin/laporan'
       path: '/laporan'
@@ -1025,6 +1059,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAutoReleaseEscrowRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/accrue-fees': {
+      id: '/api/public/hooks/accrue-fees'
+      path: '/api/public/hooks/accrue-fees'
+      fullPath: '/api/public/hooks/accrue-fees'
+      preLoaderRoute: typeof ApiPublicHooksAccrueFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1037,6 +1078,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminFeeRoute: typeof AuthenticatedAdminFeeRoute
   AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
+  AuthenticatedAdminLaporanRatRoute: typeof AuthenticatedAdminLaporanRatRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
@@ -1058,6 +1100,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminFeeRoute: AuthenticatedAdminFeeRoute,
   AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
+  AuthenticatedAdminLaporanRatRoute: AuthenticatedAdminLaporanRatRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
@@ -1149,6 +1192,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
+  ApiPublicHooksAccrueFeesRoute: ApiPublicHooksAccrueFeesRoute,
   ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
   ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }

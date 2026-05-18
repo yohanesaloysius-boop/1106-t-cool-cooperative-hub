@@ -25,6 +25,7 @@ type Row = {
   id: string; pinjaman_id: string; cicilan_ke: number; nominal: number;
   jatuh_tempo: string; status: "unpaid" | "pending" | "paid" | "overdue";
   bukti_url: string | null; paid_at: string | null;
+  denda: number | null;
 };
 
 function AngsuranPage() {
@@ -37,7 +38,7 @@ function AngsuranPage() {
     queryKey: ["angsuran", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("angsuran").select("id,pinjaman_id,cicilan_ke,nominal,jatuh_tempo,status,bukti_url,paid_at").eq("user_id", user!.id).order("jatuh_tempo");
+      const { data, error } = await supabase.from("angsuran").select("id,pinjaman_id,cicilan_ke,nominal,jatuh_tempo,status,bukti_url,paid_at,denda").eq("user_id", user!.id).order("jatuh_tempo");
       if (error) throw error;
       return (data ?? []) as Row[];
     },
@@ -61,6 +62,7 @@ function AngsuranPage() {
 
   const sisaTotal = enriched.filter((r) => r.status !== "paid").reduce((s, r) => s + Number(r.nominal), 0);
   const overdueRows = enriched.filter((r) => r.displayStatus === "overdue");
+  const totalDenda = enriched.filter((r) => r.status !== "paid").reduce((s, r) => s + Number(r.denda ?? 0), 0);
   const next = enriched.find((r) => r.status === "unpaid");
 
   // Group per pinjaman for sisa hutang otomatis
@@ -138,7 +140,9 @@ function AngsuranPage() {
           <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
           <div className="flex-1 text-sm">
             <p className="font-semibold text-destructive">Anda memiliki {overdueRows.length} angsuran terlambat</p>
-            <p className="text-foreground/80">Total tunggakan: <span className="font-semibold">{fmt.format(overdueRows.reduce((s, r) => s + Number(r.nominal), 0))}</span>. Segera lakukan pembayaran untuk menghindari sanksi.</p>
+            <p className="text-foreground/80">Total tunggakan: <span className="font-semibold">{fmt.format(overdueRows.reduce((s, r) => s + Number(r.nominal), 0))}</span>
+              {totalDenda > 0 && (<> · Denda berjalan: <span className="font-semibold text-destructive">{fmt.format(totalDenda)}</span></>)}
+              . Segera lakukan pembayaran untuk menghentikan akumulasi denda.</p>
           </div>
         </div>
       )}
@@ -207,36 +211,44 @@ function AngsuranPage() {
                     <th className="p-3 text-left">Cicilan</th>
                     <th className="p-3 text-left">Jatuh Tempo</th>
                     <th className="p-3 text-right">Nominal</th>
+                    <th className="p-3 text-right">Denda</th>
+                    <th className="p-3 text-right">Total Bayar</th>
                     <th className="p-3 text-left">Status</th>
                     <th className="p-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {enriched.map((r) => (
-                    <tr key={r.id} className="border-t border-border">
-                      <td className="p-3 font-medium">#{r.cicilan_ke}</td>
-                      <td className="p-3">{new Date(r.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                      <td className="p-3 text-right font-medium tabular-nums">{fmt.format(Number(r.nominal))}</td>
-                      <td className="p-3"><StatusBadge status={r.displayStatus} /></td>
-                      <td className="p-3">
-                        <div className="flex justify-end gap-1">
-                          {r.bukti_url && (
-                            <Button size="sm" variant="ghost" onClick={() => viewBukti(r.bukti_url!)}>
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                          {r.status === "paid" && (
-                            <Button size="sm" variant="ghost" onClick={() => downloadReceipt(r)}>
-                              <FileDown className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                          {(r.status === "unpaid" || r.displayStatus === "overdue") && (
-                            <Button size="sm" variant="outline" onClick={() => { setPayRow(r); setBukti(null); }}>Bayar</Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {enriched.map((r) => {
+                    const denda = Number(r.denda ?? 0);
+                    const total = Number(r.nominal) + denda;
+                    return (
+                      <tr key={r.id} className="border-t border-border">
+                        <td className="p-3 font-medium">#{r.cicilan_ke}</td>
+                        <td className="p-3">{new Date(r.jatuh_tempo).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                        <td className="p-3 text-right tabular-nums">{fmt.format(Number(r.nominal))}</td>
+                        <td className={`p-3 text-right tabular-nums ${denda > 0 ? "text-destructive font-medium" : "text-muted-foreground"}`}>{denda > 0 ? fmt.format(denda) : "—"}</td>
+                        <td className="p-3 text-right font-semibold tabular-nums">{fmt.format(total)}</td>
+                        <td className="p-3"><StatusBadge status={r.displayStatus} /></td>
+                        <td className="p-3">
+                          <div className="flex justify-end gap-1">
+                            {r.bukti_url && (
+                              <Button size="sm" variant="ghost" onClick={() => viewBukti(r.bukti_url!)}>
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {r.status === "paid" && (
+                              <Button size="sm" variant="ghost" onClick={() => downloadReceipt(r)}>
+                                <FileDown className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {(r.status === "unpaid" || r.displayStatus === "overdue") && (
+                              <Button size="sm" variant="outline" onClick={() => { setPayRow(r); setBukti(null); }}>Bayar</Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -249,9 +261,13 @@ function AngsuranPage() {
           <DialogHeader><DialogTitle>Konfirmasi Pembayaran</DialogTitle></DialogHeader>
           {payRow && user && (
             <div className="space-y-4">
-              <div className="rounded-xl bg-muted p-4">
+              <div className="rounded-xl bg-muted p-4 space-y-1">
                 <p className="text-xs text-muted-foreground">Cicilan #{payRow.cicilan_ke} · Jatuh tempo {new Date(payRow.jatuh_tempo).toLocaleDateString("id-ID")}</p>
-                <p className="text-xl font-bold">{fmt.format(Number(payRow.nominal))}</p>
+                <div className="flex justify-between text-sm"><span>Pokok</span><span className="tabular-nums">{fmt.format(Number(payRow.nominal))}</span></div>
+                {Number(payRow.denda ?? 0) > 0 && (
+                  <div className="flex justify-between text-sm text-destructive"><span>Denda keterlambatan</span><span className="tabular-nums">{fmt.format(Number(payRow.denda))}</span></div>
+                )}
+                <div className="mt-2 flex justify-between border-t border-border pt-2"><span className="font-semibold">Total Bayar</span><span className="text-xl font-bold tabular-nums">{fmt.format(Number(payRow.nominal) + Number(payRow.denda ?? 0))}</span></div>
               </div>
               <FileUpload
                 bucket="ktp"

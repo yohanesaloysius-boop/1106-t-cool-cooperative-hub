@@ -21,6 +21,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           deleted_at: string | null
+          denda: number
+          denda_updated_at: string | null
           id: string
           jatuh_tempo: string
           nominal: number
@@ -37,6 +39,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
+          denda?: number
+          denda_updated_at?: string | null
           id?: string
           jatuh_tempo: string
           nominal: number
@@ -53,6 +57,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
+          denda?: number
+          denda_updated_at?: string | null
           id?: string
           jatuh_tempo?: string
           nominal?: number
