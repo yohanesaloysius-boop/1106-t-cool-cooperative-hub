@@ -134,7 +134,18 @@ function CheckoutPage() {
             })}
           </div>
 
-          <aside className="lg:col-span-4">
+          <aside className="lg:col-span-4 space-y-4">
+            <div className="rounded-3xl border border-primary/30 bg-primary/5 p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <Landmark className="h-4 w-4" />
+                <p className="text-sm font-bold">Rekening Koperasi</p>
+              </div>
+              <RekeningInfo />
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                Transfer ke rekening koperasi → upload bukti di halaman <strong>Transaksi Saya</strong>. Dana ditahan koperasi (escrow) sampai Anda konfirmasi barang diterima.
+              </p>
+            </div>
+
             <div className="sticky top-24 rounded-3xl border border-border bg-card p-5" style={{ boxShadow: "var(--shadow-card)" }}>
               <h2 className="text-base font-semibold">Total Pembayaran</h2>
               <div className="mt-3 flex justify-between text-sm">
@@ -142,24 +153,19 @@ function CheckoutPage() {
                 <span className="font-semibold">{cart.count}</span>
               </div>
               <div className="mt-3 border-t border-border pt-3 flex justify-between">
-                <span className="font-semibold">Total</span>
+                <span className="font-semibold">Total Transfer</span>
                 <span className="text-lg font-bold text-primary">{fmtIDR(cart.total)}</span>
               </div>
               <Button className="mt-4 w-full rounded-full" onClick={submit} disabled={submitting}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                {submitting ? "Memproses…" : "Buat Pesanan & Chat Penjual"}
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                {submitting ? "Memproses…" : "Buat Pesanan (Bayar via Koperasi)"}
               </Button>
               <p className="mt-3 inline-flex items-start gap-1.5 text-[11px] text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-3 w-3 text-primary" />
-                Pesanan akan tercatat di "Transaksi Saya". Penjual akan menghubungi Anda via WhatsApp.
+                Sistem escrow: dana ditahan koperasi sampai barang diterima. Aman untuk pembeli &amp; penjual.
               </p>
-              <div className="mt-4 rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-3 text-[11px]">
-                <p className="font-semibold text-primary">💳 Bayar pakai Saldo Koperasi</p>
-                <p className="mt-0.5 text-muted-foreground">
-                  Segera hadir — gunakan saldo simpanan sukarela & dapatkan cashback ke SHU.
-                </p>
-              </div>
             </div>
+          </aside>
           </aside>
         </div>
       </main>
