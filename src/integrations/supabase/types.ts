@@ -1160,6 +1160,7 @@ export type Database = {
           barcode: string | null
           card_expired_at: string | null
           card_status: Database["public"]["Enums"]["card_status"]
+          country_code: string
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -1169,12 +1170,14 @@ export type Database = {
           jenis_kelamin: string | null
           joined_at: string
           ktp_url: string | null
+          last_login: string | null
           member_card_number: string | null
           nama_lengkap: string
           nik: string | null
           no_hp: string | null
           nomor_anggota: string | null
           pekerjaan: string | null
+          phone_verified: boolean
           qr_code: string | null
           status: Database["public"]["Enums"]["member_status"]
           tanggal_lahir: string | null
@@ -1187,6 +1190,7 @@ export type Database = {
           barcode?: string | null
           card_expired_at?: string | null
           card_status?: Database["public"]["Enums"]["card_status"]
+          country_code?: string
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1196,12 +1200,14 @@ export type Database = {
           jenis_kelamin?: string | null
           joined_at?: string
           ktp_url?: string | null
+          last_login?: string | null
           member_card_number?: string | null
           nama_lengkap: string
           nik?: string | null
           no_hp?: string | null
           nomor_anggota?: string | null
           pekerjaan?: string | null
+          phone_verified?: boolean
           qr_code?: string | null
           status?: Database["public"]["Enums"]["member_status"]
           tanggal_lahir?: string | null
@@ -1214,6 +1220,7 @@ export type Database = {
           barcode?: string | null
           card_expired_at?: string | null
           card_status?: Database["public"]["Enums"]["card_status"]
+          country_code?: string
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1223,12 +1230,14 @@ export type Database = {
           jenis_kelamin?: string | null
           joined_at?: string
           ktp_url?: string | null
+          last_login?: string | null
           member_card_number?: string | null
           nama_lengkap?: string
           nik?: string | null
           no_hp?: string | null
           nomor_anggota?: string | null
           pekerjaan?: string | null
+          phone_verified?: boolean
           qr_code?: string | null
           status?: Database["public"]["Enums"]["member_status"]
           tanggal_lahir?: string | null
@@ -1706,6 +1715,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_email_by_phone: { Args: { _phone: string }; Returns: string }
       get_featured_products: {
         Args: { _limit?: number }
         Returns: {
@@ -1824,6 +1834,7 @@ export type Database = {
         Returns: undefined
       }
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
+      normalize_phone_id: { Args: { _raw: string }; Returns: string }
     }
     Enums: {
       angsuran_status: "unpaid" | "pending" | "paid" | "overdue"
