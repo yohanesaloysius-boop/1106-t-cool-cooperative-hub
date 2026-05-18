@@ -27,6 +27,7 @@ type BungaJenis = "flat" | "efektif" | "menurun";
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  plafonMax?: number;
   initial?: { nominal?: number; tenor?: number; bunga?: number; jenis?: BungaJenis };
 }
 
@@ -46,7 +47,7 @@ const steps = [
   { id: 3, title: "Review & Submit", icon: CheckCircle2 },
 ];
 
-export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
+export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }: Props) {
   const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [step, setStep] = useState(1);
