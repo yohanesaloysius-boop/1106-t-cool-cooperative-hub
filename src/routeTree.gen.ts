@@ -51,6 +51,7 @@ import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
 import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_authenticated/admin.rekonsiliasi'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
+import { Route as AuthenticatedAdminPenjaminRouteImport } from './routes/_authenticated/admin.penjamin'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLaporanRatRouteImport } from './routes/_authenticated/admin.laporan-rat'
@@ -286,6 +287,12 @@ const AuthenticatedAdminPinjamanRoute =
     path: '/pinjaman',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPenjaminRoute =
+  AuthenticatedAdminPenjaminRouteImport.update({
+    id: '/penjamin',
+    path: '/penjamin',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPengaturanRoute =
   AuthenticatedAdminPengaturanRouteImport.update({
     id: '/pengaturan',
@@ -411,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -467,6 +475,7 @@ export interface FileRoutesByTo {
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -526,6 +535,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/_authenticated/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -585,6 +595,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
+    | '/admin/penjamin'
     | '/admin/pinjaman'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
+    | '/admin/penjamin'
     | '/admin/pinjaman'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
@@ -699,6 +711,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/laporan-rat'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
+    | '/_authenticated/admin/penjamin'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/rekonsiliasi'
     | '/_authenticated/admin/seller-verify'
@@ -1026,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPinjamanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/penjamin': {
+      id: '/_authenticated/admin/penjamin'
+      path: '/penjamin'
+      fullPath: '/admin/penjamin'
+      preLoaderRoute: typeof AuthenticatedAdminPenjaminRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/pengaturan': {
       id: '/_authenticated/admin/pengaturan'
       path: '/pengaturan'
@@ -1139,6 +1159,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminLaporanRatRoute: typeof AuthenticatedAdminLaporanRatRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
+  AuthenticatedAdminPenjaminRoute: typeof AuthenticatedAdminPenjaminRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminRekonsiliasiRoute: typeof AuthenticatedAdminRekonsiliasiRoute
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
@@ -1162,6 +1183,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminLaporanRatRoute: AuthenticatedAdminLaporanRatRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
+  AuthenticatedAdminPenjaminRoute: AuthenticatedAdminPenjaminRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminRekonsiliasiRoute: AuthenticatedAdminRekonsiliasiRoute,
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
