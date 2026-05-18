@@ -10,8 +10,9 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Phone, Mail } from "lucide-react";
 import { FileUpload } from "@/components/file-upload";
+import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -21,16 +22,27 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const loginSchema = z.object({
-  email: z.string().trim().email("Email tidak valid").max(255),
-  password: z.string().min(6, "Password minimal 6 karakter").max(72),
-});
+const loginSchema = z
+  .object({
+    identifier: z.string().trim().min(3, "Masukkan nomor HP atau email").max(255),
+    password: z.string().min(6, "Password minimal 6 karakter").max(72),
+  })
+  .superRefine((val, ctx) => {
+    const v = val.identifier;
+    const looksPhone = isPhoneLike(v);
+    if (looksPhone && !isValidIndonesianPhone(v)) {
+      ctx.addIssue({ code: "custom", path: ["identifier"], message: "Nomor HP tidak valid (contoh: 0812xxxx)" });
+    }
+    if (!looksPhone && !/^\S+@\S+\.\S+$/.test(v)) {
+      ctx.addIssue({ code: "custom", path: ["identifier"], message: "Format email/nomor HP tidak valid" });
+    }
+  });
 
 const registerSchema = z.object({
   nama_lengkap: z.string().trim().min(2, "Nama minimal 2 karakter").max(100),
   nik: z.string().trim().regex(/^\d{16}$/, "NIK harus 16 digit"),
   email: z.string().trim().email("Email tidak valid").max(255),
-  no_hp: z.string().trim().regex(/^[0-9+\-\s]{8,20}$/, "Nomor HP tidak valid"),
+  no_hp: z.string().trim().refine(isValidIndonesianPhone, "Nomor HP Indonesia tidak valid (contoh: 0812xxxxxxxx)"),
   alamat: z.string().trim().min(5, "Alamat minimal 5 karakter").max(500),
   password: z.string().min(8, "Password minimal 8 karakter").max(72),
 });
@@ -85,24 +97,89 @@ function AuthPage() {
 
 function LoginForm() {
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const attemptsRef = useRef<{ count: number; until: number }>({ count: 0, until: 0 });
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const looksPhone = isPhoneLike(form.identifier);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Soft client-side brute-force guard (server-side rate limit still applies)
+    const now = Date.now();
+    if (attemptsRef.current.until > now) {
+      const sec = Math.ceil((attemptsRef.current.until - now) / 1000);
+      return toast.error(`Terlalu banyak percobaan. Coba lagi dalam ${sec}s.`);
+    }
+
     const parsed = loginSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.errors[0].message);
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+
+    let email = parsed.data.identifier;
+    if (isPhoneLike(email)) {
+      const phone = normalizePhoneId(email);
+      if (!phone) {
+        setBusy(false);
+        return toast.error("Nomor HP tidak valid");
+      }
+      const { data: lookup, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: phone });
+      if (lookupErr) {
+        setBusy(false);
+        return toast.error("Gagal memverifikasi nomor HP");
+      }
+      if (!lookup) {
+        setBusy(false);
+        attemptsRef.current.count += 1;
+        if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
+        return toast.error("Nomor HP belum terdaftar");
+      }
+      email = lookup as string;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      attemptsRef.current.count += 1;
+      if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
+      return toast.error(error.message === "Invalid login credentials" ? "Email/Nomor HP atau password salah" : error.message);
+    }
+    attemptsRef.current = { count: 0, until: 0 };
+    if (data.user) {
+      await supabase.from("profiles").update({ last_login: new Date().toISOString() }).eq("id", data.user.id);
+    }
     toast.success("Berhasil masuk");
   };
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="li-email">Email</Label>
-        <Input id="li-email" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+        <Label htmlFor="li-id">Nomor HP atau Email</Label>
+        <div className="relative">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            {looksPhone ? <Phone className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
+          </span>
+          <Input
+            id="li-id"
+            ref={inputRef}
+            inputMode={looksPhone ? "tel" : "email"}
+            autoComplete="username"
+            placeholder="Masukkan Nomor HP"
+            className="pl-9"
+            value={form.identifier}
+            onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+            required
+          />
+        </div>
+        {looksPhone && form.identifier && (
+          <p className="text-[11px] text-muted-foreground">
+            Akan dikirim sebagai: <span className="font-mono">{normalizePhoneId(form.identifier) ?? "-"}</span>
+          </p>
+        )}
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -131,8 +208,17 @@ function RegisterForm() {
     e.preventDefault();
     const parsed = registerSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.errors[0].message);
+    const normalizedPhone = normalizePhoneId(parsed.data.no_hp)!;
     setBusy(true);
     try {
+      // Cek nomor HP unik sebelum signup
+      const { data: existing, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: normalizedPhone });
+      if (lookupErr) throw lookupErr;
+      if (existing) {
+        setBusy(false);
+        return toast.error("Nomor HP sudah terdaftar. Silakan login.");
+      }
+
       const redirectUrl = `${window.location.origin}/dashboard`;
       const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
@@ -141,7 +227,7 @@ function RegisterForm() {
           emailRedirectTo: redirectUrl,
           data: {
             nama_lengkap: parsed.data.nama_lengkap,
-            no_hp: parsed.data.no_hp,
+            no_hp: normalizedPhone,
             nik: parsed.data.nik,
             alamat: parsed.data.alamat,
           },
@@ -151,7 +237,6 @@ function RegisterForm() {
       const uid = data.user?.id;
       if (uid) {
         setTempUserId(uid);
-        // Patch optional uploaded URLs into profile
         const updates: { ktp_url?: string; foto_url?: string } = {};
         if (ktpRef.current) updates.ktp_url = supabase.storage.from("ktp").getPublicUrl(ktpRef.current.path).data.publicUrl;
         if (avatarRef.current?.publicUrl) updates.foto_url = avatarRef.current.publicUrl;
@@ -161,7 +246,8 @@ function RegisterForm() {
       }
       toast.success("Pendaftaran berhasil. Menunggu verifikasi pengurus.");
     } catch (err) {
-      toast.error((err as Error).message);
+      const msg = (err as Error).message || "Gagal mendaftar";
+      toast.error(msg.includes("profiles_no_hp_unique") ? "Nomor HP sudah terdaftar" : msg);
     } finally {
       setBusy(false);
     }
@@ -180,7 +266,17 @@ function RegisterForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="r-hp">Nomor HP</Label>
-          <Input id="r-hp" inputMode="tel" value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} required />
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Phone className="h-4 w-4" />
+            </span>
+            <Input id="r-hp" inputMode="tel" placeholder="0812xxxxxxxx" className="pl-9" value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} required />
+          </div>
+          {form.no_hp && (
+            <p className="text-[11px] text-muted-foreground">
+              Tersimpan sebagai: <span className="font-mono">{normalizePhoneId(form.no_hp) ?? "-"}</span>
+            </p>
+          )}
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="r-email">Email</Label>
