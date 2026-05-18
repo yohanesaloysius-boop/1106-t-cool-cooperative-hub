@@ -97,24 +97,89 @@ function AuthPage() {
 
 function LoginForm() {
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const attemptsRef = useRef<{ count: number; until: number }>({ count: 0, until: 0 });
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const looksPhone = isPhoneLike(form.identifier);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Soft client-side brute-force guard (server-side rate limit still applies)
+    const now = Date.now();
+    if (attemptsRef.current.until > now) {
+      const sec = Math.ceil((attemptsRef.current.until - now) / 1000);
+      return toast.error(`Terlalu banyak percobaan. Coba lagi dalam ${sec}s.`);
+    }
+
     const parsed = loginSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.errors[0].message);
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+
+    let email = parsed.data.identifier;
+    if (isPhoneLike(email)) {
+      const phone = normalizePhoneId(email);
+      if (!phone) {
+        setBusy(false);
+        return toast.error("Nomor HP tidak valid");
+      }
+      const { data: lookup, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: phone });
+      if (lookupErr) {
+        setBusy(false);
+        return toast.error("Gagal memverifikasi nomor HP");
+      }
+      if (!lookup) {
+        setBusy(false);
+        attemptsRef.current.count += 1;
+        if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
+        return toast.error("Nomor HP belum terdaftar");
+      }
+      email = lookup as string;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      attemptsRef.current.count += 1;
+      if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
+      return toast.error(error.message === "Invalid login credentials" ? "Email/Nomor HP atau password salah" : error.message);
+    }
+    attemptsRef.current = { count: 0, until: 0 };
+    if (data.user) {
+      await supabase.from("profiles").update({ last_login: new Date().toISOString() }).eq("id", data.user.id);
+    }
     toast.success("Berhasil masuk");
   };
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="li-email">Email</Label>
-        <Input id="li-email" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+        <Label htmlFor="li-id">Nomor HP atau Email</Label>
+        <div className="relative">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            {looksPhone ? <Phone className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
+          </span>
+          <Input
+            id="li-id"
+            ref={inputRef}
+            inputMode={looksPhone ? "tel" : "email"}
+            autoComplete="username"
+            placeholder="Masukkan Nomor HP"
+            className="pl-9"
+            value={form.identifier}
+            onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+            required
+          />
+        </div>
+        {looksPhone && form.identifier && (
+          <p className="text-[11px] text-muted-foreground">
+            Akan dikirim sebagai: <span className="font-mono">{normalizePhoneId(form.identifier) ?? "-"}</span>
+          </p>
+        )}
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
