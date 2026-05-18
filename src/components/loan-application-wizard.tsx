@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,7 @@ import { CameraCapture } from "@/components/camera-capture";
 import { useServerFn } from "@tanstack/react-start";
 import { verifyWithPrivy } from "@/lib/privy.functions";
 import { Badge } from "@/components/ui/badge";
+import { GuarantorPicker, type GuarantorSelection } from "@/components/guarantor-picker";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -43,8 +44,9 @@ const schema = z.object({
 
 const steps = [
   { id: 1, title: "Data Pinjaman", icon: FileText },
-  { id: 2, title: "Verifikasi Identitas", icon: ScanFace },
-  { id: 3, title: "Review & Submit", icon: CheckCircle2 },
+  { id: 2, title: "Penjamin", icon: ShieldCheck },
+  { id: 3, title: "Verifikasi Identitas", icon: ScanFace },
+  { id: 4, title: "Review & Submit", icon: CheckCircle2 },
 ];
 
 export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }: Props) {
@@ -73,6 +75,37 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   >(null);
   const [privyBusy, setPrivyBusy] = useState(false);
   const [privyErr, setPrivyErr] = useState<string | null>(null);
+  const [guarantors, setGuarantors] = useState<GuarantorSelection[]>([]);
+
+  // Load guarantor settings
+  const settingsQ = useQuery({
+    queryKey: ["guarantor-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("settings")
+        .select("key,value")
+        .in("key", ["guarantor_threshold_1", "guarantor_required_1", "guarantor_threshold_2", "guarantor_required_2"]);
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: any) => { map[r.key] = Number(r.value); });
+      return {
+        t1: map.guarantor_threshold_1 ?? 5_000_000,
+        r1: map.guarantor_required_1 ?? 2,
+        t2: map.guarantor_threshold_2 ?? 10_000_000,
+        r2: map.guarantor_required_2 ?? 4,
+      };
+    },
+  });
+
+  const nominalNum = Number(form.nominal) || 0;
+  const guarantorsRequired = (() => {
+    const s = settingsQ.data;
+    if (!s) return 0;
+    if (nominalNum >= s.t2) return s.r2;
+    if (nominalNum >= s.t1) return s.r1;
+    return 0;
+  })();
+  const perGuarantorAmount = guarantorsRequired > 0 ? Math.ceil(nominalNum / guarantorsRequired) : 0;
 
   const sim = useMemo(() => {
     const n = Number(form.nominal) || 0;
@@ -111,6 +144,9 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
       const parsed = schema.parse(form);
       if (!form.agree) throw new Error("Anda harus menyetujui syarat & ketentuan");
       if (!ktp || !selfie) throw new Error("Foto KTP dan selfie wajib diisi");
+      if (guarantorsRequired > 0 && guarantors.length < guarantorsRequired) {
+        throw new Error(`Pinjaman ini wajib memiliki ${guarantorsRequired} penjamin`);
+      }
       const result = calcLoan(parsed.nominal, parsed.tenor_bulan, parsed.bunga_persen, parsed.bunga_jenis);
 
       // Capture metadata
@@ -155,7 +191,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
         .single();
       if (vErr) throw vErr;
 
-      const { error: pErr } = await supabase.from("pinjaman").insert({
+      const { data: pinjamanRow, error: pErr } = await supabase.from("pinjaman").insert({
         user_id: user!.id,
         nominal: parsed.nominal,
         tenor_bulan: parsed.tenor_bulan,
@@ -166,8 +202,33 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
         total_bayar: Math.round(result.totalBayar),
         status: "pending_sekretaris",
         verification_id: verif.id,
-      });
+      }).select("id").single();
       if (pErr) throw pErr;
+
+      // Insert guarantor requests + notifications
+      if (guarantors.length > 0 && pinjamanRow) {
+        const { error: gErr } = await supabase.from("loan_guarantors").insert(
+          guarantors.map((g) => ({
+            pinjaman_id: pinjamanRow.id,
+            borrower_id: user!.id,
+            guarantor_id: g.user_id,
+            guarantee_amount: g.guarantee_amount,
+            status: "pending" as const,
+          })),
+        );
+        if (gErr) throw gErr;
+
+        await supabase.from("notifications").insert(
+          guarantors.map((g) => ({
+            user_id: g.user_id,
+            judul: "🤝 Permintaan menjadi penjamin",
+            pesan: `${profile?.nama_lengkap ?? "Anggota"} meminta Anda menjadi penjamin pinjaman ${fmt.format(parsed.nominal)}. Klik untuk menyetujui atau menolak.`,
+            kategori: "approval" as const,
+            url: "/penjamin",
+            ref_table: "loan_guarantors",
+          })),
+        );
+      }
 
       await supabase.from("verification_logs").insert({
         verification_id: verif.id,
@@ -193,8 +254,9 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   const canNext1 = (() => {
     try { schema.parse(form); return form.agree && !exceedsPlafon; } catch { return false; }
   })();
+  const canNext2 = guarantorsRequired === 0 || guarantors.length >= guarantorsRequired;
   // Boleh lanjut jika AI memverifikasi langsung ATAU butuh review manual admin (skor rendah / NIK tidak terbaca).
-  const canNext2 = !!ktp && !!selfie && !!privy && (privy.status === "verified" || privy.status === "pending_review");
+  const canNext3 = !!ktp && !!selfie && !!privy && (privy.status === "verified" || privy.status === "pending_review");
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
@@ -281,6 +343,27 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
           )}
 
           {step === 2 && (
+            <div className="space-y-4">
+              {guarantorsRequired === 0 ? (
+                <Card className="p-6 text-center">
+                  <ShieldCheck className="mx-auto h-10 w-10 text-success" />
+                  <p className="mt-3 font-semibold">Tidak perlu penjamin</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Nominal pinjaman Anda di bawah ambang batas penjamin koperasi.
+                  </p>
+                </Card>
+              ) : (
+                <GuarantorPicker
+                  required={guarantorsRequired}
+                  perGuarantorAmount={perGuarantorAmount}
+                  selected={guarantors}
+                  onChange={setGuarantors}
+                />
+              )}
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Untuk keamanan, kami perlu memverifikasi identitas Anda. Data hanya dipakai oleh pengurus koperasi.
@@ -399,7 +482,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="space-y-4">
               <Card className="p-4">
                 <p className="text-xs font-medium text-muted-foreground">Ringkasan Pinjaman</p>
@@ -431,6 +514,19 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                   <p><strong>Nomor Anggota:</strong> {profile?.nomor_anggota ?? "-"}</p>
                 </div>
               </Card>
+              {guarantors.length > 0 && (
+                <Card className="p-4">
+                  <p className="text-xs font-medium text-muted-foreground">Penjamin ({guarantors.length})</p>
+                  <div className="mt-2 space-y-1">
+                    {guarantors.map((g) => (
+                      <div key={g.user_id} className="flex justify-between text-sm">
+                        <span>{g.nama}</span>
+                        <span className="font-mono">{fmt.format(g.guarantee_amount)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
               <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
                 Dengan menekan <strong>Kirim Pengajuan</strong>, identitas akan diverifikasi pengurus terlebih dahulu sebelum pinjaman diproses.
               </div>
@@ -442,10 +538,10 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
           <Button variant="ghost" size="sm" disabled={step === 1} onClick={() => setStep(step - 1)}>
             <ChevronLeft className="mr-1 h-4 w-4" /> Kembali
           </Button>
-          {step < 3 ? (
+          {step < 4 ? (
             <Button
               onClick={() => setStep(step + 1)}
-              disabled={(step === 1 && !canNext1) || (step === 2 && !canNext2)}
+              disabled={(step === 1 && !canNext1) || (step === 2 && !canNext2) || (step === 3 && !canNext3)}
             >
               Lanjut <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
