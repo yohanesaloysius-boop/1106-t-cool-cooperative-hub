@@ -1783,6 +1783,13 @@ export type Database = {
       }
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
+      mp_auto_release_escrow: {
+        Args: { _days?: number }
+        Returns: {
+          released_count: number
+          total_released: number
+        }[]
+      }
       mp_confirm_received: { Args: { _trx_id: string }; Returns: undefined }
       mp_file_complaint: {
         Args: { _alasan: string; _lampiran_url: string; _trx_id: string }

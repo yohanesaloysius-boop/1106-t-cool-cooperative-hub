@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.mp_auto_release_escrow(integer) FROM anon, authenticated, public;
