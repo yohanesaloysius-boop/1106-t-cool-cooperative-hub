@@ -12,6 +12,9 @@ import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
 import { LoanApplicationWizard } from "@/components/loan-application-wizard";
 import { Progress } from "@/components/ui/progress";
 import { useLoanEligibility } from "@/hooks/use-loan-eligibility";
+import { useLoanScoring } from "@/hooks/use-loan-scoring";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -33,10 +36,13 @@ function PinjamanPage() {
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
   const { data: elig, isLoading: eligLoading } = useLoanEligibility();
+  const { data: score, isLoading: scoreLoading } = useLoanScoring();
+
+  const fullyEligible = !!elig?.eligible && !!score?.canApply;
 
   useEffect(() => {
-    if (search.nominal && elig?.eligible) setOpen(true);
-  }, [search.nominal, elig?.eligible]);
+    if (search.nominal && fullyEligible) setOpen(true);
+  }, [search.nominal, fullyEligible]);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["pinjaman", user?.id],
@@ -61,10 +67,14 @@ function PinjamanPage() {
           <Button asChild variant="outline"><Link to="/kalkulator"><Calculator className="mr-2 h-4 w-4" />Kalkulator</Link></Button>
           <Button
             onClick={() => setOpen(true)}
-            disabled={eligLoading || !elig?.eligible}
-            title={elig?.reason ?? undefined}
+            disabled={eligLoading || scoreLoading || !fullyEligible}
+            title={elig?.reason ?? score?.blockReason ?? undefined}
           >
-            {elig && !elig.eligible ? <Lock className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
+            {!fullyEligible && !eligLoading && !scoreLoading ? (
+              <Lock className="mr-2 h-4 w-4" />
+            ) : (
+              <Plus className="mr-2 h-4 w-4" />
+            )}
             Ajukan Pinjaman
           </Button>
         </div>
