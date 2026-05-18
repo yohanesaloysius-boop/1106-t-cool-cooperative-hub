@@ -25,6 +25,7 @@ type Row = {
   id: string; pinjaman_id: string; cicilan_ke: number; nominal: number;
   jatuh_tempo: string; status: "unpaid" | "pending" | "paid" | "overdue";
   bukti_url: string | null; paid_at: string | null;
+  denda: number | null;
 };
 
 function AngsuranPage() {
