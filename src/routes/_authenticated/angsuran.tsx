@@ -261,9 +261,13 @@ function AngsuranPage() {
           <DialogHeader><DialogTitle>Konfirmasi Pembayaran</DialogTitle></DialogHeader>
           {payRow && user && (
             <div className="space-y-4">
-              <div className="rounded-xl bg-muted p-4">
+              <div className="rounded-xl bg-muted p-4 space-y-1">
                 <p className="text-xs text-muted-foreground">Cicilan #{payRow.cicilan_ke} · Jatuh tempo {new Date(payRow.jatuh_tempo).toLocaleDateString("id-ID")}</p>
-                <p className="text-xl font-bold">{fmt.format(Number(payRow.nominal))}</p>
+                <div className="flex justify-between text-sm"><span>Pokok</span><span className="tabular-nums">{fmt.format(Number(payRow.nominal))}</span></div>
+                {Number(payRow.denda ?? 0) > 0 && (
+                  <div className="flex justify-between text-sm text-destructive"><span>Denda keterlambatan</span><span className="tabular-nums">{fmt.format(Number(payRow.denda))}</span></div>
+                )}
+                <div className="mt-2 flex justify-between border-t border-border pt-2"><span className="font-semibold">Total Bayar</span><span className="text-xl font-bold tabular-nums">{fmt.format(Number(payRow.nominal) + Number(payRow.denda ?? 0))}</span></div>
               </div>
               <FileUpload
                 bucket="ktp"
