@@ -387,14 +387,6 @@ function AdminLaporanRAT() {
           </Tabs>
         </>
       )}
-
-      <SignaturePadDialog
-        open={sigOpen}
-        onOpenChange={setSigOpen}
-        title="Tandatangan Ketua untuk Laporan RAT"
-        defaultName={profile?.nama_lengkap ?? ""}
-        onConfirm={(sig) => { setSigOpen(false); exportPDF(sig); }}
-      />
     </div>
   );
 }
