@@ -208,8 +208,17 @@ function RegisterForm() {
     e.preventDefault();
     const parsed = registerSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.errors[0].message);
+    const normalizedPhone = normalizePhoneId(parsed.data.no_hp)!;
     setBusy(true);
     try {
+      // Cek nomor HP unik sebelum signup
+      const { data: existing, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: normalizedPhone });
+      if (lookupErr) throw lookupErr;
+      if (existing) {
+        setBusy(false);
+        return toast.error("Nomor HP sudah terdaftar. Silakan login.");
+      }
+
       const redirectUrl = `${window.location.origin}/dashboard`;
       const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
@@ -218,7 +227,7 @@ function RegisterForm() {
           emailRedirectTo: redirectUrl,
           data: {
             nama_lengkap: parsed.data.nama_lengkap,
-            no_hp: parsed.data.no_hp,
+            no_hp: normalizedPhone,
             nik: parsed.data.nik,
             alamat: parsed.data.alamat,
           },
@@ -228,7 +237,6 @@ function RegisterForm() {
       const uid = data.user?.id;
       if (uid) {
         setTempUserId(uid);
-        // Patch optional uploaded URLs into profile
         const updates: { ktp_url?: string; foto_url?: string } = {};
         if (ktpRef.current) updates.ktp_url = supabase.storage.from("ktp").getPublicUrl(ktpRef.current.path).data.publicUrl;
         if (avatarRef.current?.publicUrl) updates.foto_url = avatarRef.current.publicUrl;
@@ -238,7 +246,8 @@ function RegisterForm() {
       }
       toast.success("Pendaftaran berhasil. Menunggu verifikasi pengurus.");
     } catch (err) {
-      toast.error((err as Error).message);
+      const msg = (err as Error).message || "Gagal mendaftar";
+      toast.error(msg.includes("profiles_no_hp_unique") ? "Nomor HP sudah terdaftar" : msg);
     } finally {
       setBusy(false);
     }
