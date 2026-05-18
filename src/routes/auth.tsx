@@ -192,7 +192,7 @@ function RegisterForm() {
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="r-pw">Password</Label>
-          <Input id="r-pw" type="password" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+          <PasswordInput id="r-pw" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
           <p className="text-[11px] text-muted-foreground">Minimal 8 karakter. Akan dicek terhadap database password bocor.</p>
         </div>
       </div>
