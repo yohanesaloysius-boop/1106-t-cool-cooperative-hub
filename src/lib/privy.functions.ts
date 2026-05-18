@@ -3,15 +3,18 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Privy e-KYC verification.
+ * Verifikasi identitas berbasis AI (Lovable AI Gateway).
  *
- * Production: panggil endpoint resmi Privy (PKS Dukcapil) menggunakan PRIVY_API_KEY.
- *   - POST {PRIVY_BASE_URL}/v1/identity/verify
- *   - body: { ktp_image_base64, selfie_image_base64, nik? }
- *   - response: { nik, nama, tgl_lahir, alamat, face_match_score, status }
+ * Alur:
+ * 1. Ambil foto KTP & selfie dari Supabase Storage → konversi ke base64.
+ * 2. Kirim ke Gemini 2.5 Pro Vision (model multimodal kuat) untuk:
+ *    a. OCR KTP → ekstrak NIK, Nama, TTL, JK, Alamat.
+ *    b. Face match KTP vs selfie → skor 0-1.
+ *    c. Liveness check sederhana (selfie tampak natural, bukan foto KTP lain).
+ * 3. Return shape kompatibel dengan UI Privy lama agar wizard tidak berubah.
  *
- * Fallback (mock): apabila PRIVY_API_KEY belum diisi, kembalikan hasil
- * simulasi deterministik berdasarkan path foto agar UI tetap dapat diuji.
+ * Catatan: tidak konek Dukcapil. Validasi NIK hanya format & checksum.
+ * Skor < 0.75 → status 'pending_review' (admin verifikasi manual).
  */
 export const verifyWithPrivy = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -23,83 +26,160 @@ export const verifyWithPrivy = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data, context }) => {
-    const apiKey = process.env.PRIVY_API_KEY;
-    const baseUrl = process.env.PRIVY_BASE_URL ?? "https://api.privy.id";
+    const apiKey = process.env.LOVABLE_API_KEY;
     const { supabase, userId } = context;
 
-    // Ambil signed URL agar Privy bisa mengunduh (atau di-base64-kan).
-    const [ktpSigned, selfieSigned] = await Promise.all([
-      supabase.storage.from(data.bucket).createSignedUrl(data.ktpPath, 300),
-      supabase.storage.from(data.bucket).createSignedUrl(data.selfiePath, 300),
-    ]);
-    if (ktpSigned.error || selfieSigned.error) {
-      return { ok: false, provider: "privy", error: "Gagal membaca foto dari storage." } as const;
-    }
-
     if (!apiKey) {
-      // ─── MOCK MODE (no PRIVY_API_KEY) ───────────────────────────────
-      const seed = (data.ktpPath + data.selfiePath).split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-      const score = 0.82 + ((seed % 13) / 100); // 0.82–0.94
-      return {
-        ok: true,
-        provider: "privy",
-        mode: "mock" as const,
-        userId,
-        result: {
-          nik: "32" + String(seed).padStart(14, "0").slice(-14),
-          nama: "ANGGOTA KOPERASI",
-          tempat_lahir: "JAKARTA",
-          tgl_lahir: "1990-01-01",
-          jenis_kelamin: "L",
-          alamat: "JL. CONTOH NO. 1",
-          face_match_score: Number(score.toFixed(3)),
-          liveness: "passed" as const,
-          status: "verified" as const,
-          referenceId: `mock_${Date.now()}`,
-          verifiedAt: new Date().toISOString(),
-        },
-      } as const;
+      return { ok: false, provider: "ai", error: "LOVABLE_API_KEY belum diset." } as const;
     }
 
-    // ─── LIVE MODE ──────────────────────────────────────────────────
+    // Download kedua foto dari storage privat.
+    const [ktpDl, selfieDl] = await Promise.all([
+      supabase.storage.from(data.bucket).download(data.ktpPath),
+      supabase.storage.from(data.bucket).download(data.selfiePath),
+    ]);
+    if (ktpDl.error || selfieDl.error || !ktpDl.data || !selfieDl.data) {
+      return { ok: false, provider: "ai", error: "Gagal membaca foto dari storage." } as const;
+    }
+
+    const toB64 = async (blob: Blob) => {
+      const buf = Buffer.from(await blob.arrayBuffer());
+      return buf.toString("base64");
+    };
+    const ktpB64 = await toB64(ktpDl.data);
+    const selfieB64 = await toB64(selfieDl.data);
+    const ktpMime = ktpDl.data.type || "image/jpeg";
+    const selfieMime = selfieDl.data.type || "image/jpeg";
+
+    const systemPrompt =
+      "Anda adalah verifikator identitas KTP Indonesia. Lakukan OCR pada KTP, lalu cocokkan wajah di KTP dengan foto selfie. Jawab HANYA dalam JSON valid sesuai schema.";
+    const userPrompt = `Analisis 2 foto: (1) KTP Indonesia, (2) Selfie pemohon.
+Tugas:
+1. OCR KTP → ekstrak: nik (16 digit), nama, tempat_lahir, tgl_lahir (YYYY-MM-DD), jenis_kelamin (L/P), alamat.
+2. Bandingkan wajah di foto KTP vs selfie → face_match_score (0.00-1.00).
+3. Liveness: apakah selfie tampak orang asli (bukan foto dari layar/cetakan)? → "passed" / "failed".
+4. ktp_quality: "good" / "blur" / "unreadable".
+5. notes: catatan singkat (≤120 char) jika ada anomali (mis. KTP tidak terbaca, wajah tertutup).
+
+PENTING: Jika KTP tidak terbaca, isi field dengan string kosong dan ktp_quality="unreadable".`;
+
+    const schema = {
+      type: "object",
+      properties: {
+        nik: { type: "string" },
+        nama: { type: "string" },
+        tempat_lahir: { type: "string" },
+        tgl_lahir: { type: "string" },
+        jenis_kelamin: { type: "string", enum: ["L", "P", ""] },
+        alamat: { type: "string" },
+        face_match_score: { type: "number", minimum: 0, maximum: 1 },
+        liveness: { type: "string", enum: ["passed", "failed"] },
+        ktp_quality: { type: "string", enum: ["good", "blur", "unreadable"] },
+        notes: { type: "string" },
+      },
+      required: [
+        "nik", "nama", "tempat_lahir", "tgl_lahir", "jenis_kelamin",
+        "alamat", "face_match_score", "liveness", "ktp_quality", "notes",
+      ],
+      additionalProperties: false,
+    };
+
     try {
-      const res = await fetch(`${baseUrl}/v1/identity/verify`, {
+      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          ktp_url: ktpSigned.data.signedUrl,
-          selfie_url: selfieSigned.data.signedUrl,
-          enable_liveness: true,
-          enable_ocr: true,
-          enable_face_match: true,
+          model: "google/gemini-2.5-pro",
+          messages: [
+            { role: "system", content: systemPrompt },
+            {
+              role: "user",
+              content: [
+                { type: "text", text: userPrompt },
+                { type: "image_url", image_url: { url: `data:${ktpMime};base64,${ktpB64}` } },
+                { type: "image_url", image_url: { url: `data:${selfieMime};base64,${selfieB64}` } },
+              ],
+            },
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "submit_verification",
+              description: "Submit hasil verifikasi identitas",
+              parameters: schema,
+            },
+          }],
+          tool_choice: { type: "function", function: { name: "submit_verification" } },
         }),
       });
-      const json = (await res.json()) as Record<string, unknown>;
-      if (!res.ok) {
-        return { ok: false, provider: "privy", error: `Privy ${res.status}: ${JSON.stringify(json)}` } as const;
+
+      if (res.status === 429) {
+        return { ok: false, provider: "ai", error: "AI sedang sibuk. Coba lagi sebentar." } as const;
       }
-      // Normalisasi agar serializable.
-      const r = json as Record<string, string | number | boolean | null>;
+      if (res.status === 402) {
+        return { ok: false, provider: "ai", error: "Kredit AI workspace habis. Hubungi admin." } as const;
+      }
+      if (!res.ok) {
+        const txt = await res.text();
+        return { ok: false, provider: "ai", error: `AI ${res.status}: ${txt.slice(0, 200)}` } as const;
+      }
+
+      const json = await res.json() as {
+        choices?: Array<{ message?: { tool_calls?: Array<{ function?: { arguments?: string } }> } }>;
+      };
+      const argsStr = json.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+      if (!argsStr) {
+        return { ok: false, provider: "ai", error: "AI tidak mengembalikan hasil terstruktur." } as const;
+      }
+      const r = JSON.parse(argsStr) as {
+        nik: string; nama: string; tempat_lahir: string; tgl_lahir: string;
+        jenis_kelamin: string; alamat: string; face_match_score: number;
+        liveness: "passed" | "failed"; ktp_quality: "good" | "blur" | "unreadable"; notes: string;
+      };
+
+      // Validasi format NIK (16 digit numerik).
+      const nikValid = /^\d{16}$/.test(r.nik);
+      const score = Math.max(0, Math.min(1, Number(r.face_match_score) || 0));
+
+      // Tentukan status:
+      // - verified  : score >= 0.75 && liveness passed && NIK valid format && KTP terbaca
+      // - pending_review : selain itu (admin review manual)
+      // - rejected  : KTP unreadable atau liveness failed total
+      let status: "verified" | "pending_review" | "rejected";
+      if (r.ktp_quality === "unreadable" || (r.liveness === "failed" && score < 0.4)) {
+        status = "rejected";
+      } else if (score >= 0.75 && r.liveness === "passed" && nikValid) {
+        status = "verified";
+      } else {
+        status = "pending_review";
+      }
+
       return {
         ok: true,
-        provider: "privy",
+        provider: "ai",
         mode: "live" as const,
         userId,
         result: {
-          nik: String(r.nik ?? ""),
-          nama: String(r.nama ?? ""),
-          tempat_lahir: String(r.tempat_lahir ?? ""),
-          tgl_lahir: String(r.tgl_lahir ?? ""),
-          jenis_kelamin: String(r.jenis_kelamin ?? ""),
-          alamat: String(r.alamat ?? ""),
-          face_match_score: Number(r.face_match_score ?? 0),
-          liveness: (r.liveness === "passed" ? "passed" : "failed") as "passed" | "failed",
-          status: (r.status === "verified" ? "verified" : "rejected") as "verified" | "rejected",
-          referenceId: String(r.reference_id ?? r.referenceId ?? ""),
+          nik: r.nik || "",
+          nama: r.nama || "",
+          tempat_lahir: r.tempat_lahir || "",
+          tgl_lahir: r.tgl_lahir || "",
+          jenis_kelamin: r.jenis_kelamin || "",
+          alamat: r.alamat || "",
+          face_match_score: Number(score.toFixed(3)),
+          liveness: r.liveness,
+          ktp_quality: r.ktp_quality,
+          notes: r.notes || "",
+          nik_format_valid: nikValid,
+          status,
+          referenceId: `ai_${Date.now()}_${userId.slice(0, 6)}`,
           verifiedAt: new Date().toISOString(),
         },
       } as const;
     } catch (e) {
-      return { ok: false, provider: "privy", error: (e as Error).message } as const;
+      return { ok: false, provider: "ai", error: (e as Error).message } as const;
     }
   });
