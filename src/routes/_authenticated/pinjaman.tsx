@@ -1,23 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, HandCoins, Loader2, Calculator, Eye, Download } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye, Download, ShieldCheck } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
-import { calcLoan } from "@/components/dashboard/loan-calculator";
-import { FileUpload } from "@/components/file-upload";
 import { LoanDetailDialog } from "@/components/loan-detail-dialog";
 import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
+import { LoanApplicationWizard } from "@/components/loan-application-wizard";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -34,79 +26,22 @@ export const Route = createFileRoute("/_authenticated/pinjaman")({
 
 const fmt = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
 
-const schema = z.object({
-  nominal: z.coerce.number().min(500_000, "Minimal Rp 500.000").max(500_000_000),
-  tenor_bulan: z.coerce.number().int().min(3, "Minimal 3 bulan").max(60, "Maksimal 60 bulan"),
-  bunga_persen: z.coerce.number().min(0).max(20),
-  bunga_jenis: z.enum(["flat", "efektif", "menurun"]),
-  tujuan: z.string().trim().min(5, "Tujuan minimal 5 karakter").max(500),
-  dokumen_url: z.string().trim().max(500).optional().or(z.literal("")),
-});
-
 function PinjamanPage() {
   const { user, profile } = useAuth();
-  const qc = useQueryClient();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    nominal: search.nominal?.toString() ?? "",
-    tenor_bulan: search.tenor?.toString() ?? "12",
-    bunga_persen: search.bunga?.toString() ?? "1.5",
-    bunga_jenis: (search.jenis ?? "flat") as BungaJenis,
-    tujuan: "",
-    dokumen_url: "",
-  });
 
-  useEffect(() => {
-    if (search.nominal) setOpen(true);
-  }, [search.nominal]);
+  useEffect(() => { if (search.nominal) setOpen(true); }, [search.nominal]);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["pinjaman", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("pinjaman").select("*").eq("user_id", user!.id).order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason)")
+        .eq("user_id", user!.id).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
-    },
-  });
-
-  const sim = useMemo(() => {
-    const n = Number(form.nominal) || 0;
-    const t = Number(form.tenor_bulan) || 1;
-    const b = Number(form.bunga_persen) || 0;
-    if (n <= 0) return null;
-    return calcLoan(n, t, b, form.bunga_jenis);
-  }, [form]);
-
-  const create = useMutation({
-    mutationFn: async () => {
-      const parsed = schema.parse(form);
-      const result = calcLoan(parsed.nominal, parsed.tenor_bulan, parsed.bunga_persen, parsed.bunga_jenis);
-      const { error } = await supabase.from("pinjaman").insert({
-        user_id: user!.id,
-        nominal: parsed.nominal,
-        tenor_bulan: parsed.tenor_bulan,
-        bunga_persen: parsed.bunga_persen,
-        bunga_jenis: parsed.bunga_jenis,
-        tujuan: parsed.tujuan,
-        dokumen_url: parsed.dokumen_url || null,
-        cicilan_per_bulan: Math.round(result.cicilan),
-        total_bayar: Math.round(result.totalBayar),
-        status: "pending_sekretaris",
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Pengajuan terkirim", { description: "Akan direview oleh sekretaris, bendahara, lalu ketua." });
-      setOpen(false);
-      setForm({ nominal: "", tenor_bulan: "12", bunga_persen: "1.5", bunga_jenis: "flat", tujuan: "", dokumen_url: "" });
-      qc.invalidateQueries({ queryKey: ["pinjaman"] });
-      qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
-    },
-    onError: (e: unknown) => {
-      const msg = e instanceof z.ZodError ? e.issues[0]?.message : (e as Error).message;
-      toast.error("Gagal", { description: msg });
     },
   });
 
@@ -115,78 +50,24 @@ function PinjamanPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Pinjaman Saya</h1>
-          <p className="text-sm text-muted-foreground">Pengajuan dan status pinjaman Anda.</p>
+          <p className="text-sm text-muted-foreground">Pengajuan dengan verifikasi identitas anggota.</p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline"><Link to="/kalkulator"><Calculator className="mr-2 h-4 w-4" />Kalkulator</Link></Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" />Ajukan Pinjaman</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader><DialogTitle>Pengajuan Pinjaman</DialogTitle></DialogHeader>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>Nominal (IDR)</Label>
-                    <Input type="number" className="mt-2" value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label>Tenor (bulan)</Label>
-                    <Input type="number" min={3} max={60} className="mt-2" value={form.tenor_bulan} onChange={(e) => setForm({ ...form, tenor_bulan: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label>Bunga / bulan (%)</Label>
-                    <Input type="number" step="0.1" className="mt-2" value={form.bunga_persen} onChange={(e) => setForm({ ...form, bunga_persen: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label>Jenis Bunga</Label>
-                    <Select value={form.bunga_jenis} onValueChange={(v) => setForm({ ...form, bunga_jenis: v as BungaJenis })}>
-                      <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="flat">Flat</SelectItem>
-                        <SelectItem value="efektif">Efektif</SelectItem>
-                        <SelectItem value="menurun">Menurun</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label>Tujuan Pinjaman</Label>
-                  <Textarea className="mt-2" rows={3} maxLength={500} placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Dokumen Pendukung (PDF/Gambar — opsional)</Label>
-                  <div className="mt-2">
-                    <FileUpload
-                      bucket="ktp"
-                      userId={user!.id}
-                      accept="image/*,application/pdf"
-                      label=""
-                      hint="Disimpan privat untuk verifikasi pengurus."
-                      maxMB={8}
-                      onUploaded={(r) => setForm({ ...form, dokumen_url: r.path })}
-                    />
-                  </div>
-                </div>
-                {sim && (
-                  <div className="rounded-xl p-4 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
-                    <p className="text-xs opacity-80">Estimasi cicilan / bulan</p>
-                    <p className="text-xl font-bold">{fmt.format(Math.round(sim.cicilan))}</p>
-                    <p className="mt-1 text-xs opacity-80">Total bayar: {fmt.format(Math.round(sim.totalBayar))}</p>
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
-                <Button onClick={() => create.mutate()} disabled={create.isPending}>
-                  {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Kirim Pengajuan
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />Ajukan Pinjaman</Button>
         </div>
       </div>
+
+      <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
+        <ShieldCheck className="h-4 w-4 shrink-0" />
+        <span>Setiap pengajuan wajib melewati verifikasi identitas (foto KTP + selfie) untuk mencegah penyalahgunaan.</span>
+      </div>
+
+      <LoanApplicationWizard
+        open={open}
+        onOpenChange={setOpen}
+        initial={{ nominal: search.nominal, tenor: search.tenor, bunga: search.bunga, jenis: search.jenis }}
+      />
 
       <Card style={{ boxShadow: "var(--shadow-card)" }}>
         <CardHeader><CardTitle>Daftar Pinjaman</CardTitle></CardHeader>
@@ -197,7 +78,7 @@ function PinjamanPage() {
             <EmptyState icon={HandCoins} title="Belum ada pinjaman" desc="Ajukan pinjaman pertama Anda. Workflow approval bertingkat: Sekretaris → Bendahara → Ketua." />
           ) : (
             <div className="space-y-3">
-              {rows.map((r) => (
+              {rows.map((r: any) => (
                 <div key={r.id} className="rounded-xl border border-border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -206,6 +87,15 @@ function PinjamanPage() {
                         {r.tenor_bulan} bulan · Bunga {Number(r.bunga_persen)}% ({r.bunga_jenis}) · Cicilan {fmt.format(Number(r.cicilan_per_bulan ?? 0))}/bulan
                       </p>
                       {r.tujuan && <p className="mt-2 text-sm">{r.tujuan}</p>}
+                      {r.loan_verifications && (
+                        <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px]">
+                          <ShieldCheck className="h-3 w-3" />
+                          Verifikasi: {r.loan_verifications.status}
+                          {r.loan_verifications.status === "rejected" && r.loan_verifications.rejected_reason && (
+                            <span className="ml-1 text-destructive">· {r.loan_verifications.rejected_reason}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="text-right">
                       <StatusBadge status={r.status} />
@@ -216,20 +106,13 @@ function PinjamanPage() {
                       />
                       {["approved", "disbursed", "active", "completed"].includes(String(r.status)) && (
                         <Button
-                          size="sm"
-                          variant="ghost"
-                          className="mt-1 h-7 gap-1 text-xs"
+                          size="sm" variant="ghost" className="mt-1 h-7 gap-1 text-xs"
                           onClick={() =>
                             downloadSuratPinjaman({
-                              id: r.id,
-                              nominal: Number(r.nominal),
-                              tenor_bulan: Number(r.tenor_bulan),
-                              bunga_persen: Number(r.bunga_persen),
-                              cicilan_per_bulan: r.cicilan_per_bulan as any,
-                              total_bayar: r.total_bayar as any,
-                              status: String(r.status),
-                              approved_at: (r as any).approved_at ?? null,
-                              disbursed_at: (r as any).disbursed_at ?? null,
+                              id: r.id, nominal: Number(r.nominal), tenor_bulan: Number(r.tenor_bulan),
+                              bunga_persen: Number(r.bunga_persen), cicilan_per_bulan: r.cicilan_per_bulan as any,
+                              total_bayar: r.total_bayar as any, status: String(r.status),
+                              approved_at: (r as any).approved_at ?? null, disbursed_at: (r as any).disbursed_at ?? null,
                               tujuan: r.tujuan ?? null,
                               anggota: {
                                 nama: profile?.nama_lengkap ?? "—",
@@ -254,3 +137,4 @@ function PinjamanPage() {
     </div>
   );
 }
+
