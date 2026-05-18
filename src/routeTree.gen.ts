@@ -49,6 +49,7 @@ import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
+import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
 import { Route as AuthenticatedAdminFeeRouteImport } from './routes/_authenticated/admin.fee'
 import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenticated/admin.escrow'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -267,6 +268,12 @@ const AuthenticatedAdminLaporanRoute =
     path: '/laporan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminKomplainRoute =
+  AuthenticatedAdminKomplainRouteImport.update({
+    id: '/komplain',
+    path: '/komplain',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminFeeRoute = AuthenticatedAdminFeeRouteImport.update({
   id: '/fee',
   path: '/fee',
@@ -343,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
+  '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -390,6 +398,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
+  '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -440,6 +449,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/_authenticated/admin/fee': typeof AuthenticatedAdminFeeRoute
+  '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -490,6 +500,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/escrow'
     | '/admin/fee'
+    | '/admin/komplain'
     | '/admin/laporan'
     | '/admin/marketplace'
     | '/admin/pengaturan'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/escrow'
     | '/admin/fee'
+    | '/admin/komplain'
     | '/admin/laporan'
     | '/admin/marketplace'
     | '/admin/pengaturan'
@@ -586,6 +598,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/escrow'
     | '/_authenticated/admin/fee'
+    | '/_authenticated/admin/komplain'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
@@ -895,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLaporanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/komplain': {
+      id: '/_authenticated/admin/komplain'
+      path: '/komplain'
+      fullPath: '/admin/komplain'
+      preLoaderRoute: typeof AuthenticatedAdminKomplainRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/fee': {
       id: '/_authenticated/admin/fee'
       path: '/fee'
@@ -954,6 +974,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminEscrowRoute: typeof AuthenticatedAdminEscrowRoute
   AuthenticatedAdminFeeRoute: typeof AuthenticatedAdminFeeRoute
+  AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
@@ -972,6 +993,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminEscrowRoute: AuthenticatedAdminEscrowRoute,
   AuthenticatedAdminFeeRoute: AuthenticatedAdminFeeRoute,
+  AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
