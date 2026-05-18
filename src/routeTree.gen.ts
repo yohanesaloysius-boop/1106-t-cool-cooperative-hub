@@ -59,6 +59,7 @@ import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
 import { Route as AuthenticatedAdminFeeRouteImport } from './routes/_authenticated/admin.fee'
 import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenticated/admin.escrow'
+import { Route as AuthenticatedAdminBukuBesarRouteImport } from './routes/_authenticated/admin.buku-besar'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
@@ -334,6 +335,12 @@ const AuthenticatedAdminEscrowRoute =
     path: '/escrow',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminBukuBesarRoute =
+  AuthenticatedAdminBukuBesarRouteImport.update({
+    id: '/buku-besar',
+    path: '/buku-besar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -411,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -468,6 +476,7 @@ export interface FileRoutesByTo {
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -528,6 +537,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/_authenticated/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/_authenticated/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -588,6 +598,7 @@ export interface FileRouteTypes {
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
+    | '/admin/buku-besar'
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/admin/angsuran'
     | '/admin/approval'
     | '/admin/audit'
+    | '/admin/buku-besar'
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
@@ -704,6 +716,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
     | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/buku-besar'
     | '/_authenticated/admin/escrow'
     | '/_authenticated/admin/fee'
     | '/_authenticated/admin/komplain'
@@ -1095,6 +1108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEscrowRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/buku-besar': {
+      id: '/_authenticated/admin/buku-besar'
+      path: '/buku-besar'
+      fullPath: '/admin/buku-besar'
+      preLoaderRoute: typeof AuthenticatedAdminBukuBesarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/audit': {
       id: '/_authenticated/admin/audit'
       path: '/audit'
@@ -1152,6 +1172,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
   AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminBukuBesarRoute: typeof AuthenticatedAdminBukuBesarRoute
   AuthenticatedAdminEscrowRoute: typeof AuthenticatedAdminEscrowRoute
   AuthenticatedAdminFeeRoute: typeof AuthenticatedAdminFeeRoute
   AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
@@ -1176,6 +1197,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
   AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminBukuBesarRoute: AuthenticatedAdminBukuBesarRoute,
   AuthenticatedAdminEscrowRoute: AuthenticatedAdminEscrowRoute,
   AuthenticatedAdminFeeRoute: AuthenticatedAdminFeeRoute,
   AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
