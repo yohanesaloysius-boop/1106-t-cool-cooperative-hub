@@ -15,6 +15,8 @@ import { useLoanEligibility } from "@/hooks/use-loan-eligibility";
 import { useLoanScoring } from "@/hooks/use-loan-scoring";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp } from "lucide-react";
+import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
+import { FileSignature } from "lucide-react";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -49,7 +51,7 @@ function PinjamanPage() {
     enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason)")
+        .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason), loan_agreements!loan_agreements_pinjaman_id_key(id,status,pdf_path,member_signed_at,pengurus_signed_at)" as any)
         .eq("user_id", user!.id).order("created_at", { ascending: false });
       if (error) throw error;
       return data;

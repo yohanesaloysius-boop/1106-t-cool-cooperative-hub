@@ -47,6 +47,7 @@ import { Route as AuthenticatedAdminStatistikRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
+import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_authenticated/admin.rekonsiliasi'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
@@ -261,6 +262,12 @@ const AuthenticatedAdminSellerVerifyRoute =
     path: '/seller-verify',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminRekonsiliasiRoute =
+  AuthenticatedAdminRekonsiliasiRouteImport.update({
+    id: '/rekonsiliasi',
+    path: '/rekonsiliasi',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPinjamanRoute =
   AuthenticatedAdminPinjamanRouteImport.update({
     id: '/pinjaman',
@@ -391,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -444,6 +452,7 @@ export interface FileRoutesByTo {
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -500,6 +509,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/_authenticated/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -556,6 +566,7 @@ export interface FileRouteTypes {
     | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
+    | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
@@ -609,6 +620,7 @@ export interface FileRouteTypes {
     | '/admin/marketplace'
     | '/admin/pengaturan'
     | '/admin/pinjaman'
+    | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
@@ -664,6 +676,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/pinjaman'
+    | '/_authenticated/admin/rekonsiliasi'
     | '/_authenticated/admin/seller-verify'
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
@@ -961,6 +974,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSellerVerifyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/rekonsiliasi': {
+      id: '/_authenticated/admin/rekonsiliasi'
+      path: '/rekonsiliasi'
+      fullPath: '/admin/rekonsiliasi'
+      preLoaderRoute: typeof AuthenticatedAdminRekonsiliasiRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/pinjaman': {
       id: '/_authenticated/admin/pinjaman'
       path: '/pinjaman'
@@ -1082,6 +1102,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
+  AuthenticatedAdminRekonsiliasiRoute: typeof AuthenticatedAdminRekonsiliasiRoute
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
   AuthenticatedAdminSimpananRoute: typeof AuthenticatedAdminSimpananRoute
@@ -1104,6 +1125,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
+  AuthenticatedAdminRekonsiliasiRoute: AuthenticatedAdminRekonsiliasiRoute,
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
   AuthenticatedAdminSimpananRoute: AuthenticatedAdminSimpananRoute,
@@ -1199,3 +1221,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
