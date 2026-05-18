@@ -336,7 +336,14 @@ function MarketplaceSayaPage() {
         {/* TRANSAKSI */}
         <TabsContent value="transaksi">
           <div className="rounded-3xl border border-border bg-card p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-            <h2 className="mb-4 text-lg font-bold">Transaksi Masuk</h2>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="text-lg font-bold">Transaksi Masuk</h2>
+              <Link to="/saldo">
+                <Button variant="outline" size="sm" className="rounded-full">
+                  <Wallet className="mr-1.5 h-3.5 w-3.5" /> Saldo & Pencairan
+                </Button>
+              </Link>
+            </div>
             {salesQ.isLoading ? (
               <Skeleton className="h-24 rounded-2xl" />
             ) : sales.length === 0 ? (
@@ -347,16 +354,7 @@ function MarketplaceSayaPage() {
             ) : (
               <div className="space-y-2">
                 {sales.map((t: any) => (
-                  <div key={t.id} className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/60 p-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{t.marketplace_products?.nama_produk}</p>
-                      <p className="text-xs text-muted-foreground">{t.qty} × {fmtIDR(Number(t.harga_satuan))}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold tabular-nums">{fmtIDR(Number(t.total))}</p>
-                      <Badge variant="secondary" className="rounded-full text-[10px]">{t.status}</Badge>
-                    </div>
-                  </div>
+                  <SellerTrxRow key={t.id} trx={t} onChanged={() => qc.invalidateQueries({ queryKey: ["mp-my-sales"] })} />
                 ))}
               </div>
             )}
