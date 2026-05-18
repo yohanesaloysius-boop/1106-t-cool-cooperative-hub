@@ -131,6 +131,69 @@ function PinjamanPage() {
         </Card>
       )}
 
+      {score && (
+        <Card style={{ boxShadow: "var(--shadow-card)" }} className={score.overdueCount > 0 ? "border-destructive/30 bg-destructive/5" : "border-primary/20"}>
+          <CardContent className="space-y-4 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-primary/10 p-2 text-primary"><TrendingUp className="h-5 w-5" /></div>
+                <div>
+                  <p className="text-sm font-semibold">Skor Kredit Anda</p>
+                  <p className="text-xs text-muted-foreground">Otomatis dihitung dari aktivitas keanggotaan</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-2xl font-bold leading-none">{score.score}<span className="text-sm text-muted-foreground">/100</span></p>
+                  <p className="text-[11px] text-muted-foreground">Grade {score.grade}</p>
+                </div>
+                <Badge variant={score.canApply ? "default" : "destructive"}>{score.canApply ? "Layak" : "Diblokir"}</Badge>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-border p-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Plafon tersedia</p>
+                <p className="mt-1 text-xl font-bold tracking-tight">{fmt.format(score.plafonMax)}</p>
+                <p className="text-[11px] text-muted-foreground">Berdasarkan {score.multiplier}× total simpanan ({fmt.format(score.totalSimpanan)})</p>
+              </div>
+              <div className="rounded-lg border border-border p-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Status</p>
+                <p className="mt-1 text-sm">Pinjaman aktif: <strong>{score.activeLoans}</strong> · Lunas: <strong>{score.completedLoans}</strong></p>
+                <p className={`text-xs ${score.overdueCount > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                  Tunggakan: <strong>{score.overdueCount}</strong>{score.overdueCount > 0 && ` (${fmt.format(score.overdueNominal)})`}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {score.breakdown.map((b) => (
+                <div key={b.label}>
+                  <div className="mb-1 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">{b.label}</span>
+                    <span className="font-medium">{b.value}/{b.max}</span>
+                  </div>
+                  <Progress value={(b.value / b.max) * 100} className="h-1.5" />
+                </div>
+              ))}
+            </div>
+
+            {score.blockReason && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold">Pengajuan diblokir</p>
+                  <p>{score.blockReason}</p>
+                  {score.overdueCount > 0 && (
+                    <Link to="/angsuran" className="mt-1 inline-block underline">Lihat tunggakan →</Link>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
         <ShieldCheck className="h-4 w-4 shrink-0" />
         <span>Setiap pengajuan wajib melewati verifikasi identitas (foto KTP + selfie) untuk mencegah penyalahgunaan.</span>
