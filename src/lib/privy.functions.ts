@@ -78,7 +78,27 @@ export const verifyWithPrivy = createServerFn({ method: "POST" })
       if (!res.ok) {
         return { ok: false, provider: "privy", error: `Privy ${res.status}: ${JSON.stringify(json)}` } as const;
       }
-      return { ok: true, provider: "privy", mode: "live" as const, userId, result: json } as const;
+      // Normalisasi agar serializable.
+      const r = json as Record<string, string | number | boolean | null>;
+      return {
+        ok: true,
+        provider: "privy",
+        mode: "live" as const,
+        userId,
+        result: {
+          nik: String(r.nik ?? ""),
+          nama: String(r.nama ?? ""),
+          tempat_lahir: String(r.tempat_lahir ?? ""),
+          tgl_lahir: String(r.tgl_lahir ?? ""),
+          jenis_kelamin: String(r.jenis_kelamin ?? ""),
+          alamat: String(r.alamat ?? ""),
+          face_match_score: Number(r.face_match_score ?? 0),
+          liveness: (r.liveness === "passed" ? "passed" : "failed") as "passed" | "failed",
+          status: (r.status === "verified" ? "verified" : "rejected") as "verified" | "rejected",
+          referenceId: String(r.reference_id ?? r.referenceId ?? ""),
+          verifiedAt: new Date().toISOString(),
+        },
+      } as const;
     } catch (e) {
       return { ok: false, provider: "privy", error: (e as Error).message } as const;
     }
