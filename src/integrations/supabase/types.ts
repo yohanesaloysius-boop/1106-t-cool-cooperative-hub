@@ -348,6 +348,51 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_complaints: {
+        Row: {
+          alasan: string
+          buyer_id: string
+          created_at: string
+          id: string
+          lampiran_url: string | null
+          resolusi: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          seller_id: string
+          status: string
+          trx_id: string
+          updated_at: string
+        }
+        Insert: {
+          alasan: string
+          buyer_id: string
+          created_at?: string
+          id?: string
+          lampiran_url?: string | null
+          resolusi?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          seller_id: string
+          status?: string
+          trx_id: string
+          updated_at?: string
+        }
+        Update: {
+          alasan?: string
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          lampiran_url?: string | null
+          resolusi?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          seller_id?: string
+          status?: string
+          trx_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       marketplace_favorites: {
         Row: {
           created_at: string
@@ -1675,6 +1720,16 @@ export type Database = {
           store_slug: string
         }[]
       }
+      get_fee_breakdown: {
+        Args: never
+        Returns: {
+          bulan: string
+          jumlah_trx: number
+          total_fee: number
+          total_gmv: number
+        }[]
+      }
+      get_marketplace_admin_stats: { Args: never; Returns: Json }
       get_marketplace_stats: { Args: never; Returns: Json }
       get_or_create_wallet: { Args: { _user_id: string }; Returns: string }
       get_public_koperasi_stats: { Args: never; Returns: Json }
@@ -1685,6 +1740,17 @@ export type Database = {
           kind: string
           title: string
           ts: string
+        }[]
+      }
+      get_top_products: {
+        Args: { _limit?: number }
+        Returns: {
+          gambar: string
+          nama_produk: string
+          product_id: string
+          store_nama: string
+          total_omset: number
+          total_qty: number
         }[]
       }
       get_user_marketplace_activity: {
@@ -1718,12 +1784,28 @@ export type Database = {
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
       mp_confirm_received: { Args: { _trx_id: string }; Returns: undefined }
+      mp_file_complaint: {
+        Args: { _alasan: string; _lampiran_url: string; _trx_id: string }
+        Returns: string
+      }
       mp_process_withdrawal: {
         Args: { _bukti_url: string; _wd_id: string }
         Returns: undefined
       }
       mp_reject_withdrawal: {
         Args: { _alasan: string; _wd_id: string }
+        Returns: undefined
+      }
+      mp_resolve_complaint: {
+        Args: { _action: string; _catatan: string; _complaint_id: string }
+        Returns: undefined
+      }
+      mp_set_store_status: {
+        Args: {
+          _alasan: string
+          _status: Database["public"]["Enums"]["store_status"]
+          _store_id: string
+        }
         Returns: undefined
       }
       mp_ship: {
@@ -1758,6 +1840,7 @@ export type Database = {
         | "shipped"
         | "completed"
         | "cancelled"
+        | "refunded"
       notif_kategori:
         | "info"
         | "sukses"
@@ -1779,7 +1862,7 @@ export type Database = {
         | "cancelled"
       product_status: "draft" | "active" | "out_of_stock" | "archived"
       simpanan_jenis: "pokok" | "wajib" | "sukarela"
-      store_status: "active" | "inactive" | "suspended"
+      store_status: "active" | "inactive" | "suspended" | "pending"
       tabungan_status:
         | "pending"
         | "active"
@@ -1945,6 +2028,7 @@ export const Constants = {
         "shipped",
         "completed",
         "cancelled",
+        "refunded",
       ],
       notif_kategori: [
         "info",
@@ -1969,7 +2053,7 @@ export const Constants = {
       ],
       product_status: ["draft", "active", "out_of_stock", "archived"],
       simpanan_jenis: ["pokok", "wajib", "sukarela"],
-      store_status: ["active", "inactive", "suspended"],
+      store_status: ["active", "inactive", "suspended", "pending"],
       tabungan_status: [
         "pending",
         "active",
