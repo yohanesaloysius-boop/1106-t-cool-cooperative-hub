@@ -10,8 +10,9 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Phone, Mail } from "lucide-react";
 import { FileUpload } from "@/components/file-upload";
+import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -21,16 +22,27 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const loginSchema = z.object({
-  email: z.string().trim().email("Email tidak valid").max(255),
-  password: z.string().min(6, "Password minimal 6 karakter").max(72),
-});
+const loginSchema = z
+  .object({
+    identifier: z.string().trim().min(3, "Masukkan nomor HP atau email").max(255),
+    password: z.string().min(6, "Password minimal 6 karakter").max(72),
+  })
+  .superRefine((val, ctx) => {
+    const v = val.identifier;
+    const looksPhone = isPhoneLike(v);
+    if (looksPhone && !isValidIndonesianPhone(v)) {
+      ctx.addIssue({ code: "custom", path: ["identifier"], message: "Nomor HP tidak valid (contoh: 0812xxxx)" });
+    }
+    if (!looksPhone && !/^\S+@\S+\.\S+$/.test(v)) {
+      ctx.addIssue({ code: "custom", path: ["identifier"], message: "Format email/nomor HP tidak valid" });
+    }
+  });
 
 const registerSchema = z.object({
   nama_lengkap: z.string().trim().min(2, "Nama minimal 2 karakter").max(100),
   nik: z.string().trim().regex(/^\d{16}$/, "NIK harus 16 digit"),
   email: z.string().trim().email("Email tidak valid").max(255),
-  no_hp: z.string().trim().regex(/^[0-9+\-\s]{8,20}$/, "Nomor HP tidak valid"),
+  no_hp: z.string().trim().refine(isValidIndonesianPhone, "Nomor HP Indonesia tidak valid (contoh: 0812xxxxxxxx)"),
   alamat: z.string().trim().min(5, "Alamat minimal 5 karakter").max(500),
   password: z.string().min(8, "Password minimal 8 karakter").max(72),
 });
