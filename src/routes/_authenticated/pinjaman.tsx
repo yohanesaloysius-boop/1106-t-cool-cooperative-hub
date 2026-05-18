@@ -32,8 +32,11 @@ function PinjamanPage() {
   const { user, profile } = useAuth();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
+  const { data: elig, isLoading: eligLoading } = useLoanEligibility();
 
-  useEffect(() => { if (search.nominal) setOpen(true); }, [search.nominal]);
+  useEffect(() => {
+    if (search.nominal && elig?.eligible) setOpen(true);
+  }, [search.nominal, elig?.eligible]);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["pinjaman", user?.id],
