@@ -202,6 +202,7 @@ function PinjamanPage() {
       <LoanApplicationWizard
         open={open}
         onOpenChange={setOpen}
+        plafonMax={score?.plafonMax}
         initial={{ nominal: search.nominal, tenor: search.tenor, bunga: search.bunga, jenis: search.jenis }}
       />
 
