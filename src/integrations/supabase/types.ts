@@ -571,46 +571,76 @@ export type Database = {
       }
       marketplace_transactions: {
         Row: {
+          bukti_transfer_url: string | null
           buyer_id: string
           catatan: string | null
           created_at: string
+          fee_nominal: number
+          fee_persen: number
           harga_satuan: number
           id: string
+          kurir: string | null
+          paid_at: string | null
           product_id: string
           qty: number
+          received_at: string | null
+          resi: string | null
+          seller_amount: number
           seller_id: string
+          shipped_at: string | null
           status: Database["public"]["Enums"]["mp_trx_status"]
           store_id: string
           total: number
           updated_at: string
+          verified_by: string | null
         }
         Insert: {
+          bukti_transfer_url?: string | null
           buyer_id: string
           catatan?: string | null
           created_at?: string
+          fee_nominal?: number
+          fee_persen?: number
           harga_satuan: number
           id?: string
+          kurir?: string | null
+          paid_at?: string | null
           product_id: string
           qty: number
+          received_at?: string | null
+          resi?: string | null
+          seller_amount?: number
           seller_id: string
+          shipped_at?: string | null
           status?: Database["public"]["Enums"]["mp_trx_status"]
           store_id: string
           total: number
           updated_at?: string
+          verified_by?: string | null
         }
         Update: {
+          bukti_transfer_url?: string | null
           buyer_id?: string
           catatan?: string | null
           created_at?: string
+          fee_nominal?: number
+          fee_persen?: number
           harga_satuan?: number
           id?: string
+          kurir?: string | null
+          paid_at?: string | null
           product_id?: string
           qty?: number
+          received_at?: string | null
+          resi?: string | null
+          seller_amount?: number
           seller_id?: string
+          shipped_at?: string | null
           status?: Database["public"]["Enums"]["mp_trx_status"]
           store_id?: string
           total?: number
           updated_at?: string
+          verified_by?: string | null
         }
         Relationships: [
           {
@@ -642,6 +672,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      marketplace_withdrawals: {
+        Row: {
+          bank_atas_nama: string | null
+          bank_nama: string | null
+          bank_no_rek: string | null
+          bukti_transfer_url: string | null
+          catatan: string | null
+          created_at: string
+          id: string
+          nominal: number
+          processed_at: string | null
+          processed_by: string | null
+          requested_at: string
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bank_atas_nama?: string | null
+          bank_nama?: string | null
+          bank_no_rek?: string | null
+          bukti_transfer_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          nominal: number
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bank_atas_nama?: string | null
+          bank_nama?: string | null
+          bank_no_rek?: string | null
+          bukti_transfer_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          nominal?: number
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       meeting_attendances: {
         Row: {
@@ -1498,6 +1579,83 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          arah: string
+          created_at: string
+          created_by: string | null
+          id: string
+          jenis: string
+          keterangan: string | null
+          nominal: number
+          ref_id: string | null
+          ref_table: string | null
+          user_id: string | null
+          wallet_id: string
+        }
+        Insert: {
+          arah: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          jenis: string
+          keterangan?: string | null
+          nominal: number
+          ref_id?: string | null
+          ref_table?: string | null
+          user_id?: string | null
+          wallet_id: string
+        }
+        Update: {
+          arah?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          jenis?: string
+          keterangan?: string | null
+          nominal?: number
+          ref_id?: string | null
+          ref_table?: string | null
+          user_id?: string | null
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          created_at: string
+          id: string
+          saldo: number
+          saldo_escrow: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          saldo?: number
+          saldo_escrow?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          saldo?: number
+          saldo_escrow?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1518,6 +1676,7 @@ export type Database = {
         }[]
       }
       get_marketplace_stats: { Args: never; Returns: Json }
+      get_or_create_wallet: { Args: { _user_id: string }; Returns: string }
       get_public_koperasi_stats: { Args: never; Returns: Json }
       get_public_recent_activity: {
         Args: { limit_count?: number }
@@ -1558,6 +1717,24 @@ export type Database = {
       }
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
+      mp_confirm_received: { Args: { _trx_id: string }; Returns: undefined }
+      mp_process_withdrawal: {
+        Args: { _bukti_url: string; _wd_id: string }
+        Returns: undefined
+      }
+      mp_reject_withdrawal: {
+        Args: { _alasan: string; _wd_id: string }
+        Returns: undefined
+      }
+      mp_ship: {
+        Args: { _kurir: string; _resi: string; _trx_id: string }
+        Returns: undefined
+      }
+      mp_upload_bukti: {
+        Args: { _bukti_url: string; _trx_id: string }
+        Returns: undefined
+      }
+      mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
     }
     Enums: {
       angsuran_status: "unpaid" | "pending" | "paid" | "overdue"
@@ -1618,6 +1795,7 @@ export type Database = {
         | "biaya_admin"
         | "pendapatan_bunga"
         | "lainnya"
+      withdrawal_status: "pending" | "approved" | "rejected" | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1809,6 +1987,7 @@ export const Constants = {
         "pendapatan_bunga",
         "lainnya",
       ],
+      withdrawal_status: ["pending", "approved", "rejected", "paid"],
     },
   },
 } as const
