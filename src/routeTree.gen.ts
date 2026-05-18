@@ -28,12 +28,14 @@ import { Route as AuthenticatedRiwayatRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedRapatRouteImport } from './routes/_authenticated/rapat'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
+import { Route as AuthenticatedPenjaminRouteImport } from './routes/_authenticated/penjamin'
 import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_authenticated/marketplace-saya'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticated/favorit'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_authenticated/dashboard-belanja'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBukuBesarRouteImport } from './routes/_authenticated/buku-besar'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -49,6 +51,7 @@ import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
 import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_authenticated/admin.rekonsiliasi'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
+import { Route as AuthenticatedAdminPenjaminRouteImport } from './routes/_authenticated/admin.penjamin'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLaporanRatRouteImport } from './routes/_authenticated/admin.laporan-rat'
@@ -160,6 +163,11 @@ const AuthenticatedPinjamanRoute = AuthenticatedPinjamanRouteImport.update({
   path: '/pinjaman',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPenjaminRoute = AuthenticatedPenjaminRouteImport.update({
+  id: '/penjamin',
+  path: '/penjamin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedMarketplaceSayaRoute =
   AuthenticatedMarketplaceSayaRouteImport.update({
     id: '/marketplace-saya',
@@ -190,6 +198,11 @@ const AuthenticatedDashboardBelanjaRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBukuBesarRoute = AuthenticatedBukuBesarRouteImport.update({
+  id: '/buku-besar',
+  path: '/buku-besar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
@@ -272,6 +285,12 @@ const AuthenticatedAdminPinjamanRoute =
   AuthenticatedAdminPinjamanRouteImport.update({
     id: '/pinjaman',
     path: '/pinjaman',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPenjaminRoute =
+  AuthenticatedAdminPenjaminRouteImport.update({
+    id: '/penjamin',
+    path: '/penjamin',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminPengaturanRoute =
@@ -369,12 +388,14 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -397,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -423,12 +445,14 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapat': typeof AuthenticatedRapatRoute
@@ -451,6 +475,7 @@ export interface FileRoutesByTo {
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -480,12 +505,14 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
+  '/_authenticated/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/favorit': typeof AuthenticatedFavoritRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
   '/_authenticated/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
+  '/_authenticated/penjamin': typeof AuthenticatedPenjaminRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/rapat': typeof AuthenticatedRapatRoute
@@ -508,6 +535,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/_authenticated/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
   '/_authenticated/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
@@ -537,12 +565,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/approval'
+    | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
+    | '/penjamin'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -565,6 +595,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
+    | '/admin/penjamin'
     | '/admin/pinjaman'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
@@ -591,12 +622,14 @@ export interface FileRouteTypes {
     | '/verify'
     | '/angsuran'
     | '/approval'
+    | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
     | '/marketplace-saya'
+    | '/penjamin'
     | '/pinjaman'
     | '/profil'
     | '/rapat'
@@ -619,6 +652,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-rat'
     | '/admin/marketplace'
     | '/admin/pengaturan'
+    | '/admin/penjamin'
     | '/admin/pinjaman'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
@@ -647,12 +681,14 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
+    | '/_authenticated/buku-besar'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard-belanja'
     | '/_authenticated/dokumen'
     | '/_authenticated/favorit'
     | '/_authenticated/kalkulator'
     | '/_authenticated/marketplace-saya'
+    | '/_authenticated/penjamin'
     | '/_authenticated/pinjaman'
     | '/_authenticated/profil'
     | '/_authenticated/rapat'
@@ -675,6 +711,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/laporan-rat'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/pengaturan'
+    | '/_authenticated/admin/penjamin'
     | '/_authenticated/admin/pinjaman'
     | '/_authenticated/admin/rekonsiliasi'
     | '/_authenticated/admin/seller-verify'
@@ -841,6 +878,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPinjamanRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/penjamin': {
+      id: '/_authenticated/penjamin'
+      path: '/penjamin'
+      fullPath: '/penjamin'
+      preLoaderRoute: typeof AuthenticatedPenjaminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/marketplace-saya': {
       id: '/_authenticated/marketplace-saya'
       path: '/marketplace-saya'
@@ -881,6 +925,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/buku-besar': {
+      id: '/_authenticated/buku-besar'
+      path: '/buku-besar'
+      fullPath: '/buku-besar'
+      preLoaderRoute: typeof AuthenticatedBukuBesarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/approval': {
@@ -986,6 +1037,13 @@ declare module '@tanstack/react-router' {
       path: '/pinjaman'
       fullPath: '/admin/pinjaman'
       preLoaderRoute: typeof AuthenticatedAdminPinjamanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/penjamin': {
+      id: '/_authenticated/admin/penjamin'
+      path: '/penjamin'
+      fullPath: '/admin/penjamin'
+      preLoaderRoute: typeof AuthenticatedAdminPenjaminRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pengaturan': {
@@ -1101,6 +1159,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminLaporanRatRoute: typeof AuthenticatedAdminLaporanRatRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
+  AuthenticatedAdminPenjaminRoute: typeof AuthenticatedAdminPenjaminRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
   AuthenticatedAdminRekonsiliasiRoute: typeof AuthenticatedAdminRekonsiliasiRoute
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
@@ -1124,6 +1183,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminLaporanRatRoute: AuthenticatedAdminLaporanRatRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
+  AuthenticatedAdminPenjaminRoute: AuthenticatedAdminPenjaminRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
   AuthenticatedAdminRekonsiliasiRoute: AuthenticatedAdminRekonsiliasiRoute,
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
@@ -1144,12 +1204,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
+  AuthenticatedBukuBesarRoute: typeof AuthenticatedBukuBesarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDashboardBelanjaRoute: typeof AuthenticatedDashboardBelanjaRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedFavoritRoute: typeof AuthenticatedFavoritRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
   AuthenticatedMarketplaceSayaRoute: typeof AuthenticatedMarketplaceSayaRoute
+  AuthenticatedPenjaminRoute: typeof AuthenticatedPenjaminRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRapatRoute: typeof AuthenticatedRapatRoute
@@ -1165,12 +1227,14 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
+  AuthenticatedBukuBesarRoute: AuthenticatedBukuBesarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDashboardBelanjaRoute: AuthenticatedDashboardBelanjaRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedFavoritRoute: AuthenticatedFavoritRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
   AuthenticatedMarketplaceSayaRoute: AuthenticatedMarketplaceSayaRoute,
+  AuthenticatedPenjaminRoute: AuthenticatedPenjaminRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRapatRoute: AuthenticatedRapatRoute,

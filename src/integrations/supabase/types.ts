@@ -381,6 +381,57 @@ export type Database = {
         }
         Relationships: []
       }
+      loan_guarantors: {
+        Row: {
+          borrower_id: string
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          guarantee_amount: number
+          guarantor_id: string
+          id: string
+          pinjaman_id: string
+          rejected_reason: string | null
+          requested_at: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["guarantor_status"]
+          updated_at: string
+        }
+        Insert: {
+          borrower_id: string
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          guarantee_amount?: number
+          guarantor_id: string
+          id?: string
+          pinjaman_id: string
+          rejected_reason?: string | null
+          requested_at?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["guarantor_status"]
+          updated_at?: string
+        }
+        Update: {
+          borrower_id?: string
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          guarantee_amount?: number
+          guarantor_id?: string
+          id?: string
+          pinjaman_id?: string
+          rejected_reason?: string | null
+          requested_at?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["guarantor_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       loan_verifications: {
         Row: {
           admin_notes: string | null
@@ -1944,6 +1995,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      act_on_guarantor_request: {
+        Args: { _action: string; _id: string; _reason?: string }
+        Returns: undefined
+      }
       get_email_by_phone: { Args: { _phone: string }; Returns: string }
       get_featured_products: {
         Args: { _limit?: number }
@@ -1970,6 +2025,20 @@ export type Database = {
       }
       get_marketplace_admin_stats: { Args: never; Returns: Json }
       get_marketplace_stats: { Args: never; Returns: Json }
+      get_member_ledger: {
+        Args: { _from?: string; _to?: string; _user_id: string }
+        Returns: {
+          arah: string
+          debit: number
+          jenis: string
+          keterangan: string
+          kredit: number
+          ref_id: string
+          ref_table: string
+          status: string
+          tanggal: string
+        }[]
+      }
       get_or_create_wallet: { Args: { _user_id: string }; Returns: string }
       get_public_koperasi_stats: { Args: never; Returns: Json }
       get_public_recent_activity: {
@@ -2068,6 +2137,10 @@ export type Database = {
       }
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
       normalize_phone_id: { Args: { _raw: string }; Returns: string }
+      validate_guarantor: {
+        Args: { _amount: number; _guarantor_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       angsuran_status: "unpaid" | "pending" | "paid" | "overdue"
@@ -2081,6 +2154,12 @@ export type Database = {
         | "lainnya"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
+      guarantor_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "expired"
+        | "cancelled"
       lowongan_status: "pending" | "approved" | "rejected" | "expired"
       meeting_status: "scheduled" | "ongoing" | "completed" | "cancelled"
       member_status: "pending" | "active" | "suspended" | "rejected"
@@ -2270,6 +2349,13 @@ export const Constants = {
       ],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
+      guarantor_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "expired",
+        "cancelled",
+      ],
       lowongan_status: ["pending", "approved", "rejected", "expired"],
       meeting_status: ["scheduled", "ongoing", "completed", "cancelled"],
       member_status: ["pending", "active", "suspended", "rejected"],
