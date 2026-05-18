@@ -58,6 +58,7 @@ import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
+import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -321,6 +322,12 @@ const ApiPublicHooksDailyRemindersRoute =
     path: '/api/public/hooks/daily-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAutoReleaseEscrowRoute =
+  ApiPublicHooksAutoReleaseEscrowRouteImport.update({
+    id: '/api/public/hooks/auto-release-escrow',
+    path: '/api/public/hooks/auto-release-escrow',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -370,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -419,6 +427,7 @@ export interface FileRoutesByTo {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesById {
@@ -471,6 +480,7 @@ export interface FileRoutesById {
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRouteTypes {
@@ -523,6 +533,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
+    | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -572,6 +583,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
+    | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   id:
     | '__root__'
@@ -623,6 +635,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
+    | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
 }
@@ -636,6 +649,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
+  ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
   ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
 
@@ -984,6 +998,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDailyRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/auto-release-escrow': {
+      id: '/api/public/hooks/auto-release-escrow'
+      path: '/api/public/hooks/auto-release-escrow'
+      fullPath: '/api/public/hooks/auto-release-escrow'
+      preLoaderRoute: typeof ApiPublicHooksAutoReleaseEscrowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1105,6 +1126,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
+  ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
   ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
 export const routeTree = rootRouteImport
