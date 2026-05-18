@@ -38,7 +38,7 @@ function AngsuranPage() {
     queryKey: ["angsuran", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("angsuran").select("id,pinjaman_id,cicilan_ke,nominal,jatuh_tempo,status,bukti_url,paid_at").eq("user_id", user!.id).order("jatuh_tempo");
+      const { data, error } = await supabase.from("angsuran").select("id,pinjaman_id,cicilan_ke,nominal,jatuh_tempo,status,bukti_url,paid_at,denda").eq("user_id", user!.id).order("jatuh_tempo");
       if (error) throw error;
       return (data ?? []) as Row[];
     },
