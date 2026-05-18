@@ -5,11 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, HandCoins, Loader2, Calculator, Eye, Download, ShieldCheck } from "lucide-react";
+import { Plus, HandCoins, Loader2, Calculator, Eye, Download, ShieldCheck, Lock, CheckCircle2 } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { LoanDetailDialog } from "@/components/loan-detail-dialog";
 import { downloadSuratPinjaman } from "@/lib/bukti-pdf";
 import { LoanApplicationWizard } from "@/components/loan-application-wizard";
+import { Progress } from "@/components/ui/progress";
+import { useLoanEligibility } from "@/hooks/use-loan-eligibility";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -30,8 +32,11 @@ function PinjamanPage() {
   const { user, profile } = useAuth();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
+  const { data: elig, isLoading: eligLoading } = useLoanEligibility();
 
-  useEffect(() => { if (search.nominal) setOpen(true); }, [search.nominal]);
+  useEffect(() => {
+    if (search.nominal && elig?.eligible) setOpen(true);
+  }, [search.nominal, elig?.eligible]);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["pinjaman", user?.id],
@@ -54,9 +59,67 @@ function PinjamanPage() {
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline"><Link to="/kalkulator"><Calculator className="mr-2 h-4 w-4" />Kalkulator</Link></Button>
-          <Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />Ajukan Pinjaman</Button>
+          <Button
+            onClick={() => setOpen(true)}
+            disabled={eligLoading || !elig?.eligible}
+            title={elig?.reason ?? undefined}
+          >
+            {elig && !elig.eligible ? <Lock className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
+            Ajukan Pinjaman
+          </Button>
         </div>
       </div>
+
+      {elig && (
+        <Card style={{ boxShadow: "var(--shadow-card)" }} className={elig.eligible ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/30 bg-amber-500/5"}>
+          <CardContent className="space-y-3 p-4">
+            <div className="flex items-start gap-3">
+              {elig.eligible ? (
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+              ) : (
+                <Lock className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+              )}
+              <div className="flex-1 space-y-1">
+                <p className="text-sm font-semibold">
+                  {elig.eligible
+                    ? "Anda memenuhi syarat untuk mengajukan pinjaman."
+                    : "Pinjaman hanya tersedia untuk anggota aktif minimal 6 bulan dan rutin membayar iuran wajib."}
+                </p>
+                {!elig.eligible && elig.monthsUntilEligible > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Anda dapat mengajukan pinjaman dalam <strong>{elig.monthsUntilEligible} bulan lagi</strong>.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <div className="mb-1 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Lama keanggotaan</span>
+                  <span className="font-medium">{elig.monthsAsMember}/{elig.iuranRequired} bulan</span>
+                </div>
+                <Progress value={Math.min(100, (elig.monthsAsMember / elig.iuranRequired) * 100)} />
+              </div>
+              <div>
+                <div className="mb-1 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Iuran wajib aktif (6 bulan terakhir)</span>
+                  <span className="font-medium">{elig.iuranPaidCount}/{elig.iuranRequired} bulan</span>
+                </div>
+                <Progress value={(elig.iuranPaidCount / elig.iuranRequired) * 100} />
+              </div>
+            </div>
+            {!elig.eligible && elig.missingMonths.length > 0 && (
+              <p className="text-xs text-amber-700">
+                Bulan belum terbayar/terverifikasi: {elig.missingMonths.join(", ")}.{" "}
+                <Link to="/simpanan" className="underline">Setor iuran wajib →</Link>
+              </p>
+            )}
+            {!elig.statusActive && (
+              <p className="text-xs text-amber-700">Status keanggotaan: {profile?.status ?? "—"}. Hubungi pengurus untuk aktivasi.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
         <ShieldCheck className="h-4 w-4 shrink-0" />
