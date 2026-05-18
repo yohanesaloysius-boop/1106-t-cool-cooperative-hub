@@ -27,6 +27,7 @@ type BungaJenis = "flat" | "efektif" | "menurun";
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  plafonMax?: number;
   initial?: { nominal?: number; tenor?: number; bunga?: number; jenis?: BungaJenis };
 }
 
@@ -46,7 +47,7 @@ const steps = [
   { id: 3, title: "Review & Submit", icon: CheckCircle2 },
 ];
 
-export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
+export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }: Props) {
   const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [step, setStep] = useState(1);
@@ -188,8 +189,9 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
     },
   });
 
+  const exceedsPlafon = typeof plafonMax === "number" && Number(form.nominal) > plafonMax;
   const canNext1 = (() => {
-    try { schema.parse(form); return form.agree; } catch { return false; }
+    try { schema.parse(form); return form.agree && !exceedsPlafon; } catch { return false; }
   })();
   // Boleh lanjut jika AI memverifikasi langsung ATAU butuh review manual admin (skor rendah / NIK tidak terbaca).
   const canNext2 = !!ktp && !!selfie && !!privy && (privy.status === "verified" || privy.status === "pending_review");
@@ -252,6 +254,12 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
                   </Select>
                 </div>
               </div>
+              {typeof plafonMax === "number" && (
+                <div className={`rounded-lg border p-2 text-xs ${exceedsPlafon ? "border-destructive/40 bg-destructive/5 text-destructive" : "border-border text-muted-foreground"}`}>
+                  Plafon disetujui sistem: <strong>{fmt.format(plafonMax)}</strong>
+                  {exceedsPlafon && <span> · Nominal melebihi plafon Anda</span>}
+                </div>
+              )}
               <div>
                 <Label>Tujuan Pinjaman</Label>
                 <Textarea rows={3} maxLength={500} className="mt-2" placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} />

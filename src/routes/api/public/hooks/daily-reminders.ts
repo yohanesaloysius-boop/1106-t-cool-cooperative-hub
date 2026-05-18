@@ -49,7 +49,87 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
     handlers: {
       POST: async () => {
-        const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0 };
+        const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0 };
+
+        // ===== Iuran wajib bulanan =====
+        // - Tanggal 25 / 28 / akhir bulan → reminder kalau belum setor iuran wajib bulan berjalan
+        // - Tanggal 1-3 bulan berikutnya → notifikasi keterlambatan bulan sebelumnya
+        const nowD = new Date();
+        const todayDay = nowD.getUTCDate();
+        const lastDayOfMonth = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() + 1, 0)).getUTCDate();
+        const startThisMonth = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth(), 1));
+        const startNextMonth = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() + 1, 1));
+        const startPrevMonth = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() - 1, 1));
+        const thisMonthKey = `${nowD.getUTCFullYear()}-${String(nowD.getUTCMonth() + 1).padStart(2, "0")}`;
+        const prevDate = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() - 1, 1));
+        const prevMonthKey = `${prevDate.getUTCFullYear()}-${String(prevDate.getUTCMonth() + 1).padStart(2, "0")}`;
+
+        const isReminderDay = todayDay === 25 || todayDay === lastDayOfMonth - 1 || todayDay === lastDayOfMonth;
+        const isLateDay = todayDay >= 1 && todayDay <= 3;
+
+        if (isReminderDay || isLateDay) {
+          const { data: activeMembers } = await supabaseAdmin
+            .from("profiles")
+            .select("id, nama_lengkap")
+            .eq("status", "active")
+            .is("deleted_at", null);
+
+          if (activeMembers?.length) {
+            const ids = activeMembers.map((m) => m.id);
+
+            if (isReminderDay) {
+              const { data: paidThis } = await supabaseAdmin
+                .from("simpanan")
+                .select("user_id")
+                .in("user_id", ids)
+                .eq("jenis", "wajib")
+                .in("status", ["pending", "verified"])
+                .gte("created_at", startThisMonth.toISOString())
+                .lt("created_at", startNextMonth.toISOString())
+                .is("deleted_at", null);
+              const paidSet = new Set((paidThis ?? []).map((r) => r.user_id));
+              const targets = activeMembers.filter((m) => !paidSet.has(m.id));
+              const daysLeft = lastDayOfMonth - todayDay;
+              const labelWaktu = daysLeft <= 0 ? "hari ini" : `${daysLeft} hari lagi`;
+              summary.iuran_wajib = await enqueue(
+                targets.map((m) => ({
+                  user_id: m.id,
+                  judul: "Iuran Wajib Bulan Ini",
+                  pesan: `Iuran wajib bulan ${thisMonthKey} jatuh tempo ${labelWaktu}. Mohon segera setor untuk menjaga keanggotaan aktif.`,
+                  kategori: "peringatan",
+                  url: "/simpanan",
+                  ref_table: `simpanan:wajib:${thisMonthKey}`,
+                  ref_id: m.id,
+                })),
+              );
+            }
+
+            if (isLateDay) {
+              const { data: paidPrev } = await supabaseAdmin
+                .from("simpanan")
+                .select("user_id")
+                .in("user_id", ids)
+                .eq("jenis", "wajib")
+                .in("status", ["pending", "verified"])
+                .gte("created_at", startPrevMonth.toISOString())
+                .lt("created_at", startThisMonth.toISOString())
+                .is("deleted_at", null);
+              const paidSet = new Set((paidPrev ?? []).map((r) => r.user_id));
+              const targets = activeMembers.filter((m) => !paidSet.has(m.id));
+              summary.iuran_late = await enqueue(
+                targets.map((m) => ({
+                  user_id: m.id,
+                  judul: "Iuran Wajib Terlambat",
+                  pesan: `Iuran wajib bulan ${prevMonthKey} belum tercatat. Tunggakan dapat memengaruhi eligibility & skor kredit Anda.`,
+                  kategori: "peringatan",
+                  url: "/simpanan",
+                  ref_table: `simpanan:wajib-late:${prevMonthKey}`,
+                  ref_id: m.id,
+                })),
+              );
+            }
+          }
+        }
 
         // 1) Anggota baru aktif tapi belum setor simpanan pokok (>= 3 hari sejak joined_at)
         const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
