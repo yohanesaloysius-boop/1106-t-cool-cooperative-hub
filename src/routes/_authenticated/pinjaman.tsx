@@ -51,10 +51,18 @@ function PinjamanPage() {
     enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason), loan_agreements!loan_agreements_pinjaman_id_key(id,status,pdf_path,member_signed_at,pengurus_signed_at)" as any)
+        .from("pinjaman").select("*, loan_verifications:verification_id(status, rejected_reason)")
         .eq("user_id", user!.id).order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      const ids = (data ?? []).map((r: any) => r.id);
+      let akadMap = new Map<string, any>();
+      if (ids.length) {
+        const { data: akads } = await (supabase.from("loan_agreements" as any)
+          .select("pinjaman_id,id,status,pdf_path,member_signed_at,pengurus_signed_at")
+          .in("pinjaman_id", ids));
+        akadMap = new Map(((akads as any[]) ?? []).map((a) => [a.pinjaman_id, a]));
+      }
+      return (data ?? []).map((r: any) => ({ ...r, akad: akadMap.get(r.id) ?? null }));
     },
   });
 
