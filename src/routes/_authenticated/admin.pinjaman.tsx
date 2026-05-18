@@ -11,7 +11,6 @@ import { SignaturePadDialog, type SignatureResult } from "@/components/signature
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { Loader2, PenLine, XCircle, Banknote, FileSignature } from "lucide-react";
 import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
-import { useQuery as useRq } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/admin/pinjaman")({
   head: () => ({ meta: [{ title: "Approval Pinjaman — T-COOL Koperasi" }] }),
