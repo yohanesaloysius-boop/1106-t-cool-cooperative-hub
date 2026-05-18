@@ -35,6 +35,7 @@ import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
 import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_authenticated/dashboard-belanja'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBukuBesarRouteImport } from './routes/_authenticated/buku-besar'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -196,6 +197,11 @@ const AuthenticatedDashboardBelanjaRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBukuBesarRoute = AuthenticatedBukuBesarRouteImport.update({
+  id: '/buku-besar',
+  path: '/buku-besar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
@@ -430,6 +437,7 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/dokumen': typeof AuthenticatedDokumenRoute
@@ -488,6 +496,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
+  '/_authenticated/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/approval'
+    | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
     | '/dokumen'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/angsuran'
     | '/approval'
+    | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
     | '/dokumen'
@@ -658,6 +669,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
+    | '/_authenticated/buku-besar'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard-belanja'
     | '/_authenticated/dokumen'
@@ -900,6 +912,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/buku-besar': {
+      id: '/_authenticated/buku-besar'
+      path: '/buku-besar'
+      fullPath: '/buku-besar'
+      preLoaderRoute: typeof AuthenticatedBukuBesarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/approval': {
@@ -1163,6 +1182,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
+  AuthenticatedBukuBesarRoute: typeof AuthenticatedBukuBesarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDashboardBelanjaRoute: typeof AuthenticatedDashboardBelanjaRoute
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
@@ -1185,6 +1205,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
+  AuthenticatedBukuBesarRoute: AuthenticatedBukuBesarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDashboardBelanjaRoute: AuthenticatedDashboardBelanjaRoute,
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
@@ -1242,3 +1263,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
