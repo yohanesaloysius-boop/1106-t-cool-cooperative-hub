@@ -166,10 +166,28 @@ function CheckoutPage() {
               </p>
             </div>
           </aside>
-          </aside>
         </div>
       </main>
       <SiteFooter />
     </div>
   );
 }
+
+function RekeningInfo() {
+  const { data } = useQuery({ queryKey: ["mp-rekening"], queryFn: getMarketplaceRekening });
+  if (!data) return <p className="mt-2 text-xs text-muted-foreground">Memuat…</p>;
+  return (
+    <div className="mt-2 space-y-1 text-sm">
+      <p><strong>{data.bank}</strong></p>
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-base">{data.no_rek}</span>
+        <Button size="sm" variant="ghost" className="h-7 rounded-full px-2"
+          onClick={() => { navigator.clipboard.writeText(data.no_rek); toast.success("Disalin"); }}>
+          <Copy className="h-3 w-3" />
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">a.n. {data.atas_nama}</p>
+    </div>
+  );
+}
+
