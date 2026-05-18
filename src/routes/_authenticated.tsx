@@ -86,6 +86,8 @@ const navGroups: NavGroup[] = [
       { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
       { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
       { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
+      { to: "/admin/laporan-rat", label: "Laporan RAT", icon: FileBarChart2 },
+      { to: "/admin/rekonsiliasi", label: "Rekonsiliasi Bank", icon: Landmark },
       { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
       { to: "/approval", label: "Status Approval", icon: FileSignature },
       { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
