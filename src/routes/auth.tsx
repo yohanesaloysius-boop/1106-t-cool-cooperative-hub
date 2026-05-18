@@ -109,7 +109,7 @@ function LoginForm() {
           <Label htmlFor="li-pw">Password</Label>
           <Link to="/forgot-password" className="text-xs text-primary hover:underline">Lupa password?</Link>
         </div>
-        <Input id="li-pw" type="password" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+        <PasswordInput id="li-pw" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
       </div>
       <Button type="submit" className="w-full" disabled={busy}>
         {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Masuk
