@@ -90,6 +90,7 @@ const navGroups: NavGroup[] = [
       { to: "/approval", label: "Status Approval", icon: FileSignature },
       { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
       { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
+      { to: "/admin/escrow", label: "Escrow & Pencairan", icon: Wallet },
       { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
       { to: "/admin/audit", label: "Audit Log", icon: Activity },
     ],
