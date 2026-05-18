@@ -186,7 +186,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   const canNext1 = (() => {
     try { schema.parse(form); return form.agree; } catch { return false; }
   })();
-  const canNext2 = !!ktp && !!selfie && !!privy && privy.status === "verified" && privy.face_match_score >= 0.75;
+  // Boleh lanjut jika AI memverifikasi langsung ATAU butuh review manual admin (skor rendah / NIK tidak terbaca).
+  const canNext2 = !!ktp && !!selfie && !!privy && (privy.status === "verified" || privy.status === "pending_review");
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
@@ -321,11 +322,12 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
                     <div className="rounded-xl bg-primary/10 p-2 text-primary"><ShieldCheck className="h-5 w-5" /></div>
                     <div>
                       <p className="font-semibold flex items-center gap-2">
-                        e-KYC Privy
-                        {privy?.mode === "mock" && <Badge variant="outline" className="text-[10px]">Simulasi</Badge>}
-                        {privy?.mode === "live" && <Badge className="text-[10px]">Live</Badge>}
+                        Verifikasi AI (OCR + Face Match)
+                        {privy?.status === "verified" && <Badge className="text-[10px] bg-success text-success-foreground">Terverifikasi</Badge>}
+                        {privy?.status === "pending_review" && <Badge variant="outline" className="text-[10px] border-amber-500 text-amber-600">Review Manual</Badge>}
+                        {privy?.status === "rejected" && <Badge variant="destructive" className="text-[10px]">Ditolak</Badge>}
                       </p>
-                      <p className="text-xs text-muted-foreground">Verifikasi NIK ke Dukcapil + pencocokan wajah (Privy).</p>
+                      <p className="text-xs text-muted-foreground">OCR KTP otomatis + cocokkan wajah selfie. Skor rendah akan diverifikasi pengurus secara manual.</p>
                     </div>
                   </div>
                   {privy?.status === "verified" && <CheckCircle2 className="h-5 w-5 text-success" />}
@@ -334,16 +336,33 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
                 {privy ? (
                   <div className="space-y-2 border-t bg-muted/30 p-4 text-xs">
                     <div className="grid grid-cols-2 gap-y-1">
-                      <span className="text-muted-foreground">NIK</span><span className="text-right font-mono">{privy.nik}</span>
-                      <span className="text-muted-foreground">Nama</span><span className="text-right font-medium">{privy.nama}</span>
-                      <span className="text-muted-foreground">Tgl Lahir</span><span className="text-right">{privy.tgl_lahir}</span>
+                      <span className="text-muted-foreground">NIK</span>
+                      <span className={`text-right font-mono ${(privy as any).nik_format_valid === false ? "text-destructive" : ""}`}>
+                        {privy.nik || "—"}
+                      </span>
+                      <span className="text-muted-foreground">Nama</span><span className="text-right font-medium">{privy.nama || "—"}</span>
+                      <span className="text-muted-foreground">Tgl Lahir</span><span className="text-right">{privy.tgl_lahir || "—"}</span>
                       <span className="text-muted-foreground">Liveness</span><span className="text-right">{privy.liveness}</span>
+                      <span className="text-muted-foreground">Kualitas KTP</span><span className="text-right">{(privy as any).ktp_quality ?? "—"}</span>
                       <span className="text-muted-foreground">Face Match</span>
-                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-destructive"}`}>
+                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-amber-600"}`}>
                         {(privy.face_match_score * 100).toFixed(1)}%
                       </span>
                       <span className="text-muted-foreground">Ref</span><span className="text-right font-mono text-[10px]">{privy.referenceId}</span>
                     </div>
+                    {(privy as any).notes && (
+                      <p className="rounded bg-background/60 p-2 text-[11px] text-muted-foreground">📝 {(privy as any).notes}</p>
+                    )}
+                    {privy.status === "pending_review" && (
+                      <div className="rounded bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-300">
+                        ℹ Skor verifikasi belum maksimal. Pengajuan tetap bisa dilanjutkan — pengurus akan memverifikasi identitas Anda secara manual.
+                      </div>
+                    )}
+                    {privy.status === "rejected" && (
+                      <div className="rounded bg-destructive/10 p-2 text-[11px] text-destructive">
+                        ✗ KTP tidak terbaca atau selfie tidak valid. Mohon ambil ulang foto.
+                      </div>
+                    )}
                   </div>
                 ) : null}
 
@@ -360,7 +379,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
                     className="w-full gap-2"
                   >
                     {privyBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                    {privy ? "Verifikasi ulang" : "Verifikasi via Privy"}
+                    {privy ? "Verifikasi ulang" : "Mulai Verifikasi AI"}
                   </Button>
                 </div>
               </Card>
