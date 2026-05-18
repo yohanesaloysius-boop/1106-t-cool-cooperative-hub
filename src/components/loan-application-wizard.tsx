@@ -61,6 +61,17 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   const [ktp, setKtp] = useState<{ path: string; preview: string } | null>(null);
   const [selfie, setSelfie] = useState<{ path: string; preview: string } | null>(null);
   const [openCam, setOpenCam] = useState<"ktp" | "selfie" | null>(null);
+  const verifyPrivyFn = useServerFn(verifyWithPrivy);
+  const [privy, setPrivy] = useState<
+    | null
+    | {
+        mode: "mock" | "live";
+        nik: string; nama: string; tgl_lahir: string; alamat: string;
+        face_match_score: number; liveness: string; status: string; referenceId: string;
+      }
+  >(null);
+  const [privyBusy, setPrivyBusy] = useState(false);
+  const [privyErr, setPrivyErr] = useState<string | null>(null);
 
   const sim = useMemo(() => {
     const n = Number(form.nominal) || 0;
@@ -71,8 +82,27 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   }, [form]);
 
   const reset = () => {
-    setStep(1); setKtp(null); setSelfie(null);
+    setStep(1); setKtp(null); setSelfie(null); setPrivy(null); setPrivyErr(null);
     setForm({ nominal: "", tenor_bulan: "12", bunga_persen: "1.5", bunga_jenis: "flat", tujuan: "", agree: false });
+  };
+
+  const runPrivy = async () => {
+    if (!ktp || !selfie) return;
+    setPrivyBusy(true); setPrivyErr(null);
+    try {
+      const res = await verifyPrivyFn({ data: { ktpPath: ktp.path, selfiePath: selfie.path, bucket: "verifikasi-pinjaman" } });
+      if (!res.ok) { setPrivyErr(res.error ?? "Verifikasi gagal"); setPrivy(null); }
+      else {
+        const r = res.result;
+        setPrivy({
+          mode: res.mode, nik: r.nik, nama: r.nama, tgl_lahir: r.tgl_lahir, alamat: r.alamat,
+          face_match_score: r.face_match_score, liveness: r.liveness, status: r.status, referenceId: r.referenceId,
+        });
+        if (r.face_match_score < 0.75) setPrivyErr(`Skor wajah rendah (${(r.face_match_score * 100).toFixed(1)}%). Ulangi selfie.`);
+      }
+    } catch (e) {
+      setPrivyErr((e as Error).message);
+    } finally { setPrivyBusy(false); }
   };
 
   const submit = useMutation({
