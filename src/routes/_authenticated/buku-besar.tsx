@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookOpen, ArrowDownCircle, ArrowUpCircle, Download, Loader2, PiggyBank, HandCoins, Wallet, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MemberCard } from "@/components/member-card";
+import { MemberCardDisplay } from "@/components/member-card-display";
 import { buildPassbookPdf } from "@/lib/passbook-pdf";
 import { toast } from "sonner";
 
@@ -171,12 +171,11 @@ function BukuBesarPage() {
       {profile && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-1">
-            <MemberCard
+            <MemberCardDisplay
               nama={profile.nama_lengkap ?? "-"}
               nomor={profile.nomor_anggota ?? null}
-              status={profile.status}
-              joined_at={profileExtra.data?.joined_at ?? null}
               foto_url={profile.foto_url ?? null}
+              joined_at={profileExtra.data?.joined_at ?? null}
             />
           </div>
           <div className="lg:col-span-2 grid grid-cols-2 gap-3">
