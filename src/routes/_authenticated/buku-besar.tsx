@@ -56,6 +56,17 @@ function BukuBesarPage() {
     },
   });
 
+  const profileExtra = useQuery({
+    queryKey: ["profile-extra", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles").select("nik, joined_at").eq("id", user!.id).maybeSingle();
+      if (error) throw error;
+      return data as { nik: string | null; joined_at: string | null } | null;
+    },
+  });
+
   const jenisList = useMemo(() => {
     const s = new Set<string>();
     (q.data ?? []).forEach((r) => s.add(r.jenis));
@@ -120,11 +131,11 @@ function BukuBesarPage() {
         anggota: {
           nama: profile.nama_lengkap ?? "-",
           nomor: profile.nomor_anggota ?? null,
-          nik: profile.nik ?? null,
+          nik: profileExtra.data?.nik ?? null,
           email: profile.email ?? null,
           no_hp: profile.no_hp ?? null,
           status: profile.status,
-          joined_at: profile.joined_at ?? null,
+          joined_at: profileExtra.data?.joined_at ?? null,
         },
         koperasi: { nama: "T-COOL Koperasi", alamat: "Indonesia" },
         periode: { from, to },
@@ -164,7 +175,7 @@ function BukuBesarPage() {
               nama={profile.nama_lengkap ?? "-"}
               nomor={profile.nomor_anggota ?? null}
               status={profile.status}
-              joined_at={profile.joined_at ?? null}
+              joined_at={profileExtra.data?.joined_at ?? null}
               foto_url={profile.foto_url ?? null}
             />
           </div>
