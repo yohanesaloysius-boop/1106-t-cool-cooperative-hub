@@ -10,7 +10,7 @@ export interface UploadResult {
 }
 
 interface Props {
-  bucket: "ktp" | "avatars" | "bukti-transfer" | "dokumen-pinjaman" | "tanda-tangan" | "laporan-pdf";
+  bucket: "ktp" | "avatars" | "bukti-transfer" | "dokumen-pinjaman" | "tanda-tangan" | "laporan-pdf" | "verifikasi-pinjaman";
   userId: string;
   accept?: string;
   label: string;
