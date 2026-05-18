@@ -31,7 +31,8 @@ export function useLoanEligibility() {
     queryFn: async () => {
       const required = 6;
       const now = new Date();
-      const joined = profile?.joined_at ? new Date((profile as any).joined_at) : new Date((profile as any)?.created_at ?? now);
+      const joinedRaw = (profile as any)?.joined_at ?? (profile as any)?.created_at;
+      const joined = joinedRaw ? new Date(joinedRaw) : now;
       const monthsAsMember = Math.max(
         0,
         (now.getFullYear() - joined.getFullYear()) * 12 + (now.getMonth() - joined.getMonth())
