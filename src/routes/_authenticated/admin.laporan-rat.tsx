@@ -31,7 +31,6 @@ function AdminLaporanRAT() {
 
   const currentYear = new Date().getFullYear();
   const [tahun, setTahun] = useState<number>(currentYear);
-  const [sigOpen, setSigOpen] = useState(false);
 
   const startISO = `${tahun}-01-01T00:00:00`;
   const endISO = `${tahun}-12-31T23:59:59`;
