@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { CameraCapture } from "@/components/camera-capture";
+import { useServerFn } from "@tanstack/react-start";
+import { verifyWithPrivy } from "@/lib/privy.functions";
+import { Badge } from "@/components/ui/badge";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
