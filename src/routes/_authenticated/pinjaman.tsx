@@ -273,6 +273,29 @@ function PinjamanPage() {
                           <Download className="h-3 w-3" /> Surat
                         </Button>
                       )}
+                      {String(r.status) === "approved" && (!r.akad || r.akad.status === "pending_member") && (
+                        <AkadSignDialog
+                          role="member"
+                          pinjaman={r}
+                          profile={{
+                            nama: profile?.nama_lengkap ?? "—",
+                            nomor: profile?.nomor_anggota ?? null,
+                            nik: (profile as any)?.nik ?? null,
+                            alamat: (profile as any)?.alamat ?? null,
+                          }}
+                          trigger={
+                            <Button size="sm" variant="default" className="mt-1 h-7 gap-1 text-xs">
+                              <FileSignature className="h-3 w-3" /> Tanda Tangani Akad
+                            </Button>
+                          }
+                        />
+                      )}
+                      {r.akad?.status === "pending_pengurus" && (
+                        <p className="mt-1 text-[10px] text-warning">Menunggu TTD pengurus</p>
+                      )}
+                      {r.akad?.pdf_path && (
+                        <div className="mt-1"><AkadDownloadButton pdfPath={r.akad.pdf_path} /></div>
+                      )}
                     </div>
                   </div>
                 </div>
