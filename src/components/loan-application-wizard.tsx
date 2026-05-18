@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { CameraCapture } from "@/components/camera-capture";
+import { useServerFn } from "@tanstack/react-start";
+import { verifyWithPrivy } from "@/lib/privy.functions";
+import { Badge } from "@/components/ui/badge";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -58,6 +61,17 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   const [ktp, setKtp] = useState<{ path: string; preview: string } | null>(null);
   const [selfie, setSelfie] = useState<{ path: string; preview: string } | null>(null);
   const [openCam, setOpenCam] = useState<"ktp" | "selfie" | null>(null);
+  const verifyPrivyFn = useServerFn(verifyWithPrivy);
+  const [privy, setPrivy] = useState<
+    | null
+    | {
+        mode: "mock" | "live";
+        nik: string; nama: string; tgl_lahir: string; alamat: string;
+        face_match_score: number; liveness: string; status: string; referenceId: string;
+      }
+  >(null);
+  const [privyBusy, setPrivyBusy] = useState(false);
+  const [privyErr, setPrivyErr] = useState<string | null>(null);
 
   const sim = useMemo(() => {
     const n = Number(form.nominal) || 0;
@@ -68,8 +82,27 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   }, [form]);
 
   const reset = () => {
-    setStep(1); setKtp(null); setSelfie(null);
+    setStep(1); setKtp(null); setSelfie(null); setPrivy(null); setPrivyErr(null);
     setForm({ nominal: "", tenor_bulan: "12", bunga_persen: "1.5", bunga_jenis: "flat", tujuan: "", agree: false });
+  };
+
+  const runPrivy = async () => {
+    if (!ktp || !selfie) return;
+    setPrivyBusy(true); setPrivyErr(null);
+    try {
+      const res = await verifyPrivyFn({ data: { ktpPath: ktp.path, selfiePath: selfie.path, bucket: "verifikasi-pinjaman" } });
+      if (!res.ok) { setPrivyErr(res.error ?? "Verifikasi gagal"); setPrivy(null); }
+      else {
+        const r = res.result;
+        setPrivy({
+          mode: res.mode, nik: r.nik, nama: r.nama, tgl_lahir: r.tgl_lahir, alamat: r.alamat,
+          face_match_score: r.face_match_score, liveness: r.liveness, status: r.status, referenceId: r.referenceId,
+        });
+        if (r.face_match_score < 0.75) setPrivyErr(`Skor wajah rendah (${(r.face_match_score * 100).toFixed(1)}%). Ulangi selfie.`);
+      }
+    } catch (e) {
+      setPrivyErr((e as Error).message);
+    } finally { setPrivyBusy(false); }
   };
 
   const submit = useMutation({
@@ -97,8 +130,18 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
           ktp_image_path: ktp.path,
           selfie_image_path: selfie.path,
           status: "pending",
-          ocr_data: { _placeholder: true, nama: profile?.nama_lengkap, nik: (profile as any)?.nik },
-          face_match_score: null,
+          ocr_data: {
+            provider: "privy",
+            mode: privy?.mode ?? null,
+            nik: privy?.nik ?? (profile as any)?.nik ?? null,
+            nama: privy?.nama ?? profile?.nama_lengkap ?? null,
+            tgl_lahir: privy?.tgl_lahir ?? null,
+            alamat: privy?.alamat ?? null,
+            liveness: privy?.liveness ?? null,
+            privy_status: privy?.status ?? null,
+            privy_reference: privy?.referenceId ?? null,
+          },
+          face_match_score: privy?.face_match_score ?? null,
           location,
           user_agent: navigator.userAgent,
         })
@@ -143,7 +186,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
   const canNext1 = (() => {
     try { schema.parse(form); return form.agree; } catch { return false; }
   })();
-  const canNext2 = !!ktp && !!selfie;
+  const canNext2 = !!ktp && !!selfie && !!privy && privy.status === "verified" && privy.face_match_score >= 0.75;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
@@ -270,6 +313,57 @@ export function LoanApplicationWizard({ open, onOpenChange, initial }: Props) {
               <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
                 🔒 Foto Anda disimpan secara privat. Akses hanya untuk pengurus koperasi terverifikasi.
               </div>
+
+              {/* e-KYC Privy */}
+              <Card className="overflow-hidden border-primary/30">
+                <div className="flex items-start justify-between gap-3 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-primary/10 p-2 text-primary"><ShieldCheck className="h-5 w-5" /></div>
+                    <div>
+                      <p className="font-semibold flex items-center gap-2">
+                        e-KYC Privy
+                        {privy?.mode === "mock" && <Badge variant="outline" className="text-[10px]">Simulasi</Badge>}
+                        {privy?.mode === "live" && <Badge className="text-[10px]">Live</Badge>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Verifikasi NIK ke Dukcapil + pencocokan wajah (Privy).</p>
+                    </div>
+                  </div>
+                  {privy?.status === "verified" && <CheckCircle2 className="h-5 w-5 text-success" />}
+                </div>
+
+                {privy ? (
+                  <div className="space-y-2 border-t bg-muted/30 p-4 text-xs">
+                    <div className="grid grid-cols-2 gap-y-1">
+                      <span className="text-muted-foreground">NIK</span><span className="text-right font-mono">{privy.nik}</span>
+                      <span className="text-muted-foreground">Nama</span><span className="text-right font-medium">{privy.nama}</span>
+                      <span className="text-muted-foreground">Tgl Lahir</span><span className="text-right">{privy.tgl_lahir}</span>
+                      <span className="text-muted-foreground">Liveness</span><span className="text-right">{privy.liveness}</span>
+                      <span className="text-muted-foreground">Face Match</span>
+                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-destructive"}`}>
+                        {(privy.face_match_score * 100).toFixed(1)}%
+                      </span>
+                      <span className="text-muted-foreground">Ref</span><span className="text-right font-mono text-[10px]">{privy.referenceId}</span>
+                    </div>
+                  </div>
+                ) : null}
+
+                {privyErr && (
+                  <div className="border-t bg-destructive/10 p-3 text-xs text-destructive">⚠ {privyErr}</div>
+                )}
+
+                <div className="border-t p-3">
+                  <Button
+                    onClick={runPrivy}
+                    disabled={!ktp || !selfie || privyBusy}
+                    variant={privy?.status === "verified" ? "outline" : "default"}
+                    size="sm"
+                    className="w-full gap-2"
+                  >
+                    {privyBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                    {privy ? "Verifikasi ulang" : "Verifikasi via Privy"}
+                  </Button>
+                </div>
+              </Card>
             </div>
           )}
 
