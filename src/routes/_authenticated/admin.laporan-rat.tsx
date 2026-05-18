@@ -243,9 +243,16 @@ function AdminLaporanRAT() {
             <Button variant="outline" onClick={exportExcel} disabled={!data}>
               <FileSpreadsheet className="mr-2 h-4 w-4" />Unduh Excel
             </Button>
-            <Button onClick={() => (isKetua ? setSigOpen(true) : exportPDF())} disabled={!data}>
-              <FileText className="mr-2 h-4 w-4" />{isKetua ? "Tandatangan & Unduh PDF" : "Unduh PDF"}
+            <Button variant="outline" onClick={() => exportPDF()} disabled={!data}>
+              <FileText className="mr-2 h-4 w-4" />Unduh PDF
             </Button>
+            {isKetua && (
+              <SignaturePadDialog
+                title="Tanda Tangani Laporan RAT"
+                onSign={(s) => exportPDF(s)}
+                trigger={<Button disabled={!data}><FileText className="mr-2 h-4 w-4" />PDF + TTD Ketua</Button>}
+              />
+            )}
           </div>
         </CardContent>
       </Card>
