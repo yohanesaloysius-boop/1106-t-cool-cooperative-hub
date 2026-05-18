@@ -266,7 +266,17 @@ function RegisterForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="r-hp">Nomor HP</Label>
-          <Input id="r-hp" inputMode="tel" value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} required />
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Phone className="h-4 w-4" />
+            </span>
+            <Input id="r-hp" inputMode="tel" placeholder="0812xxxxxxxx" className="pl-9" value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} required />
+          </div>
+          {form.no_hp && (
+            <p className="text-[11px] text-muted-foreground">
+              Tersimpan sebagai: <span className="font-mono">{normalizePhoneId(form.no_hp) ?? "-"}</span>
+            </p>
+          )}
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="r-email">Email</Label>
