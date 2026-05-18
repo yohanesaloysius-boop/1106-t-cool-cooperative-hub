@@ -194,6 +194,93 @@ export const fmtIDR = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
+// ---------- Komplain ----------
+export async function fileComplaint(trxId: string, alasan: string, lampiranUrl?: string) {
+  const { data, error } = await supabase.rpc("mp_file_complaint" as any, {
+    _trx_id: trxId,
+    _alasan: alasan,
+    _lampiran_url: lampiranUrl ?? null,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function resolveComplaint(complaintId: string, action: "refund" | "reject", catatan: string) {
+  const { error } = await supabase.rpc("mp_resolve_complaint" as any, {
+    _complaint_id: complaintId,
+    _action: action,
+    _catatan: catatan,
+  });
+  if (error) throw error;
+}
+
+export async function listOpenComplaints(): Promise<any[]> {
+  const { data } = await supabase
+    .from("marketplace_complaints" as any)
+    .select("*")
+    .eq("status", "open")
+    .order("created_at", { ascending: false });
+  return (data ?? []) as any[];
+}
+
+export async function listAllComplaints(): Promise<any[]> {
+  const { data } = await supabase
+    .from("marketplace_complaints" as any)
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  return (data ?? []) as any[];
+}
+
+export async function listMyComplaints(userId: string): Promise<any[]> {
+  const { data } = await supabase
+    .from("marketplace_complaints" as any)
+    .select("*")
+    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+    .order("created_at", { ascending: false });
+  return (data ?? []) as any[];
+}
+
+// ---------- Seller verification ----------
+export async function setStoreStatus(storeId: string, status: "active" | "pending" | "suspended" | "inactive", alasan?: string) {
+  const { error } = await supabase.rpc("mp_set_store_status" as any, {
+    _store_id: storeId,
+    _status: status,
+    _alasan: alasan ?? null,
+  });
+  if (error) throw error;
+}
+
+export async function listStoresByStatus(status?: string): Promise<any[]> {
+  let q = supabase.from("marketplace_stores").select("*, profiles!marketplace_stores_member_id_fkey(nama_lengkap, nomor_anggota, no_hp)").order("created_at", { ascending: false });
+  if (status) q = q.eq("status_toko", status as any);
+  const { data } = await q;
+  return (data ?? []) as any[];
+}
+
+// ---------- Admin stats ----------
+export async function getAdminStats(): Promise<{
+  fee_koperasi: number; escrow_total: number; gmv: number;
+  completed: number; pending_verif: number; open_complaints: number;
+  by_status: Record<string, number>;
+}> {
+  const { data, error } = await supabase.rpc("get_marketplace_admin_stats" as any);
+  if (error) throw error;
+  return data as any;
+}
+
+export async function getTopProducts(limit = 10): Promise<any[]> {
+  const { data, error } = await supabase.rpc("get_top_products" as any, { _limit: limit });
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
+export async function getFeeBreakdown(): Promise<{ bulan: string; total_fee: number; total_gmv: number; jumlah_trx: number }[]> {
+  const { data, error } = await supabase.rpc("get_fee_breakdown" as any);
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
 export async function uploadBuktiFile(userId: string, file: File): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
   const path = `${userId}/bukti/${Date.now()}.${ext}`;
