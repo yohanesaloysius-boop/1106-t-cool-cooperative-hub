@@ -59,7 +59,6 @@ function CheckoutPage() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      const waLinks: { store: string; url: string }[] = [];
       for (const [storeId, items] of Object.entries(groups)) {
         const catatan = notes[storeId]?.trim() || undefined;
         for (const it of items) {
@@ -70,26 +69,9 @@ function CheckoutPage() {
             catatan,
           });
         }
-        const totalStore = items.reduce((s, it) => s + cartItemEffectivePrice(it) * it.qty, 0);
-        const lines = items
-          .map((it) => `• ${it.nama_produk} x${it.qty} — ${fmtIDR(cartItemEffectivePrice(it) * it.qty)}`)
-          .join("\n");
-        const msg = `*Pesanan Marketplace T-COOL*\n\nDari: ${profile?.nama_lengkap ?? user.email}\n${
-          profile?.nomor_anggota ? `No. Anggota: ${profile.nomor_anggota}\n` : ""
-        }\n${lines}\n\n*Total: ${fmtIDR(totalStore)}*${catatan ? `\n\nCatatan: ${catatan}` : ""}`;
-        const wa = items[0].store_whatsapp;
-        if (wa) {
-          waLinks.push({
-            store: items[0].store_nama,
-            url: `https://wa.me/${String(wa).replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`,
-          });
-        }
       }
       cart.clear();
-      toast.success("Pesanan dibuat! Konfirmasi via WhatsApp ke penjual.");
-
-      // Open first WA link; show others on transaksi-saya
-      if (waLinks[0]) window.open(waLinks[0].url, "_blank");
+      toast.success("Pesanan dibuat! Lanjut transfer ke rekening koperasi & upload bukti.");
       navigate({ to: "/transaksi-saya" });
     } catch (e: any) {
       toast.error(e.message);
