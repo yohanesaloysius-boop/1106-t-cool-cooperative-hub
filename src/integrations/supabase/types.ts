@@ -171,6 +171,116 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_depreciations: {
+        Row: {
+          akumulasi: number
+          asset_id: string
+          beban_bulan: number
+          created_at: string
+          id: string
+          nilai_buku: number
+          periode: string
+        }
+        Insert: {
+          akumulasi?: number
+          asset_id: string
+          beban_bulan?: number
+          created_at?: string
+          id?: string
+          nilai_buku?: number
+          periode: string
+        }
+        Update: {
+          akumulasi?: number
+          asset_id?: string
+          beban_bulan?: number
+          created_at?: string
+          id?: string
+          nilai_buku?: number
+          periode?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_depreciations_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assets: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deskripsi: string | null
+          dokumen_url: string | null
+          foto_url: string | null
+          harga_perolehan: number
+          id: string
+          kategori: Database["public"]["Enums"]["asset_kategori"]
+          kondisi: Database["public"]["Enums"]["asset_kondisi"]
+          lokasi: string | null
+          nama: string
+          nilai_residu: number
+          nomor_aset: string
+          penanggung_jawab: string | null
+          status: Database["public"]["Enums"]["asset_status"]
+          tanggal_perolehan: string
+          umur_ekonomis_bulan: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deskripsi?: string | null
+          dokumen_url?: string | null
+          foto_url?: string | null
+          harga_perolehan?: number
+          id?: string
+          kategori?: Database["public"]["Enums"]["asset_kategori"]
+          kondisi?: Database["public"]["Enums"]["asset_kondisi"]
+          lokasi?: string | null
+          nama: string
+          nilai_residu?: number
+          nomor_aset: string
+          penanggung_jawab?: string | null
+          status?: Database["public"]["Enums"]["asset_status"]
+          tanggal_perolehan: string
+          umur_ekonomis_bulan?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deskripsi?: string | null
+          dokumen_url?: string | null
+          foto_url?: string | null
+          harga_perolehan?: number
+          id?: string
+          kategori?: Database["public"]["Enums"]["asset_kategori"]
+          kondisi?: Database["public"]["Enums"]["asset_kondisi"]
+          lokasi?: string | null
+          nama?: string
+          nilai_residu?: number
+          nomor_aset?: string
+          penanggung_jawab?: string | null
+          status?: Database["public"]["Enums"]["asset_status"]
+          tanggal_perolehan?: string
+          umur_ekonomis_bulan?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -1999,6 +2109,10 @@ export type Database = {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
+      compute_asset_depreciation: {
+        Args: { _asset_id: string }
+        Returns: number
+      }
       get_email_by_phone: { Args: { _phone: string }; Returns: string }
       get_featured_products: {
         Args: { _limit?: number }
@@ -2152,6 +2266,14 @@ export type Database = {
         | "anggota"
         | "pengumuman"
         | "lainnya"
+      asset_kategori:
+        | "kendaraan"
+        | "properti"
+        | "peralatan"
+        | "elektronik"
+        | "lainnya"
+      asset_kondisi: "baik" | "perlu_perbaikan" | "rusak"
+      asset_status: "aktif" | "dijual" | "rusak" | "dihapus"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
       guarantor_status:
@@ -2347,6 +2469,15 @@ export const Constants = {
         "pengumuman",
         "lainnya",
       ],
+      asset_kategori: [
+        "kendaraan",
+        "properti",
+        "peralatan",
+        "elektronik",
+        "lainnya",
+      ],
+      asset_kondisi: ["baik", "perlu_perbaikan", "rusak"],
+      asset_status: ["aktif", "dijual", "rusak", "dihapus"],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
       guarantor_status: [
