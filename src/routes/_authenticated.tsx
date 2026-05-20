@@ -49,6 +49,11 @@ const navGroups: NavGroup[] = [
     label: "Koperasi Keuangan",
     icon: Landmark,
     items: [
+      // Admin Koperasi - Inti
+      { to: "/admin", label: "Dasbor Admin", icon: ShieldCheck, adminOnly: true },
+      { to: "/admin/anggota", label: "Kelola Anggota", icon: Users, adminOnly: true },
+      { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon, adminOnly: true },
+      { to: "/admin/audit", label: "Audit Log", icon: Activity, adminOnly: true },
       // Anggota
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
@@ -58,7 +63,7 @@ const navGroups: NavGroup[] = [
       { to: "/buku-besar", label: "Buku Besar", icon: BookOpen },
       { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
       { to: "/approval", label: "Status Approval", icon: FileSignature },
-      // Admin Koperasi
+      // Admin Koperasi - Keuangan
       { to: "/admin/buku-besar", label: "Buku Besar Anggota", icon: BookOpen, adminOnly: true },
       { to: "/admin/buku-kas", label: "Buku Kas Harian", icon: BookText, adminOnly: true },
       { to: "/admin/arsip-transaksi", label: "Arsip Digital Transaksi", icon: Archive, adminOnly: true },
@@ -97,18 +102,6 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
       { to: "/rapat", label: "Rapat", icon: CalendarDays },
-    ],
-  },
-  {
-    id: "admin",
-    label: "Panel Admin",
-    icon: ShieldCheck,
-    adminOnly: true,
-    items: [
-      { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
-      { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
-      { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
-      { to: "/admin/audit", label: "Audit Log", icon: Activity },
     ],
   },
 ];
