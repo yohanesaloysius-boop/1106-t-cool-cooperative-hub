@@ -13,6 +13,9 @@ const QUICK_PROMPTS = [
   "Simulasi pinjaman 10 juta tenor 12 bulan",
   "Apa itu simpanan wajib?",
   "Kapan SHU dibagikan?",
+  "Bagaimana cara membuka toko di marketplace?",
+  "Jelaskan alur escrow marketplace",
+  "Berapa fee marketplace?",
   "Hubungi admin",
 ];
 
