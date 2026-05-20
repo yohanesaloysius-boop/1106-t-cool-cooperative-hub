@@ -4,7 +4,7 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -42,6 +42,8 @@ const navGroups: NavGroup[] = [
       { to: "/profil", label: "Profil", icon: UserIcon },
       { to: "/riwayat", label: "Riwayat", icon: History },
       { to: "/favorit", label: "Favorit", icon: Heart },
+      { to: "/lowongan", label: "Lowongan Kerja", icon: Briefcase },
+      { to: "/admin/lowongan", label: "Kelola Lowongan", icon: Briefcase, adminOnly: true },
     ],
   },
   {
