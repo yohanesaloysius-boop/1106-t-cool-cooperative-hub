@@ -1,69 +1,64 @@
-# Marketplace Komunitas — Struktur Dasar
+# Plan: 5 Modul Tata Kelola Koperasi
 
-Fokus tahap ini: **UI, routing, layout**. Belum bikin tabel database / transaksi / upload produk real — semua pakai data dummy supaya bisa cepat di-review.
+Menambahkan 5 modul besar: Aset & Inventaris, Laporan Keuangan SAK ETAP, Manajemen Pajak, OPEX, dan Penagihan. Semua menu baru hanya muncul untuk pengurus (super_admin, ketua, sekretaris, bendahara). Menu di beranda anggota tidak diubah.
 
-## 1. Routing baru (TanStack file routes)
+## Urutan implementasi (batch)
 
-Halaman publik (tanpa login):
-- `src/routes/marketplace.tsx` — Home Marketplace (hero, produk unggulan slider, toko pilihan, kategori, CTA gabung)
-- `src/routes/marketplace.produk.$id.tsx` — Detail Produk
-- `src/routes/marketplace.toko.$slug.tsx` — Detail Toko
+Saya kerjakan bertahap supaya tiap modul bisa dites. Saran urutan:
 
-Halaman anggota (di dalam `_authenticated`):
-- `src/routes/_authenticated/marketplace-saya.tsx` — Dashboard Seller (toko saya + daftar produk saya, tombol tambah produk — placeholder)
+1. **Aset & Inventaris** (mandiri, paling sederhana)
+2. **OPEX / Pengeluaran Operasional** (fondasi buku besar)
+3. **Manajemen Pajak** (lanjutan OPEX)
+4. **Modul Penagihan** (pakai data `angsuran` yang sudah ada)
+5. **Laporan Keuangan SAK ETAP** (paling akhir — agregasi semua di atas)
 
-Halaman admin (di dalam `_authenticated`, role `is_pengurus`):
-- `src/routes/_authenticated/admin.marketplace.tsx` — Manajemen Marketplace (tab: Produk, Toko, Kategori, Laporan — placeholder tabel dummy)
+## Ringkasan tiap modul
 
-## 2. Update navigasi
+### 1. Aset & Inventaris
+- Tabel `assets`: nama, kategori (kendaraan/properti/peralatan/lainnya), nomor_aset, tanggal_perolehan, harga_perolehan, umur_ekonomis_bulan, nilai_residu, lokasi, kondisi, status (aktif/dijual/rusak/dihapus), penanggung_jawab, foto, dokumen.
+- Tabel `asset_depreciations`: snapshot bulanan (asset_id, bulan, beban_bulan, akumulasi, nilai_buku) — di-generate via tombol admin atau cron.
+- Halaman `/admin/aset`: list, filter kategori, CRUD, hitung penyusutan garis lurus.
+- Halaman detail aset: riwayat penyusutan + dokumen.
 
-- **Header publik** (`site-header.tsx`): tambah link "Marketplace" ke nav utama.
-- **Sidebar anggota** (`_authenticated.tsx`): tambah menu "Marketplace" + "Marketplace Saya".
-- **Sidebar admin**: tambah menu "Manajemen Marketplace".
+### 2. OPEX (Pengeluaran Operasional)
+- Tabel `opex_categories`: nama, kode (gaji/sewa/listrik/atk/lainnya).
+- Tabel `opex_expenses`: kategori_id, tanggal, deskripsi, nominal, penerima, metode_bayar, status (draft/pending/approved/rejected/paid), bukti_url, created_by, approved_by, paid_at, pajak_terkait (jsonb untuk PPh 21/23).
+- Halaman `/admin/opex`: list + filter periode + kategori, form pengajuan, approval (ketua/super_admin), tandai paid (bendahara), upload bukti.
+- Workflow approval pakai pola yang ada (`approvals` table sudah ada).
 
-## 3. Update homepage (`src/routes/index.tsx`)
+### 3. Manajemen Pajak
+- Tabel `tax_records`: jenis (pph21/pph23/ppn/spt_tahunan), periode_bulan, periode_tahun, dasar_pengenaan, tarif_persen, nominal_pajak, status (draft/dilaporkan/dibayar), bukti_lapor_url, bukti_bayar_url, ref_opex_id (nullable), catatan.
+- Auto-create record PPh 21 dari OPEX kategori "gaji" & PPh 23 dari kategori "jasa".
+- Halaman `/admin/pajak`: list per jenis, ringkasan tahunan, generate laporan SPT (export CSV/PDF sederhana).
 
-Placeholder "Marketplace Komunitas — Segera Hadir" di kolom kanan hero diganti jadi **preview card aktif** yang menampilkan:
-- Mini hero
-- 4 produk unggulan dummy (carousel auto-scroll horizontal)
-- Tombol "Jelajahi Marketplace" → `/marketplace`
+### 4. Modul Penagihan
+- Tabel `collection_logs`: angsuran_id, user_id, jenis_kontak (telepon/wa/sms/kunjungan/email), tanggal, hasil (janji_bayar/tidak_diangkat/menolak/sudah_bayar/restrukturisasi), catatan, follow_up_date, created_by.
+- Tabel `loan_restructures`: pinjaman_id, alasan, tenor_baru, bunga_baru, cicilan_baru, status (pending/approved/rejected), approved_by, dokumen_url.
+- Halaman `/admin/penagihan`: 
+  - Tab "Tunggakan" — list angsuran `overdue/unpaid` + jatuh tempo lewat, urut by hari tunggakan, tombol "Log kontak" & "Ajukan restrukturisasi".
+  - Tab "Riwayat kontak" — semua log.
+  - Tab "Restrukturisasi" — pengajuan & approval, kalau approved bikin angsuran baru.
 
-## 4. Komponen marketplace baru
+### 5. Laporan Keuangan SAK ETAP
+- View/RPC SQL untuk agregasi:
+  - `get_neraca(_tanggal)` — aset (kas/bank/piutang/aset tetap-akum.penyusutan) vs kewajiban (simpanan anggota) + ekuitas (modal/SHU ditahan).
+  - `get_laba_rugi(_from, _to)` — pendapatan (bunga pinjaman, fee marketplace, denda) - beban (OPEX, penyusutan, pajak).
+  - `get_arus_kas(_from, _to)` — operasi/investasi/pendanaan dari wallet_transactions + opex + assets.
+  - `get_perubahan_ekuitas(_tahun)` — saldo awal, +SHU, -pembagian, saldo akhir.
+- Halaman `/admin/laporan-keuangan`: 4 tab (Neraca, Laba Rugi, Arus Kas, Perubahan Ekuitas), filter periode, export PDF/Excel (pakai `jspdf` & `xlsx` yang sudah ada atau install).
 
-`src/components/marketplace/`:
-- `product-card.tsx` — kartu produk (gambar, nama, harga, toko, rating)
-- `store-card.tsx` — kartu toko (logo, nama, kota, jumlah produk)
-- `category-pill.tsx` — chip kategori
-- `product-carousel.tsx` — slider auto-scroll horizontal pakai CSS marquee (re-use pola `animate-marquee-y`, dibuat varian horizontal)
-- `marketplace-hero.tsx` — hero banner gradient + CTA
+## Akses & keamanan
 
-## 5. Data dummy
+- Semua tabel RLS: hanya `is_pengurus(auth.uid())` boleh CRUD, anggota tidak akses (kecuali laporan tertentu kalau diminta).
+- Approval workflow OPEX pakai pola `approvals` table existing.
+- Notifikasi (`notifications`) ke pengurus saat OPEX butuh approval, restrukturisasi diajukan, tunggakan jatuh tempo.
 
-`src/lib/marketplace-mock.ts`:
-- 12 produk dummy (nama Indonesia, harga rupiah, kategori, toko, rating, gambar dari Unsplash)
-- 6 toko anggota
-- 8 kategori (Kuliner, Fashion, Elektronik, Pertanian, Jasa, Kerajinan, Kesehatan, Lainnya)
+## Catatan UI
 
-Gambar pakai URL `https://images.unsplash.com/...` (tidak generate file lokal).
+- Tambah menu pengurus di `src/routes/_authenticated/admin.tsx` (sidebar/grid pengurus) — Aset, OPEX, Pajak, Penagihan, Laporan Keuangan.
+- Menu beranda anggota TIDAK diubah.
+- Pakai komponen yang sudah ada (shadcn Table, Card, Dialog, Tabs).
 
-## 6. Role marketplace
+## Estimasi
 
-Tambah field klien-side `is_seller` di `use-auth` (default `false`, toggle manual lewat tombol "Buka Toko" di halaman Marketplace Saya — UI only, belum simpan ke DB). Role admin pakai `is_pengurus` yang sudah ada.
-
-## 7. Desain
-
-- Token warna & shadow dari `styles.css` yang sudah ada (jangan hardcode).
-- Style premium-modern (gaya Tokopedia/Shopee): kartu rounded-2xl, shadow halus, hover lift, badge diskon merah, harga primary, rating bintang amber.
-- Responsive: grid 2 kolom mobile → 4 kolom desktop.
-- Dark mode mengikuti theme yang sudah ada.
-
-## Yang TIDAK dikerjakan tahap ini
-
-- Tabel database produk/toko/transaksi
-- Upload gambar produk
-- Sistem pesan/chat
-- Checkout/pembayaran
-- Approval produk oleh admin (UI ada, tombol no-op)
-- Persistensi role `seller`
-
-Lanjut implementasi?
+Tiap modul = 1–2 migrasi DB + 1–3 route file. Total ~5 migrasi + ~10 file route + update menu admin. Saya kerjakan modul **1 dulu (Aset & Inventaris)** dan minta review sebelum lanjut modul berikutnya — supaya tidak menumpuk error dan Anda bisa cek arah desainnya.
