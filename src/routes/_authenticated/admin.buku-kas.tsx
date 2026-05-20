@@ -47,17 +47,30 @@ function AdminBukuKas() {
       const fromISO = `${from}T00:00:00`;
       const toISO = `${to}T23:59:59`;
       const [{ data: simp }, { data: ang }, { data: pj }, { data: shu }] = await Promise.all([
-        supabase.from("simpanan").select("id,nominal,jenis,created_at,user_id,profiles:profiles!simpanan_user_id_fkey(nama_lengkap,nomor_anggota)").eq("status", "verified").gte("created_at", fromISO).lte("created_at", toISO),
-        supabase.from("angsuran").select("id,nominal,paid_at,cicilan_ke,user_id,profiles:profiles!angsuran_user_id_fkey(nama_lengkap,nomor_anggota)").eq("status", "paid").gte("paid_at", fromISO).lte("paid_at", toISO),
-        supabase.from("pinjaman").select("id,nominal,disbursed_at,user_id,profiles:profiles!pinjaman_user_id_fkey(nama_lengkap,nomor_anggota)").not("disbursed_at", "is", null).gte("disbursed_at", fromISO).lte("disbursed_at", toISO),
-        supabase.from("shu").select("id,nominal,dibagikan_at,tahun,user_id,profiles:profiles!shu_user_id_fkey(nama_lengkap,nomor_anggota)").not("dibagikan_at", "is", null).gte("dibagikan_at", fromISO).lte("dibagikan_at", toISO),
+        supabase.from("simpanan").select("id,nominal,jenis,created_at,user_id").eq("status", "verified").gte("created_at", fromISO).lte("created_at", toISO),
+        supabase.from("angsuran").select("id,nominal,paid_at,cicilan_ke,user_id").eq("status", "paid").gte("paid_at", fromISO).lte("paid_at", toISO),
+        supabase.from("pinjaman").select("id,nominal,disbursed_at,user_id").not("disbursed_at", "is", null).gte("disbursed_at", fromISO).lte("disbursed_at", toISO),
+        supabase.from("shu").select("id,nominal,dibagikan_at,tahun,user_id").not("dibagikan_at", "is", null).gte("dibagikan_at", fromISO).lte("dibagikan_at", toISO),
       ]);
+      const ids = new Set<string>();
+      (simp ?? []).forEach((x: any) => ids.add(x.user_id));
+      (ang ?? []).forEach((x: any) => ids.add(x.user_id));
+      (pj ?? []).forEach((x: any) => ids.add(x.user_id));
+      (shu ?? []).forEach((x: any) => ids.add(x.user_id));
+      const { data: profs } = ids.size
+        ? await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota").in("id", Array.from(ids))
+        : { data: [] as any[] };
+      const pmap = new Map<string, { nama_lengkap: string; nomor_anggota: string | null }>();
+      (profs ?? []).forEach((p: any) => pmap.set(p.id, { nama_lengkap: p.nama_lengkap, nomor_anggota: p.nomor_anggota }));
+      const name = (uid: string) => {
+        const p = pmap.get(uid);
+        return p ? `${p.nama_lengkap}${p.nomor_anggota ? ` (${p.nomor_anggota})` : ""}` : "-";
+      };
       const rows: Row[] = [];
-      const name = (p: any) => p ? `${p.nama_lengkap}${p.nomor_anggota ? ` (${p.nomor_anggota})` : ""}` : "-";
-      (simp ?? []).forEach((s: any) => rows.push({ tanggal: s.created_at, jenis: `Simpanan ${s.jenis}`, keterangan: `Setoran simpanan dari ${name(s.profiles)}`, arah: "in", nominal: Number(s.nominal), ref_table: "simpanan", ref_id: s.id }));
-      (ang ?? []).forEach((a: any) => rows.push({ tanggal: a.paid_at, jenis: "Angsuran", keterangan: `Pembayaran angsuran ke-${a.cicilan_ke} dari ${name(a.profiles)}`, arah: "in", nominal: Number(a.nominal), ref_table: "angsuran", ref_id: a.id }));
-      (pj ?? []).forEach((p: any) => rows.push({ tanggal: p.disbursed_at, jenis: "Pencairan Pinjaman", keterangan: `Pencairan pinjaman kepada ${name(p.profiles)}`, arah: "out", nominal: Number(p.nominal), ref_table: "pinjaman", ref_id: p.id }));
-      (shu ?? []).forEach((s: any) => rows.push({ tanggal: s.dibagikan_at, jenis: `SHU ${s.tahun}`, keterangan: `Pembagian SHU kepada ${name(s.profiles)}`, arah: "out", nominal: Number(s.nominal), ref_table: "shu", ref_id: s.id }));
+      (simp ?? []).forEach((s: any) => rows.push({ tanggal: s.created_at, jenis: `Simpanan ${s.jenis}`, keterangan: `Setoran simpanan dari ${name(s.user_id)}`, arah: "in", nominal: Number(s.nominal), ref_table: "simpanan", ref_id: s.id }));
+      (ang ?? []).forEach((a: any) => rows.push({ tanggal: a.paid_at, jenis: "Angsuran", keterangan: `Pembayaran angsuran ke-${a.cicilan_ke} dari ${name(a.user_id)}`, arah: "in", nominal: Number(a.nominal), ref_table: "angsuran", ref_id: a.id }));
+      (pj ?? []).forEach((p: any) => rows.push({ tanggal: p.disbursed_at, jenis: "Pencairan Pinjaman", keterangan: `Pencairan pinjaman kepada ${name(p.user_id)}`, arah: "out", nominal: Number(p.nominal), ref_table: "pinjaman", ref_id: p.id }));
+      (shu ?? []).forEach((s: any) => rows.push({ tanggal: s.dibagikan_at, jenis: `SHU ${s.tahun}`, keterangan: `Pembagian SHU kepada ${name(s.user_id)}`, arah: "out", nominal: Number(s.nominal), ref_table: "shu", ref_id: s.id }));
       rows.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
       return rows;
     },
