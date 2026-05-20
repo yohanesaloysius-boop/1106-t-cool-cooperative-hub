@@ -30,6 +30,7 @@ import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPinjamanRouteImport } from './routes/_authenticated/pinjaman'
 import { Route as AuthenticatedPenjaminRouteImport } from './routes/_authenticated/penjamin'
 import { Route as AuthenticatedMarketplaceSayaRouteImport } from './routes/_authenticated/marketplace-saya'
+import { Route as AuthenticatedLowonganRouteImport } from './routes/_authenticated/lowongan'
 import { Route as AuthenticatedKalkulatorRouteImport } from './routes/_authenticated/kalkulator'
 import { Route as AuthenticatedFavoritRouteImport } from './routes/_authenticated/favorit'
 import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticated/dokumen'
@@ -177,6 +178,11 @@ const AuthenticatedMarketplaceSayaRoute =
     path: '/marketplace-saya',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedLowonganRoute = AuthenticatedLowonganRouteImport.update({
+  id: '/lowongan',
+  path: '/lowongan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedKalkulatorRoute = AuthenticatedKalkulatorRouteImport.update({
   id: '/kalkulator',
   path: '/kalkulator',
@@ -415,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/lowongan': typeof AuthenticatedLowonganRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -475,6 +482,7 @@ export interface FileRoutesByTo {
   '/dokumen': typeof AuthenticatedDokumenRoute
   '/favorit': typeof AuthenticatedFavoritRoute
   '/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/lowongan': typeof AuthenticatedLowonganRoute
   '/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/penjamin': typeof AuthenticatedPenjaminRoute
   '/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -538,6 +546,7 @@ export interface FileRoutesById {
   '/_authenticated/dokumen': typeof AuthenticatedDokumenRoute
   '/_authenticated/favorit': typeof AuthenticatedFavoritRoute
   '/_authenticated/kalkulator': typeof AuthenticatedKalkulatorRoute
+  '/_authenticated/lowongan': typeof AuthenticatedLowonganRoute
   '/_authenticated/marketplace-saya': typeof AuthenticatedMarketplaceSayaRoute
   '/_authenticated/penjamin': typeof AuthenticatedPenjaminRoute
   '/_authenticated/pinjaman': typeof AuthenticatedPinjamanRoute
@@ -601,6 +610,7 @@ export interface FileRouteTypes {
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
+    | '/lowongan'
     | '/marketplace-saya'
     | '/penjamin'
     | '/pinjaman'
@@ -661,6 +671,7 @@ export interface FileRouteTypes {
     | '/dokumen'
     | '/favorit'
     | '/kalkulator'
+    | '/lowongan'
     | '/marketplace-saya'
     | '/penjamin'
     | '/pinjaman'
@@ -723,6 +734,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dokumen'
     | '/_authenticated/favorit'
     | '/_authenticated/kalkulator'
+    | '/_authenticated/lowongan'
     | '/_authenticated/marketplace-saya'
     | '/_authenticated/penjamin'
     | '/_authenticated/pinjaman'
@@ -929,6 +941,13 @@ declare module '@tanstack/react-router' {
       path: '/marketplace-saya'
       fullPath: '/marketplace-saya'
       preLoaderRoute: typeof AuthenticatedMarketplaceSayaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/lowongan': {
+      id: '/_authenticated/lowongan'
+      path: '/lowongan'
+      fullPath: '/lowongan'
+      preLoaderRoute: typeof AuthenticatedLowonganRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/kalkulator': {
@@ -1276,6 +1295,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDokumenRoute: typeof AuthenticatedDokumenRoute
   AuthenticatedFavoritRoute: typeof AuthenticatedFavoritRoute
   AuthenticatedKalkulatorRoute: typeof AuthenticatedKalkulatorRoute
+  AuthenticatedLowonganRoute: typeof AuthenticatedLowonganRoute
   AuthenticatedMarketplaceSayaRoute: typeof AuthenticatedMarketplaceSayaRoute
   AuthenticatedPenjaminRoute: typeof AuthenticatedPenjaminRoute
   AuthenticatedPinjamanRoute: typeof AuthenticatedPinjamanRoute
@@ -1299,6 +1319,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDokumenRoute: AuthenticatedDokumenRoute,
   AuthenticatedFavoritRoute: AuthenticatedFavoritRoute,
   AuthenticatedKalkulatorRoute: AuthenticatedKalkulatorRoute,
+  AuthenticatedLowonganRoute: AuthenticatedLowonganRoute,
   AuthenticatedMarketplaceSayaRoute: AuthenticatedMarketplaceSayaRoute,
   AuthenticatedPenjaminRoute: AuthenticatedPenjaminRoute,
   AuthenticatedPinjamanRoute: AuthenticatedPinjamanRoute,
@@ -1351,13 +1372,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

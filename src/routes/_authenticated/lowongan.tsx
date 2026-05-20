@@ -122,7 +122,7 @@ function LowonganPage() {
           {loadingApproved ? (
             <div className="flex items-center justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
           ) : !approved || approved.length === 0 ? (
-            <EmptyState icon={Briefcase} title="Belum ada lowongan" description="Saat ini belum ada lowongan yang disetujui." />
+            <EmptyState icon={Briefcase} title="Belum ada lowongan" desc="Saat ini belum ada lowongan yang disetujui." />
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {approved.map((l) => (
@@ -227,7 +227,7 @@ function LowonganPage() {
           {loadingMine ? (
             <div className="flex items-center justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
           ) : !mine || mine.length === 0 ? (
-            <EmptyState icon={Briefcase} title="Belum ada iklan" description="Anda belum pernah memasang lowongan." />
+            <EmptyState icon={Briefcase} title="Belum ada iklan" desc="Anda belum pernah memasang lowongan." />
           ) : (
             <div className="space-y-3">
               {mine.map((l) => {
