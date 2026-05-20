@@ -42,6 +42,8 @@ const navGroups: NavGroup[] = [
       { to: "/profil", label: "Profil", icon: UserIcon },
       { to: "/riwayat", label: "Riwayat", icon: History },
       { to: "/favorit", label: "Favorit", icon: Heart },
+      { to: "/lowongan", label: "Lowongan Kerja", icon: Briefcase },
+      { to: "/admin/lowongan", label: "Kelola Lowongan", icon: Briefcase, adminOnly: true },
     ],
   },
   {
