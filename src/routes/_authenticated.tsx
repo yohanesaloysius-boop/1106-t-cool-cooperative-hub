@@ -29,7 +29,7 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
   return ROLE_LABEL[r];
 }
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean };
 type NavGroup = { id: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean; items: NavItem[] };
 
 const navGroups: NavGroup[] = [
@@ -49,6 +49,7 @@ const navGroups: NavGroup[] = [
     label: "Koperasi Keuangan",
     icon: Landmark,
     items: [
+      // Anggota
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
       { to: "/penjamin", label: "Penjamin Saya", icon: Shield },
@@ -56,6 +57,17 @@ const navGroups: NavGroup[] = [
       { to: "/shu", label: "SHU & Reward", icon: Wallet },
       { to: "/buku-besar", label: "Buku Besar", icon: BookOpen },
       { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
+      { to: "/approval", label: "Status Approval", icon: FileSignature },
+      // Admin Koperasi
+      { to: "/admin/buku-besar", label: "Buku Besar Anggota", icon: BookOpen, adminOnly: true },
+      { to: "/admin/buku-kas", label: "Buku Kas Harian", icon: BookText, adminOnly: true },
+      { to: "/admin/arsip-transaksi", label: "Arsip Digital Transaksi", icon: Archive, adminOnly: true },
+      { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2, adminOnly: true },
+      { to: "/admin/laporan-rat", label: "Laporan RAT", icon: FileBarChart2, adminOnly: true },
+      { to: "/admin/rekonsiliasi", label: "Rekonsiliasi Bank", icon: Landmark, adminOnly: true },
+      { to: "/admin/penjamin", label: "Monitoring Penjamin", icon: Shield, adminOnly: true },
+      { to: "/admin/shu", label: "Distribusi SHU", icon: Coins, adminOnly: true },
+      { to: "/admin/approval", label: "Approval Digital", icon: FileSignature, adminOnly: true },
     ],
   },
   {
@@ -63,11 +75,19 @@ const navGroups: NavGroup[] = [
     label: "Marketplace Komunitas",
     icon: ShoppingBag,
     items: [
+      // Anggota / Pembeli
       { to: "/marketplace", label: "Marketplace", icon: ShoppingBag },
       { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
       { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
       { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
       { to: "/saldo", label: "Saldo & Pencairan", icon: Wallet },
+      // Admin Marketplace
+      { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon, adminOnly: true },
+      { to: "/admin/seller-verify", label: "Verifikasi Seller", icon: ShieldCheck, adminOnly: true },
+      { to: "/admin/escrow", label: "Escrow & Pencairan", icon: Wallet, adminOnly: true },
+      { to: "/admin/fee", label: "Fee Marketplace", icon: Coins, adminOnly: true },
+      { to: "/admin/komplain", label: "Komplain & Refund", icon: FileSignature, adminOnly: true },
+      { to: "/admin/statistik", label: "Statistik & Top Produk", icon: FileBarChart2, adminOnly: true },
     ],
   },
   {
@@ -87,22 +107,6 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck },
       { to: "/admin/anggota", label: "Kelola Anggota", icon: Users },
-      { to: "/admin/laporan", label: "Laporan Keuangan", icon: FileBarChart2 },
-      { to: "/admin/laporan-rat", label: "Laporan RAT", icon: FileBarChart2 },
-      { to: "/admin/rekonsiliasi", label: "Rekonsiliasi Bank", icon: Landmark },
-      { to: "/admin/penjamin", label: "Monitoring Penjamin", icon: Shield },
-      { to: "/admin/buku-besar", label: "Buku Besar Anggota", icon: BookOpen },
-      { to: "/admin/buku-kas", label: "Buku Kas Harian", icon: BookText },
-      { to: "/admin/arsip-transaksi", label: "Arsip Digital Transaksi", icon: Archive },
-      { to: "/admin/shu", label: "Distribusi SHU", icon: Coins },
-      { to: "/approval", label: "Status Approval", icon: FileSignature },
-      { to: "/admin/approval", label: "Approval Digital", icon: FileSignature },
-      { to: "/admin/marketplace", label: "Manajemen Marketplace", icon: StoreIcon },
-      { to: "/admin/seller-verify", label: "Verifikasi Seller", icon: ShieldCheck },
-      { to: "/admin/escrow", label: "Escrow & Pencairan", icon: Wallet },
-      { to: "/admin/fee", label: "Fee Marketplace", icon: Coins },
-      { to: "/admin/komplain", label: "Komplain & Refund", icon: FileSignature },
-      { to: "/admin/statistik", label: "Statistik & Top Produk", icon: FileBarChart2 },
       { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon },
       { to: "/admin/audit", label: "Audit Log", icon: Activity },
     ],
@@ -112,7 +116,9 @@ const navGroups: NavGroup[] = [
 function AuthLayout() {
   const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
-  const visibleGroups = navGroups.filter((g) => !g.adminOnly || isPengurus);
+  const visibleGroups = navGroups
+    .filter((g) => !g.adminOnly || isPengurus)
+    .map((g) => ({ ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) }));
   const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
