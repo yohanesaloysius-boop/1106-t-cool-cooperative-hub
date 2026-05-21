@@ -159,12 +159,12 @@ function SimpananPage() {
           <h1 className="text-2xl font-bold tracking-tight">Simpanan Saya</h1>
           <p className="text-sm text-muted-foreground">Pokok, wajib, sukarela, dan tabungan berjangka.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setPayingId(null); }}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
+            <Button onClick={() => setPayingId(null)}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Setor Simpanan</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{payingId ? "Bayar Tagihan Simpanan" : "Setor Simpanan"}</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div>
                 <Label>Jenis Simpanan</Label>
