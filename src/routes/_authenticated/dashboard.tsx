@@ -203,6 +203,9 @@ function DashboardPage() {
         </div>
       </motion.section>
 
+      {/* Onboarding checklist — auto hide kalau semua selesai */}
+      {!isPengurus && <OnboardingChecklist />}
+
       {/* Ringkasan keuangan pribadi anggota */}
       <motion.section
         variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
