@@ -54,14 +54,18 @@ function AdminBukuBesarPage() {
     [members.data, memberId],
   );
 
+  const isAll = memberId === "__all__";
   const ledger = useQuery({
     queryKey: ["admin-ledger", memberId, from, to],
     enabled: !!memberId,
     queryFn: async () => {
+      if (isAll) {
+        const { data, error } = await supabase.rpc("get_jurnal_umum", { _from: from, _to: to });
+        if (error) throw error;
+        return data ?? [];
+      }
       const { data, error } = await supabase.rpc("get_member_ledger", {
-        _user_id: memberId,
-        _from: from,
-        _to: to,
+        _user_id: memberId, _from: from, _to: to,
       });
       if (error) throw error;
       return data ?? [];
