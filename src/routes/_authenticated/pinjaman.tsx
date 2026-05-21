@@ -80,14 +80,14 @@ function PinjamanPage() {
           <Button
             onClick={() => setOpen(true)}
             disabled={eligLoading || scoreLoading || !fullyEligible}
-            title={elig?.reason ?? score?.blockReason ?? undefined}
+            title={isPengurus ? "Mode pengurus: bypass eligibility (demo)" : (elig?.reason ?? score?.blockReason ?? undefined)}
           >
             {!fullyEligible && !eligLoading && !scoreLoading ? (
               <Lock className="mr-2 h-4 w-4" />
             ) : (
               <Plus className="mr-2 h-4 w-4" />
             )}
-            Ajukan Pinjaman
+            Ajukan Pinjaman {isPengurus && !elig?.eligible ? "(Demo)" : ""}
           </Button>
         </div>
       </div>
