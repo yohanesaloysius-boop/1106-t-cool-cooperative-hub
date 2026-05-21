@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
+import { CommandPalette } from "@/components/command-palette";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -32,7 +33,7 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean };
 type NavGroup = { id: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean; items: NavItem[] };
 
-const navGroups: NavGroup[] = [
+export const navGroups: NavGroup[] = [
   {
     id: "dasbor",
     label: "Dasbor Utama",
@@ -51,9 +52,11 @@ const navGroups: NavGroup[] = [
     icon: Landmark,
     items: [
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
+      { to: "/tabungan-berjangka", label: "Tabungan Berjangka", icon: PiggyBank },
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
       { to: "/penjamin", label: "Penjamin Saya", icon: Shield },
       { to: "/angsuran", label: "Angsuran", icon: Receipt },
+      { to: "/bayar-qris", label: "Bayar QRIS", icon: QrCode },
       { to: "/shu", label: "SHU & Reward", icon: Wallet },
       { to: "/buku-besar", label: "Buku Besar", icon: BookOpen },
       { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
@@ -104,6 +107,8 @@ const navGroups: NavGroup[] = [
       { to: "/admin/buku-kas", label: "Buku Kas Harian", icon: BookText, adminOnly: true },
       { to: "/admin/arsip-transaksi", label: "Arsip Digital Transaksi", icon: Archive, adminOnly: true },
       { to: "/admin/rekonsiliasi", label: "Rekonsiliasi Bank", icon: Landmark, adminOnly: true },
+      { to: "/admin/qris", label: "Verifikasi QRIS", icon: QrCode, adminOnly: true },
+      { to: "/admin/tabungan-berjangka", label: "Tabungan Berjangka", icon: PiggyBank, adminOnly: true },
       { to: "/admin/shu", label: "Distribusi SHU", icon: Coins, adminOnly: true },
       { to: "/admin/penjamin", label: "Monitoring Penjamin", icon: Shield, adminOnly: true },
     ],
@@ -309,6 +314,7 @@ function AuthLayout() {
                 </button>
               </div>
             )}
+            <CommandPalette />
             <NotificationCenter />
             <Button variant="outline" size="sm" className="gap-2 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
               <LogOut className="h-4 w-4" />
