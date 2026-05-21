@@ -54,6 +54,7 @@ import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminPenjaminRouteImport } from './routes/_authenticated/admin.penjamin'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
+import { Route as AuthenticatedAdminPenagihanRouteImport } from './routes/_authenticated/admin.penagihan'
 import { Route as AuthenticatedAdminOpexRouteImport } from './routes/_authenticated/admin.opex'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLowonganRouteImport } from './routes/_authenticated/admin.lowongan'
@@ -311,6 +312,12 @@ const AuthenticatedAdminPengaturanRoute =
     path: '/pengaturan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPenagihanRoute =
+  AuthenticatedAdminPenagihanRouteImport.update({
+    id: '/penagihan',
+    path: '/penagihan',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminOpexRoute = AuthenticatedAdminOpexRouteImport.update({
   id: '/opex',
   path: '/opex',
@@ -470,6 +477,7 @@ export interface FileRoutesByFullPath {
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
+  '/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -534,6 +542,7 @@ export interface FileRoutesByTo {
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
+  '/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -601,6 +610,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/opex': typeof AuthenticatedAdminOpexRoute
+  '/_authenticated/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
@@ -668,6 +678,7 @@ export interface FileRouteTypes {
     | '/admin/lowongan'
     | '/admin/marketplace'
     | '/admin/opex'
+    | '/admin/penagihan'
     | '/admin/pengaturan'
     | '/admin/penjamin'
     | '/admin/pinjaman'
@@ -732,6 +743,7 @@ export interface FileRouteTypes {
     | '/admin/lowongan'
     | '/admin/marketplace'
     | '/admin/opex'
+    | '/admin/penagihan'
     | '/admin/pengaturan'
     | '/admin/penjamin'
     | '/admin/pinjaman'
@@ -798,6 +810,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/lowongan'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/opex'
+    | '/_authenticated/admin/penagihan'
     | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/penjamin'
     | '/_authenticated/admin/pinjaman'
@@ -1148,6 +1161,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPengaturanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/penagihan': {
+      id: '/_authenticated/admin/penagihan'
+      path: '/penagihan'
+      fullPath: '/admin/penagihan'
+      preLoaderRoute: typeof AuthenticatedAdminPenagihanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/opex': {
       id: '/_authenticated/admin/opex'
       path: '/opex'
@@ -1301,6 +1321,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminLowonganRoute: typeof AuthenticatedAdminLowonganRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminOpexRoute: typeof AuthenticatedAdminOpexRoute
+  AuthenticatedAdminPenagihanRoute: typeof AuthenticatedAdminPenagihanRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPenjaminRoute: typeof AuthenticatedAdminPenjaminRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
@@ -1331,6 +1352,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminLowonganRoute: AuthenticatedAdminLowonganRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminOpexRoute: AuthenticatedAdminOpexRoute,
+  AuthenticatedAdminPenagihanRoute: AuthenticatedAdminPenagihanRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPenjaminRoute: AuthenticatedAdminPenjaminRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,

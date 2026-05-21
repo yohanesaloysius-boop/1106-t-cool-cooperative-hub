@@ -118,7 +118,7 @@ function PenagihanPage() {
   }, [cases]);
 
   if (!isPengurus) {
-    return <EmptyState icon={ShieldAlert} title="Akses Ditolak" description="Halaman penagihan hanya untuk pengurus." />;
+    return <EmptyState icon={ShieldAlert} title="Akses Ditolak" desc="Halaman penagihan hanya untuk pengurus." />;
   }
 
   return (
@@ -157,7 +157,7 @@ function PenagihanPage() {
           {isLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
           ) : filtered.length === 0 ? (
-            <EmptyState icon={AlertTriangle} title="Tidak ada kasus" description="Klik 'Sinkron Tunggakan' untuk memunculkan kasus terbaru dari angsuran yang lewat jatuh tempo." />
+            <EmptyState icon={AlertTriangle} title="Tidak ada kasus" desc="Klik 'Sinkron Tunggakan' untuk memunculkan kasus terbaru dari angsuran yang lewat jatuh tempo." />
           ) : (
             <div className="overflow-x-auto">
               <Table>
