@@ -47,6 +47,19 @@ function SimpananPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ jenis: "wajib" as Jenis, nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
+  const [payingId, setPayingId] = useState<string | null>(null);
+
+  const openPay = (r: { id: string; jenis: string; nominal: number | string; catatan?: string | null }) => {
+    setPayingId(r.id);
+    setForm({
+      jenis: (r.jenis as Jenis) ?? "pokok",
+      nominal: String(r.nominal ?? ""),
+      tenor_bulan: "12",
+      catatan: r.catatan ?? "",
+      bukti_url: "",
+    });
+    setOpen(true);
+  };
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["simpanan", user?.id],
@@ -98,19 +111,34 @@ function SimpananPage() {
         if (error) throw error;
       } else {
         const parsed = simpananSchema.parse({ ...form, jenis: form.jenis });
-        const { error } = await supabase.from("simpanan").insert({
-          user_id: user!.id,
-          jenis: parsed.jenis,
-          nominal: parsed.nominal,
-          catatan: parsed.catatan || null,
-          bukti_url: parsed.bukti_url || null,
-        });
-        if (error) throw error;
+        if (payingId) {
+          const { error } = await supabase
+            .from("simpanan")
+            .update({
+              nominal: parsed.nominal,
+              catatan: parsed.catatan || null,
+              bukti_url: parsed.bukti_url || null,
+            })
+            .eq("id", payingId)
+            .eq("user_id", user!.id)
+            .eq("status", "pending");
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("simpanan").insert({
+            user_id: user!.id,
+            jenis: parsed.jenis,
+            nominal: parsed.nominal,
+            catatan: parsed.catatan || null,
+            bukti_url: parsed.bukti_url || null,
+          });
+          if (error) throw error;
+        }
       }
     },
     onSuccess: () => {
-      toast.success("Pengajuan dikirim", { description: "Menunggu verifikasi pengurus." });
+      toast.success(payingId ? "Bukti terkirim" : "Pengajuan dikirim", { description: "Menunggu verifikasi pengurus." });
       setOpen(false);
+      setPayingId(null);
       setForm({ jenis: "wajib", nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
       qc.invalidateQueries({ queryKey: ["simpanan"] });
       qc.invalidateQueries({ queryKey: ["tabjangka-mine"] });
@@ -131,12 +159,12 @@ function SimpananPage() {
           <h1 className="text-2xl font-bold tracking-tight">Simpanan Saya</h1>
           <p className="text-sm text-muted-foreground">Pokok, wajib, sukarela, dan tabungan berjangka.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setPayingId(null); }}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
+            <Button onClick={() => setPayingId(null)}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Setor Simpanan</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{payingId ? "Bayar Tagihan Simpanan" : "Setor Simpanan"}</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div>
                 <Label>Jenis Simpanan</Label>
@@ -272,6 +300,13 @@ function SimpananPage() {
                             }
                           >
                             <Download className="mr-1 h-3.5 w-3.5" /> Bukti
+                          </Button>
+                        ) : r.status === "pending" && !r.bukti_url && (r.jenis === "pokok" || r.jenis === "wajib" || r.jenis === "sukarela") ? (
+                          <Button
+                            size="sm"
+                            onClick={() => openPay({ id: r.id, jenis: String(r.jenis), nominal: Number(r.nominal), catatan: r.catatan })}
+                          >
+                            Bayar Sekarang
                           </Button>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>
