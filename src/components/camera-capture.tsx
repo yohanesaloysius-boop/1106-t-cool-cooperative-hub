@@ -38,7 +38,7 @@ function estimateBlur(canvas: HTMLCanvasElement) {
   return { variance: sum2 / n - mean * mean, brightness: mean };
 }
 
-export function CameraCapture({ open, onOpenChange, facingMode = "environment", title, hint, guide = "ktp", bucket, userId, onUploaded }: Props) {
+export function CameraCapture({ open, onOpenChange, facingMode = "environment", title, hint, guide = "ktp", bucket, userId, watermark, onUploaded }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
