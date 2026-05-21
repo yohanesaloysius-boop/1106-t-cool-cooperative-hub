@@ -589,18 +589,32 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
               guide="ktp"
               bucket="verifikasi-pinjaman"
               userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
               onUploaded={(path, preview) => setKtp({ path, preview })}
             />
             <CameraCapture
               open={openCam === "selfie"}
               onOpenChange={(v) => !v && setOpenCam(null)}
               facingMode="user"
-              title="Ambil Selfie"
-              hint="Lihat ke kamera, wajah dalam lingkaran, pencahayaan cukup."
+              title="Ambil Selfie #1 (Netral)"
+              hint="Lihat ke kamera, wajah dalam lingkaran, ekspresi datar."
               guide="face"
               bucket="verifikasi-pinjaman"
               userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
               onUploaded={(path, preview) => setSelfie({ path, preview })}
+            />
+            <CameraCapture
+              open={openCam === "selfie2"}
+              onOpenChange={(v) => !v && setOpenCam(null)}
+              facingMode="user"
+              title="Ambil Selfie #2 (Tersenyum)"
+              hint="Tersenyum / ekspresi berbeda. Anti screenshot."
+              guide="face"
+              bucket="verifikasi-pinjaman"
+              userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
+              onUploaded={(path, preview) => setSelfie2({ path, preview })}
             />
           </>
         )}
