@@ -106,6 +106,8 @@ const navGroups: NavGroup[] = [
       { to: "/admin/buku-kas", label: "Buku Kas Harian", icon: BookText, adminOnly: true },
       { to: "/admin/arsip-transaksi", label: "Arsip Digital Transaksi", icon: Archive, adminOnly: true },
       { to: "/admin/rekonsiliasi", label: "Rekonsiliasi Bank", icon: Landmark, adminOnly: true },
+      { to: "/admin/qris", label: "Verifikasi QRIS", icon: QrCode, adminOnly: true },
+      { to: "/admin/tabungan-berjangka", label: "Tabungan Berjangka", icon: PiggyBank, adminOnly: true },
       { to: "/admin/shu", label: "Distribusi SHU", icon: Coins, adminOnly: true },
       { to: "/admin/penjamin", label: "Monitoring Penjamin", icon: Shield, adminOnly: true },
     ],
