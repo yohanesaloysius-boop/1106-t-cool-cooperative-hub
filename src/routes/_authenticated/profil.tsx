@@ -14,7 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/file-upload";
 import { StatusBadge } from "@/components/empty-state";
-import { Loader2, Save, User as UserIcon, IdCard, ShieldCheck } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Save, User as UserIcon, IdCard, ShieldCheck, KeyRound, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profil")({
   head: () => ({ meta: [{ title: "Profil Anggota — T-COOL Koperasi" }] }),
