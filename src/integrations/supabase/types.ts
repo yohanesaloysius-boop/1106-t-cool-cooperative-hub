@@ -2496,6 +2496,7 @@ export type Database = {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
+      approve_member: { Args: { p_user_id: string }; Returns: Json }
       compute_asset_depreciation: {
         Args: { _asset_id: string }
         Returns: number

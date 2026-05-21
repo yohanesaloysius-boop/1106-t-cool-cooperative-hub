@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { MarketplaceActivityCard } from "@/components/marketplace/marketplace-activity-card";
 import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
@@ -201,6 +202,9 @@ function DashboardPage() {
           </div>
         </div>
       </motion.section>
+
+      {/* Onboarding checklist — auto hide kalau semua selesai */}
+      {!isPengurus && <OnboardingChecklist />}
 
       {/* Ringkasan keuangan pribadi anggota */}
       <motion.section
