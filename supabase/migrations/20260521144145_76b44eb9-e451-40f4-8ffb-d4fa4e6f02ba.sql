@@ -1,0 +1,1 @@
+ALTER FUNCTION public.gen_qris_invoice_no() SET search_path = 'public';
