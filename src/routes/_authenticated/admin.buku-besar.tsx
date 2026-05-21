@@ -162,7 +162,7 @@ function AdminBukuBesarPage() {
             <label className="text-xs text-muted-foreground">Sampai</label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
-          <Button onClick={exportPdf} disabled={!selected || pdfBusy || !rowsWithBalance.length}>
+          <Button onClick={exportPdf} disabled={!selected || isAll || pdfBusy || !rowsWithBalance.length}>
             {pdfBusy ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <FileText className="h-4 w-4 mr-1" />}
             Export PDF
           </Button>
