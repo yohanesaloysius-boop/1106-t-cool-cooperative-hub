@@ -117,7 +117,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   }, [form]);
 
   const reset = () => {
-    setStep(1); setKtp(null); setSelfie(null); setPrivy(null); setPrivyErr(null); setGuarantors([]);
+    setStep(1); setKtp(null); setSelfie(null); setSelfie2(null); setPrivy(null); setPrivyErr(null); setGuarantors([]);
     setForm({ nominal: "", tenor_bulan: "12", bunga_persen: "1.5", bunga_jenis: "flat", tujuan: "", agree: false });
   };
 
