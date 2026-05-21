@@ -2489,7 +2489,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lowongan_kerja_public: {
+        Row: {
+          created_at: string | null
+          deskripsi: string | null
+          expired_at: string | null
+          gender: string | null
+          id: string | null
+          judul: string | null
+          kontak_nama: string | null
+          lokasi: string | null
+          perusahaan: string | null
+          posisi: string | null
+          status: Database["public"]["Enums"]["lowongan_status"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          deskripsi?: string | null
+          expired_at?: string | null
+          gender?: string | null
+          id?: string | null
+          judul?: string | null
+          kontak_nama?: string | null
+          lokasi?: string | null
+          perusahaan?: string | null
+          posisi?: string | null
+          status?: Database["public"]["Enums"]["lowongan_status"] | null
+        }
+        Update: {
+          created_at?: string | null
+          deskripsi?: string | null
+          expired_at?: string | null
+          gender?: string | null
+          id?: string | null
+          judul?: string | null
+          kontak_nama?: string | null
+          lokasi?: string | null
+          perusahaan?: string | null
+          posisi?: string | null
+          status?: Database["public"]["Enums"]["lowongan_status"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       act_on_guarantor_request: {
