@@ -81,10 +81,10 @@ function AdminOpexPage() {
     queryKey: ["opex_expenses", tab],
     queryFn: async () => {
       let q = supabase.from("opex_expenses").select("*, opex_categories(nama,kode)").is("deleted_at", null).order("tanggal", { ascending: false }).limit(500);
-      if (tab !== "all") q = q.eq("status", tab);
+      if (tab !== "all") q = q.eq("status", tab as Opex["status"]);
       const { data, error } = await q;
       if (error) throw error;
-      return data as Opex[];
+      return data as unknown as Opex[];
     },
   });
 
