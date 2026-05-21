@@ -145,6 +145,7 @@ function AdminBukuBesarPage() {
             <Select value={memberId} onValueChange={setMemberId}>
               <SelectTrigger><SelectValue placeholder={members.isLoading ? "Memuat..." : "Pilih anggota"} /></SelectTrigger>
               <SelectContent>
+                <SelectItem value="__all__">— Semua Anggota (Jurnal Umum) —</SelectItem>
                 {(members.data ?? []).map((m) => (
                   <SelectItem key={m.id} value={m.id}>
                     {m.nama_lengkap} {m.nomor_anggota ? `(${m.nomor_anggota})` : ""}
