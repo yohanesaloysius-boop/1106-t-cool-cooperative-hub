@@ -32,7 +32,7 @@ function roleLabel(roles: AppRole[], viewAsMember: boolean): string {
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean };
 type NavGroup = { id: string; label: string; icon: typeof LayoutDashboard; adminOnly?: boolean; items: NavItem[] };
 
-const navGroups: NavGroup[] = [
+export const navGroups: NavGroup[] = [
   {
     id: "dasbor",
     label: "Dasbor Utama",
