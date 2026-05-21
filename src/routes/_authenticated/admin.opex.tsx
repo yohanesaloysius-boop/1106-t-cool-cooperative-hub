@@ -135,10 +135,11 @@ function AdminOpexPage() {
 
   const setStatus = useMutation({
     mutationFn: async (p: { id: string; status: Opex["status"]; reason?: string }) => {
-      const patch: Record<string, unknown> = { status: p.status, updated_by: user?.id };
-      if (p.status === "approved") { patch.approved_by = user?.id; patch.approved_at = new Date().toISOString(); }
+      type Patch = Parameters<ReturnType<typeof supabase.from<"opex_expenses">>["update"]>[0];
+      const patch: Patch = { status: p.status, updated_by: user?.id ?? null };
+      if (p.status === "approved") { patch.approved_by = user?.id ?? null; patch.approved_at = new Date().toISOString(); }
       if (p.status === "rejected") { patch.rejected_reason = p.reason ?? null; }
-      if (p.status === "paid") { patch.paid_by = user?.id; patch.paid_at = new Date().toISOString(); }
+      if (p.status === "paid") { patch.paid_by = user?.id ?? null; patch.paid_at = new Date().toISOString(); }
       const { error } = await supabase.from("opex_expenses").update(patch).eq("id", p.id);
       if (error) throw error;
     },
