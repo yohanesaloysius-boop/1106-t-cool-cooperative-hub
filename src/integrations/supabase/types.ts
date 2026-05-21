@@ -383,6 +383,125 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_cases: {
+        Row: {
+          catatan: string | null
+          closed_at: string | null
+          closed_reason: string | null
+          created_at: string
+          created_by: string | null
+          hari_terlambat: number
+          id: string
+          jumlah_cicilan_tertunggak: number
+          opened_at: string
+          pic_kolektor: string | null
+          pinjaman_id: string
+          priority: Database["public"]["Enums"]["collection_priority"]
+          status: Database["public"]["Enums"]["collection_status"]
+          total_denda: number
+          total_tunggakan: number
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          closed_at?: string | null
+          closed_reason?: string | null
+          created_at?: string
+          created_by?: string | null
+          hari_terlambat?: number
+          id?: string
+          jumlah_cicilan_tertunggak?: number
+          opened_at?: string
+          pic_kolektor?: string | null
+          pinjaman_id: string
+          priority?: Database["public"]["Enums"]["collection_priority"]
+          status?: Database["public"]["Enums"]["collection_status"]
+          total_denda?: number
+          total_tunggakan?: number
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          catatan?: string | null
+          closed_at?: string | null
+          closed_reason?: string | null
+          created_at?: string
+          created_by?: string | null
+          hari_terlambat?: number
+          id?: string
+          jumlah_cicilan_tertunggak?: number
+          opened_at?: string
+          pic_kolektor?: string | null
+          pinjaman_id?: string
+          priority?: Database["public"]["Enums"]["collection_priority"]
+          status?: Database["public"]["Enums"]["collection_status"]
+          total_denda?: number
+          total_tunggakan?: number
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      collection_logs: {
+        Row: {
+          action: Database["public"]["Enums"]["collection_action"]
+          case_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          isi_pembicaraan: string | null
+          janji_bayar_nominal: number | null
+          janji_bayar_tanggal: string | null
+          kontak_oleh: string | null
+          kontak_tanggal: string
+          lampiran_url: string | null
+          lokasi: string | null
+          outcome: Database["public"]["Enums"]["collection_outcome"]
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["collection_action"]
+          case_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          isi_pembicaraan?: string | null
+          janji_bayar_nominal?: number | null
+          janji_bayar_tanggal?: string | null
+          kontak_oleh?: string | null
+          kontak_tanggal?: string
+          lampiran_url?: string | null
+          lokasi?: string | null
+          outcome?: Database["public"]["Enums"]["collection_outcome"]
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["collection_action"]
+          case_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          isi_pembicaraan?: string | null
+          janji_bayar_nominal?: number | null
+          janji_bayar_tanggal?: string | null
+          kontak_oleh?: string | null
+          kontak_tanggal?: string
+          lampiran_url?: string | null
+          lokasi?: string | null
+          outcome?: Database["public"]["Enums"]["collection_outcome"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_logs_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "collection_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           created_at: string
@@ -541,6 +660,98 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      loan_restructures: {
+        Row: {
+          alasan: string
+          approved_at: string | null
+          approved_by: string | null
+          case_id: string | null
+          created_at: string
+          created_by: string | null
+          diskon_denda: number
+          effective_at: string | null
+          id: string
+          new_bunga_persen: number
+          new_cicilan_per_bulan: number
+          new_jatuh_tempo_mulai: string
+          new_pokok: number
+          new_tenor_bulan: number
+          old_bunga_persen: number
+          old_cicilan: number
+          old_sisa_pokok: number
+          old_tenor_sisa: number
+          pinjaman_id: string
+          potongan_pokok: number
+          rejected_reason: string | null
+          status: Database["public"]["Enums"]["restructure_status"]
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          alasan: string
+          approved_at?: string | null
+          approved_by?: string | null
+          case_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          diskon_denda?: number
+          effective_at?: string | null
+          id?: string
+          new_bunga_persen?: number
+          new_cicilan_per_bulan?: number
+          new_jatuh_tempo_mulai: string
+          new_pokok: number
+          new_tenor_bulan: number
+          old_bunga_persen?: number
+          old_cicilan?: number
+          old_sisa_pokok?: number
+          old_tenor_sisa?: number
+          pinjaman_id: string
+          potongan_pokok?: number
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["restructure_status"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          alasan?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          case_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          diskon_denda?: number
+          effective_at?: string | null
+          id?: string
+          new_bunga_persen?: number
+          new_cicilan_per_bulan?: number
+          new_jatuh_tempo_mulai?: string
+          new_pokok?: number
+          new_tenor_bulan?: number
+          old_bunga_persen?: number
+          old_cicilan?: number
+          old_sisa_pokok?: number
+          old_tenor_sisa?: number
+          pinjaman_id?: string
+          potongan_pokok?: number
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["restructure_status"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_restructures_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "collection_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       loan_verifications: {
         Row: {
@@ -2373,6 +2584,7 @@ export type Database = {
       }
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
       normalize_phone_id: { Args: { _raw: string }; Returns: string }
+      sync_collection_cases: { Args: never; Returns: number }
       validate_guarantor: {
         Args: { _amount: number; _guarantor_id: string }
         Returns: Json
@@ -2398,6 +2610,30 @@ export type Database = {
       asset_status: "aktif" | "dijual" | "rusak" | "dihapus"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
+      collection_action:
+        | "call"
+        | "visit"
+        | "whatsapp"
+        | "sms"
+        | "letter"
+        | "email"
+        | "other"
+      collection_outcome:
+        | "no_contact"
+        | "contacted"
+        | "promise_to_pay"
+        | "partial_payment"
+        | "full_payment"
+        | "refused"
+        | "escalate"
+      collection_priority: "low" | "medium" | "high" | "critical"
+      collection_status:
+        | "open"
+        | "in_progress"
+        | "promised"
+        | "restructured"
+        | "written_off"
+        | "closed"
       guarantor_status:
         | "pending"
         | "approved"
@@ -2443,6 +2679,13 @@ export type Database = {
         | "completed"
         | "cancelled"
       product_status: "draft" | "active" | "out_of_stock" | "archived"
+      restructure_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "active"
+        | "completed"
       simpanan_jenis: "pokok" | "wajib" | "sukarela"
       store_status: "active" | "inactive" | "suspended" | "pending"
       tabungan_status:
@@ -2610,6 +2853,33 @@ export const Constants = {
       asset_status: ["aktif", "dijual", "rusak", "dihapus"],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
+      collection_action: [
+        "call",
+        "visit",
+        "whatsapp",
+        "sms",
+        "letter",
+        "email",
+        "other",
+      ],
+      collection_outcome: [
+        "no_contact",
+        "contacted",
+        "promise_to_pay",
+        "partial_payment",
+        "full_payment",
+        "refused",
+        "escalate",
+      ],
+      collection_priority: ["low", "medium", "high", "critical"],
+      collection_status: [
+        "open",
+        "in_progress",
+        "promised",
+        "restructured",
+        "written_off",
+        "closed",
+      ],
       guarantor_status: [
         "pending",
         "approved",
@@ -2660,6 +2930,14 @@ export const Constants = {
         "cancelled",
       ],
       product_status: ["draft", "active", "out_of_stock", "archived"],
+      restructure_status: [
+        "draft",
+        "pending",
+        "approved",
+        "rejected",
+        "active",
+        "completed",
+      ],
       simpanan_jenis: ["pokok", "wajib", "sukarela"],
       store_status: ["active", "inactive", "suspended", "pending"],
       tabungan_status: [
