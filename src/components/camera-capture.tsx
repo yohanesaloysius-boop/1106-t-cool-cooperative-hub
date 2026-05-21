@@ -73,6 +73,28 @@ export function CameraCapture({ open, onOpenChange, facingMode = "environment", 
     return stop;
   }, [open, facingMode, stop]);
 
+  /** Tanam watermark (nama + timestamp) di pojok bawah-kanan foto. */
+  const drawWatermark = (canvas: HTMLCanvasElement) => {
+    if (!watermark) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const ts = new Date().toLocaleString("id-ID");
+    const text = `${watermark} • ${ts}`;
+    const fontSize = Math.max(14, Math.round(canvas.width / 48));
+    ctx.font = `600 ${fontSize}px system-ui, sans-serif`;
+    const padding = Math.round(fontSize * 0.6);
+    const metrics = ctx.measureText(text);
+    const w = metrics.width + padding * 2;
+    const h = fontSize + padding;
+    const x = canvas.width - w - padding;
+    const y = canvas.height - h - padding;
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + padding, y + h / 2);
+  };
+
   const takePhoto = () => {
     const video = videoRef.current; const canvas = canvasRef.current;
     if (!video || !canvas) return;
@@ -84,6 +106,7 @@ export function CameraCapture({ open, onOpenChange, facingMode = "environment", 
     else if (brightness < 50) { ok = false; reason = "Terlalu gelap. Cari pencahayaan yang lebih baik."; }
     else if (brightness > 230) { ok = false; reason = "Terlalu terang/silau."; }
     setQuality({ ok, reason });
+    drawWatermark(canvas);
     setSnapshot(canvas.toDataURL("image/jpeg", 0.9));
   };
 
