@@ -47,6 +47,19 @@ function SimpananPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ jenis: "wajib" as Jenis, nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
+  const [payingId, setPayingId] = useState<string | null>(null);
+
+  const openPay = (r: { id: string; jenis: string; nominal: number | string; catatan?: string | null }) => {
+    setPayingId(r.id);
+    setForm({
+      jenis: (r.jenis as Jenis) ?? "pokok",
+      nominal: String(r.nominal ?? ""),
+      tenor_bulan: "12",
+      catatan: r.catatan ?? "",
+      bukti_url: "",
+    });
+    setOpen(true);
+  };
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["simpanan", user?.id],
