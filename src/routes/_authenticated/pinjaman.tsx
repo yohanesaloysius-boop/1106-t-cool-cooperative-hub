@@ -34,13 +34,15 @@ export const Route = createFileRoute("/_authenticated/pinjaman")({
 const fmt = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
 
 function PinjamanPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, roles } = useAuth();
   const search = Route.useSearch();
   const [open, setOpen] = useState(false);
   const { data: elig, isLoading: eligLoading } = useLoanEligibility();
   const { data: score, isLoading: scoreLoading } = useLoanScoring();
 
-  const fullyEligible = !!elig?.eligible && !!score?.canApply;
+  // Pengurus boleh bypass kunci eligibility untuk keperluan demo / pengajuan internal.
+  const isPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const fullyEligible = (!!elig?.eligible && !!score?.canApply) || isPengurus;
 
   useEffect(() => {
     if (search.nominal && fullyEligible) setOpen(true);
