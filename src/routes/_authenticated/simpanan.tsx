@@ -301,6 +301,13 @@ function SimpananPage() {
                           >
                             <Download className="mr-1 h-3.5 w-3.5" /> Bukti
                           </Button>
+                        ) : r.status === "pending" && !r.bukti_url && (r.jenis === "pokok" || r.jenis === "wajib" || r.jenis === "sukarela") ? (
+                          <Button
+                            size="sm"
+                            onClick={() => openPay({ id: r.id, jenis: String(r.jenis), nominal: Number(r.nominal), catatan: r.catatan })}
+                          >
+                            Bayar Sekarang
+                          </Button>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
