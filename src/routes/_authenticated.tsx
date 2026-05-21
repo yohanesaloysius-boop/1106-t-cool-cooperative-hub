@@ -314,6 +314,7 @@ function AuthLayout() {
                 </button>
               </div>
             )}
+            <CommandPalette />
             <NotificationCenter />
             <Button variant="outline" size="sm" className="gap-2 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
               <LogOut className="h-4 w-4" />
