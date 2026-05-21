@@ -169,7 +169,7 @@ function AdminBukuBesarPage() {
         </div>
       </Card>
 
-      {selected && (
+      {selected && !isAll && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-1">
             <MemberCard
@@ -194,6 +194,23 @@ function AdminBukuBesarPage() {
               <p className="text-lg font-bold">{fmt.format(saldoAkhir)}</p>
             </Card>
           </div>
+        </div>
+      )}
+
+      {isAll && (
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Total Masuk (Kredit Koperasi)</p>
+            <p className="text-lg font-bold text-success">{fmt.format(totalIn)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Total Keluar (Debit Koperasi)</p>
+            <p className="text-lg font-bold text-destructive">{fmt.format(totalOut)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Jumlah Transaksi</p>
+            <p className="text-lg font-bold">{rowsWithBalance.length}</p>
+          </Card>
         </div>
       )}
 
