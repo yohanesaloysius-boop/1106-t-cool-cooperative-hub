@@ -77,6 +77,8 @@ const navGroups: NavGroup[] = [
       { to: "/admin/approval", label: "Approval Digital", icon: FileSignature, adminOnly: true },
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
       { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },
+      { to: "/admin/penagihan", label: "Penagihan (Collection)", icon: ShieldAlert, adminOnly: true },
+      { to: "/admin/laporan-sak", label: "Laporan SAK ETAP", icon: FileBarChart2, adminOnly: true },
     ],
   },
   {
