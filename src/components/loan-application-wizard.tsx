@@ -125,7 +125,12 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
     if (!ktp || !selfie) return;
     setPrivyBusy(true); setPrivyErr(null);
     try {
-      const res = await verifyPrivyFn({ data: { ktpPath: ktp.path, selfiePath: selfie.path, bucket: "verifikasi-pinjaman" } });
+      const res = await verifyPrivyFn({ data: {
+        ktpPath: ktp.path,
+        selfiePath: selfie.path,
+        selfie2Path: selfie2?.path,
+        bucket: "verifikasi-pinjaman",
+      } });
       if (!res.ok) { setPrivyErr(res.error ?? "Verifikasi gagal"); setPrivy(null); }
       else {
         const r = res.result;
@@ -133,7 +138,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
           mode: res.mode, nik: r.nik, nama: r.nama, tgl_lahir: r.tgl_lahir, alamat: r.alamat,
           face_match_score: r.face_match_score, liveness: r.liveness, status: r.status, referenceId: r.referenceId,
         });
-        if (r.face_match_score < 0.75) setPrivyErr(`Skor wajah rendah (${(r.face_match_score * 100).toFixed(1)}%). Ulangi selfie.`);
+        if (r.face_match_score < 0.80) setPrivyErr(`Skor wajah ${(r.face_match_score * 100).toFixed(1)}% (min 80%). Ulangi selfie dengan pencahayaan lebih baik.`);
       }
     } catch (e) {
       setPrivyErr((e as Error).message);
