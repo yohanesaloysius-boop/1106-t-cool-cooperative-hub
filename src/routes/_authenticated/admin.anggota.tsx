@@ -65,9 +65,14 @@ function AnggotaPage() {
 
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "active" | "suspended" | "rejected" }) => {
+      if (status === "active") {
+        // RPC: aktivasi + buat dompet + tagihan simpanan pokok + notifikasi
+        const { error } = await supabase.rpc("approve_member", { p_user_id: id });
+        if (error) throw error;
+        return;
+      }
       const { error } = await supabase.from("profiles").update({ status }).eq("id", id);
       if (error) throw error;
-      // audit + notif
       await Promise.all([
         supabase.from("audit_logs").insert({
           actor_id: user?.id, entity: "profiles", entity_id: id,
@@ -75,18 +80,19 @@ function AnggotaPage() {
         }),
         supabase.from("notifications").insert({
           user_id: id,
-          judul: status === "active" ? "Akun Anda telah diaktifkan" : status === "suspended" ? "Akun ditangguhkan" : "Pendaftaran ditolak",
-          pesan: status === "active"
-            ? "Selamat! Akun Anda telah diverifikasi pengurus dan dapat digunakan sepenuhnya."
-            : status === "suspended" ? "Akun Anda ditangguhkan oleh pengurus. Silakan hubungi sekretaris."
+          judul: status === "suspended" ? "Akun ditangguhkan" : "Pendaftaran ditolak",
+          pesan: status === "suspended"
+            ? "Akun Anda ditangguhkan oleh pengurus. Silakan hubungi sekretaris."
             : "Pendaftaran Anda ditolak. Hubungi pengurus untuk informasi lanjut.",
-          kategori: status === "active" ? "sukses" : status === "suspended" ? "peringatan" : "error",
+          kategori: status === "suspended" ? "peringatan" : "error",
           ref_table: "profiles", ref_id: id,
         }),
       ]);
     },
     onSuccess: (_, v) => {
-      toast.success(`Status anggota diubah ke ${statusLabel[v.status]}`);
+      toast.success(v.status === "active"
+        ? "Anggota diaktifkan — dompet & tagihan simpanan pokok dibuat otomatis."
+        : `Status anggota diubah ke ${statusLabel[v.status]}`);
       qc.invalidateQueries({ queryKey: ["admin-members"] });
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
     },
