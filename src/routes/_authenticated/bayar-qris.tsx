@@ -150,12 +150,8 @@ function BayarQRISPage() {
     toast.success(`QRIS ${data.invoice_no} dibuat — berlaku 15 menit`);
   };
 
-  // Mock: simulate payment success
-  const simulatePay = async () => {
-    if (!activeQr) return;
-    const { error } = await supabase.rpc("qris_mark_success", { _id: activeQr.id });
-    if (error) toast.error(error.message);
-  };
+  // Simulasi pembayaran khusus pengurus dipindahkan ke /admin/qris.
+
 
   const countdown = useCountdown(activeQr?.expired_at);
 
@@ -317,15 +313,11 @@ function BayarQRISPage() {
                   <p className="text-center text-xs text-muted-foreground">
                     Scan dengan aplikasi e-wallet/m-banking apa pun yang mendukung QRIS (GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BRI, BNI, dll.)
                   </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" onClick={() => { navigator.clipboard.writeText(activeQr.qr_string); toast.success("Kode QR disalin"); }}>
-                      <Copy className="mr-1.5 h-3.5 w-3.5" /> Salin Kode
-                    </Button>
-                    <Button onClick={simulatePay} className="bg-emerald-600 hover:bg-emerald-700">
-                      <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Simulasi Bayar
-                    </Button>
-                  </div>
-                  <p className="text-center text-[10px] text-muted-foreground">Mode simulasi aktif — gunakan tombol di atas untuk menguji alur tanpa scan QR.</p>
+                  <Button variant="outline" className="w-full" onClick={() => { navigator.clipboard.writeText(activeQr.qr_string); toast.success("Kode QR disalin"); }}>
+                    <Copy className="mr-1.5 h-3.5 w-3.5" /> Salin Kode QR
+                  </Button>
+                  <p className="text-center text-[10px] text-muted-foreground">Setelah Anda membayar, pengurus akan memverifikasi & menandai pembayaran berhasil dalam beberapa menit.</p>
+
                 </>
               ) : activeQr.status === "success" ? (
                 <div className="flex flex-col items-center gap-2 rounded-xl bg-emerald-50 p-6 text-center">
