@@ -466,8 +466,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                       <span className="text-muted-foreground">Liveness</span><span className="text-right">{privy.liveness}</span>
                       <span className="text-muted-foreground">Kualitas KTP</span><span className="text-right">{(privy as any).ktp_quality ?? "—"}</span>
                       <span className="text-muted-foreground">Face Match</span>
-                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-amber-600"}`}>
-                        {(privy.face_match_score * 100).toFixed(1)}%
+                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.80 ? "text-success" : "text-amber-600"}`}>
+                        {(privy.face_match_score * 100).toFixed(1)}% <span className="text-[10px] font-normal text-muted-foreground">(min 80%)</span>
                       </span>
                       <span className="text-muted-foreground">Ref</span><span className="text-right font-mono text-[10px]">{privy.referenceId}</span>
                     </div>
