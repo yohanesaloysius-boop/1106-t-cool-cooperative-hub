@@ -14,6 +14,8 @@ interface Props {
   guide?: "ktp" | "face";
   bucket: "verifikasi-pinjaman";
   userId: string;
+  /** Teks watermark (mis. nama anggota) ditanam ke foto untuk anti-reuse. */
+  watermark?: string;
   onUploaded: (path: string, dataUrl: string) => void;
 }
 
