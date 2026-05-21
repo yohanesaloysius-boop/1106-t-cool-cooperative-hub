@@ -111,19 +111,34 @@ function SimpananPage() {
         if (error) throw error;
       } else {
         const parsed = simpananSchema.parse({ ...form, jenis: form.jenis });
-        const { error } = await supabase.from("simpanan").insert({
-          user_id: user!.id,
-          jenis: parsed.jenis,
-          nominal: parsed.nominal,
-          catatan: parsed.catatan || null,
-          bukti_url: parsed.bukti_url || null,
-        });
-        if (error) throw error;
+        if (payingId) {
+          const { error } = await supabase
+            .from("simpanan")
+            .update({
+              nominal: parsed.nominal,
+              catatan: parsed.catatan || null,
+              bukti_url: parsed.bukti_url || null,
+            })
+            .eq("id", payingId)
+            .eq("user_id", user!.id)
+            .eq("status", "pending");
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("simpanan").insert({
+            user_id: user!.id,
+            jenis: parsed.jenis,
+            nominal: parsed.nominal,
+            catatan: parsed.catatan || null,
+            bukti_url: parsed.bukti_url || null,
+          });
+          if (error) throw error;
+        }
       }
     },
     onSuccess: () => {
-      toast.success("Pengajuan dikirim", { description: "Menunggu verifikasi pengurus." });
+      toast.success(payingId ? "Bukti terkirim" : "Pengajuan dikirim", { description: "Menunggu verifikasi pengurus." });
       setOpen(false);
+      setPayingId(null);
       setForm({ jenis: "wajib", nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
       qc.invalidateQueries({ queryKey: ["simpanan"] });
       qc.invalidateQueries({ queryKey: ["tabjangka-mine"] });
