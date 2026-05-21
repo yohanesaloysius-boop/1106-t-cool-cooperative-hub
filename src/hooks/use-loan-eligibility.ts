@@ -31,16 +31,6 @@ export function useLoanEligibility() {
     queryFn: async () => {
       const required = 6;
       const now = new Date();
-
-      // Demo mode: jika setting `loan_demo_mode` = true → semua syarat dilewati.
-      const { data: demoRow } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "loan_demo_mode")
-        .maybeSingle();
-      const demoMode = String((demoRow as any)?.value ?? "").toLowerCase() === "true"
-        || String((demoRow as any)?.value ?? "") === "1";
-
       const joinedRaw = (profile as any)?.joined_at ?? (profile as any)?.created_at;
       const joined = joinedRaw ? new Date(joinedRaw) : now;
       const monthsAsMember = Math.max(
@@ -50,6 +40,7 @@ export function useLoanEligibility() {
       const membershipOk = monthsAsMember >= required;
       const statusActive = profile?.status === "active";
 
+      // Ambil 6 bulan terakhir (termasuk bulan berjalan)
       const windowKeys: string[] = [];
       for (let i = required - 1; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -77,24 +68,22 @@ export function useLoanEligibility() {
       const monthsUntilByIuran = Math.max(0, required - iuranPaidCount);
       const monthsUntilEligible = Math.max(monthsUntilByMembership, monthsUntilByIuran);
 
-      const realEligible = membershipOk && statusActive && iuranPaidCount >= required;
-      const eligible = demoMode ? true : realEligible;
+      const eligible = membershipOk && statusActive && iuranPaidCount >= required;
 
       let reason: string | null = null;
-      if (demoMode && !realEligible) reason = "🧪 Mode demo aktif — syarat normal dilewati.";
-      else if (!statusActive) reason = "Status keanggotaan Anda belum aktif.";
+      if (!statusActive) reason = "Status keanggotaan Anda belum aktif.";
       else if (!membershipOk) reason = `Keanggotaan baru ${monthsAsMember} bulan, minimal ${required} bulan.`;
       else if (iuranPaidCount < required) reason = `Iuran wajib baru ${iuranPaidCount}/${required} bulan terakhir terbayar.`;
 
       return {
         eligible,
         monthsAsMember,
-        membershipOk: demoMode ? true : membershipOk,
-        statusActive: demoMode ? true : statusActive,
-        iuranPaidCount: demoMode ? required : iuranPaidCount,
+        membershipOk,
+        statusActive,
+        iuranPaidCount,
         iuranRequired: required,
-        missingMonths: demoMode ? [] : missing.map(ymLabel),
-        monthsUntilEligible: demoMode ? 0 : monthsUntilEligible,
+        missingMonths: missing.map(ymLabel),
+        monthsUntilEligible,
         reason,
       };
     },
