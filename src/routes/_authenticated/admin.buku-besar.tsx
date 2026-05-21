@@ -226,11 +226,12 @@ function AdminBukuBesarPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Tanggal</TableHead>
+                {isAll && <TableHead>Anggota</TableHead>}
                 <TableHead>Jenis</TableHead>
                 <TableHead>Keterangan</TableHead>
                 <TableHead className="text-right">Masuk</TableHead>
                 <TableHead className="text-right">Keluar</TableHead>
-                <TableHead className="text-right">Saldo</TableHead>
+                {!isAll && <TableHead className="text-right">Saldo</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,6 +240,12 @@ function AdminBukuBesarPage() {
                 return (
                   <TableRow key={i}>
                     <TableCell className="text-xs whitespace-nowrap">{dfmt(r.tanggal)}</TableCell>
+                    {isAll && (
+                      <TableCell className="text-xs">
+                        <div className="font-medium">{r.nama_anggota ?? "-"}</div>
+                        {r.nomor_anggota && <div className="text-[10px] text-muted-foreground">{r.nomor_anggota}</div>}
+                      </TableCell>
+                    )}
                     <TableCell><Badge variant="outline" className="text-[10px]">{r.jenis}</Badge></TableCell>
                     <TableCell className="text-xs">{r.keterangan}</TableCell>
                     <TableCell className="text-right font-mono text-success text-xs">
@@ -247,7 +254,7 @@ function AdminBukuBesarPage() {
                     <TableCell className="text-right font-mono text-destructive text-xs">
                       {r.arah === "out" ? fmt.format(amt) : "—"}
                     </TableCell>
-                    <TableCell className="text-right font-mono font-semibold text-xs">{fmt.format(r.saldo)}</TableCell>
+                    {!isAll && <TableCell className="text-right font-mono font-semibold text-xs">{fmt.format(r.saldo)}</TableCell>}
                   </TableRow>
                 );
               })}
