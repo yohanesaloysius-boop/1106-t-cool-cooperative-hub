@@ -58,9 +58,7 @@ const navGroups: NavGroup[] = [
       { to: "/admin/audit", label: "Audit Log", icon: Activity, adminOnly: true },
       // Anggota
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
-      { to: "/bayar-qris", label: "Bayar QRIS", icon: QrCode },
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
-      { to: "/admin/qris", label: "Monitoring QRIS", icon: QrCode, adminOnly: true },
       { to: "/penjamin", label: "Penjamin Saya", icon: Shield },
       { to: "/angsuran", label: "Angsuran", icon: Receipt },
       { to: "/shu", label: "SHU & Reward", icon: Wallet },
