@@ -167,8 +167,60 @@ function ProfilPage() {
             </form>
           </CardContent>
         </Card>
+
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2"><KeyRound className="h-4 w-4" /> Ganti Password</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChangePasswordForm />
+          </CardContent>
+        </Card>
       </div>
     </div>
+  );
+}
+
+function ChangePasswordForm() {
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pw.length < 8) { toast.error("Password minimal 8 karakter"); return; }
+    if (pw !== pw2) { toast.error("Konfirmasi password tidak cocok"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Password berhasil diganti");
+    setPw(""); setPw2("");
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <Alert className="border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-900/10">
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-xs text-amber-800 dark:text-amber-200">
+          Jika Anda masih menggunakan password standar dari pengurus, segera ganti dengan password pribadi Anda demi keamanan akun.
+        </AlertDescription>
+      </Alert>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Password Baru">
+          <PasswordInput value={pw} onChange={(e) => setPw(e.target.value)} placeholder="Min. 8 karakter" autoComplete="new-password" required />
+        </Field>
+        <Field label="Konfirmasi Password Baru">
+          <PasswordInput value={pw2} onChange={(e) => setPw2(e.target.value)} placeholder="Ulangi password baru" autoComplete="new-password" required />
+        </Field>
+      </div>
+      <div className="flex justify-end">
+        <Button type="submit" disabled={loading} className="gap-2">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+          Ganti Password
+        </Button>
+      </div>
+    </form>
   );
 }
 
