@@ -51,9 +51,11 @@ const navGroups: NavGroup[] = [
     icon: Landmark,
     items: [
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
+      { to: "/tabungan-berjangka", label: "Tabungan Berjangka", icon: PiggyBank },
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
       { to: "/penjamin", label: "Penjamin Saya", icon: Shield },
       { to: "/angsuran", label: "Angsuran", icon: Receipt },
+      { to: "/bayar-qris", label: "Bayar QRIS", icon: QrCode },
       { to: "/shu", label: "SHU & Reward", icon: Wallet },
       { to: "/buku-besar", label: "Buku Besar", icon: BookOpen },
       { to: "/kalkulator", label: "Kalkulator", icon: Calculator },
