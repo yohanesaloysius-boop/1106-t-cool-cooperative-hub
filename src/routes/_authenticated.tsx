@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
+import { CommandPalette } from "@/components/command-palette";
 
 
 export const Route = createFileRoute("/_authenticated")({
