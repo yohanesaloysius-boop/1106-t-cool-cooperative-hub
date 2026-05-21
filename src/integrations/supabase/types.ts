@@ -1932,6 +1932,60 @@ export type Database = {
         }
         Relationships: []
       }
+      qris_payments: {
+        Row: {
+          created_at: string
+          expired_at: string
+          id: string
+          invoice_no: string
+          jenis: Database["public"]["Enums"]["qris_jenis"]
+          keterangan: string | null
+          metadata: Json
+          nominal: number
+          paid_at: string | null
+          qr_string: string
+          ref_id: string | null
+          ref_table: string | null
+          status: Database["public"]["Enums"]["qris_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expired_at?: string
+          id?: string
+          invoice_no?: string
+          jenis: Database["public"]["Enums"]["qris_jenis"]
+          keterangan?: string | null
+          metadata?: Json
+          nominal: number
+          paid_at?: string | null
+          qr_string: string
+          ref_id?: string | null
+          ref_table?: string | null
+          status?: Database["public"]["Enums"]["qris_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expired_at?: string
+          id?: string
+          invoice_no?: string
+          jenis?: Database["public"]["Enums"]["qris_jenis"]
+          keterangan?: string | null
+          metadata?: Json
+          nominal?: number
+          paid_at?: string | null
+          qr_string?: string
+          ref_id?: string | null
+          ref_table?: string | null
+          status?: Database["public"]["Enums"]["qris_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -2446,6 +2500,7 @@ export type Database = {
         Args: { _asset_id: string }
         Returns: number
       }
+      gen_qris_invoice_no: { Args: never; Returns: string }
       get_email_by_phone: { Args: { _phone: string }; Returns: string }
       get_featured_products: {
         Args: { _limit?: number }
@@ -2601,6 +2656,8 @@ export type Database = {
       }
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
       normalize_phone_id: { Args: { _raw: string }; Returns: string }
+      qris_expire_pending: { Args: never; Returns: number }
+      qris_mark_success: { Args: { _id: string }; Returns: undefined }
       sync_collection_cases: { Args: never; Returns: number }
       validate_guarantor: {
         Args: { _amount: number; _guarantor_id: string }
@@ -2696,6 +2753,14 @@ export type Database = {
         | "completed"
         | "cancelled"
       product_status: "draft" | "active" | "out_of_stock" | "archived"
+      qris_jenis:
+        | "simpanan"
+        | "angsuran"
+        | "topup"
+        | "marketplace"
+        | "admin"
+        | "ppob"
+      qris_status: "pending" | "success" | "expired" | "failed" | "cancelled"
       restructure_status:
         | "draft"
         | "pending"
@@ -2947,6 +3012,15 @@ export const Constants = {
         "cancelled",
       ],
       product_status: ["draft", "active", "out_of_stock", "archived"],
+      qris_jenis: [
+        "simpanan",
+        "angsuran",
+        "topup",
+        "marketplace",
+        "admin",
+        "ppob",
+      ],
+      qris_status: ["pending", "success", "expired", "failed", "cancelled"],
       restructure_status: [
         "draft",
         "pending",
