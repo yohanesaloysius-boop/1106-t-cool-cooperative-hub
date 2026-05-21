@@ -63,7 +63,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   });
   const [ktp, setKtp] = useState<{ path: string; preview: string } | null>(null);
   const [selfie, setSelfie] = useState<{ path: string; preview: string } | null>(null);
-  const [openCam, setOpenCam] = useState<"ktp" | "selfie" | null>(null);
+  const [selfie2, setSelfie2] = useState<{ path: string; preview: string } | null>(null);
+  const [openCam, setOpenCam] = useState<"ktp" | "selfie" | "selfie2" | null>(null);
   const verifyPrivyFn = useServerFn(verifyWithPrivy);
   const [privy, setPrivy] = useState<
     | null
@@ -116,7 +117,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   }, [form]);
 
   const reset = () => {
-    setStep(1); setKtp(null); setSelfie(null); setPrivy(null); setPrivyErr(null); setGuarantors([]);
+    setStep(1); setKtp(null); setSelfie(null); setSelfie2(null); setPrivy(null); setPrivyErr(null); setGuarantors([]);
     setForm({ nominal: "", tenor_bulan: "12", bunga_persen: "1.5", bunga_jenis: "flat", tujuan: "", agree: false });
   };
 
@@ -124,7 +125,12 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
     if (!ktp || !selfie) return;
     setPrivyBusy(true); setPrivyErr(null);
     try {
-      const res = await verifyPrivyFn({ data: { ktpPath: ktp.path, selfiePath: selfie.path, bucket: "verifikasi-pinjaman" } });
+      const res = await verifyPrivyFn({ data: {
+        ktpPath: ktp.path,
+        selfiePath: selfie.path,
+        selfie2Path: selfie2?.path,
+        bucket: "verifikasi-pinjaman",
+      } });
       if (!res.ok) { setPrivyErr(res.error ?? "Verifikasi gagal"); setPrivy(null); }
       else {
         const r = res.result;
@@ -132,7 +138,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
           mode: res.mode, nik: r.nik, nama: r.nama, tgl_lahir: r.tgl_lahir, alamat: r.alamat,
           face_match_score: r.face_match_score, liveness: r.liveness, status: r.status, referenceId: r.referenceId,
         });
-        if (r.face_match_score < 0.75) setPrivyErr(`Skor wajah rendah (${(r.face_match_score * 100).toFixed(1)}%). Ulangi selfie.`);
+        if (r.face_match_score < 0.80) setPrivyErr(`Skor wajah ${(r.face_match_score * 100).toFixed(1)}% (min 80%). Ulangi selfie dengan pencahayaan lebih baik.`);
       }
     } catch (e) {
       setPrivyErr((e as Error).message);
@@ -393,8 +399,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-primary/10 p-2 text-primary"><ScanFace className="h-5 w-5" /></div>
                     <div>
-                      <p className="font-semibold">Selfie Wajah</p>
-                      <p className="text-xs text-muted-foreground">Lihat ke kamera, tanpa masker/kacamata gelap.</p>
+                      <p className="font-semibold">Selfie #1 — Wajah Netral</p>
+                      <p className="text-xs text-muted-foreground">Lihat ke kamera, ekspresi datar, tanpa masker/kacamata gelap.</p>
                     </div>
                   </div>
                   {selfie ? <CheckCircle2 className="h-5 w-5 text-success" /> : <Camera className="h-5 w-5 text-muted-foreground" />}
@@ -402,13 +408,32 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                 {selfie && <img src={selfie.preview} alt="Selfie" className="max-h-56 w-full object-contain bg-muted" />}
                 <div className="border-t p-3">
                   <Button variant={selfie ? "outline" : "default"} size="sm" className="w-full gap-2" onClick={() => setOpenCam("selfie")}>
-                    <Camera className="h-4 w-4" /> {selfie ? "Ambil ulang Selfie" : "Ambil Selfie"}
+                    <Camera className="h-4 w-4" /> {selfie ? "Ambil ulang Selfie #1" : "Ambil Selfie #1 (Netral)"}
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="overflow-hidden">
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-primary/10 p-2 text-primary"><ScanFace className="h-5 w-5" /></div>
+                    <div>
+                      <p className="font-semibold">Selfie #2 — Tersenyum <Badge variant="outline" className="ml-1 text-[9px]">Anti-replay</Badge></p>
+                      <p className="text-xs text-muted-foreground">Foto kedua dgn ekspresi berbeda. Mencegah screenshot/cetakan dipakai ulang.</p>
+                    </div>
+                  </div>
+                  {selfie2 ? <CheckCircle2 className="h-5 w-5 text-success" /> : <Camera className="h-5 w-5 text-muted-foreground" />}
+                </div>
+                {selfie2 && <img src={selfie2.preview} alt="Selfie 2" className="max-h-56 w-full object-contain bg-muted" />}
+                <div className="border-t p-3">
+                  <Button variant={selfie2 ? "outline" : "secondary"} size="sm" className="w-full gap-2" onClick={() => setOpenCam("selfie2")}>
+                    <Camera className="h-4 w-4" /> {selfie2 ? "Ambil ulang Selfie #2" : "Ambil Selfie #2 (Tersenyum)"}
                   </Button>
                 </div>
               </Card>
 
               <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
-                🔒 Foto Anda disimpan secara privat. Akses hanya untuk pengurus koperasi terverifikasi.
+                🔒 Foto Anda disimpan secara privat dengan watermark nama & waktu. Akses hanya untuk pengurus koperasi terverifikasi.
               </div>
 
               {/* e-KYC Privy */}
@@ -441,8 +466,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                       <span className="text-muted-foreground">Liveness</span><span className="text-right">{privy.liveness}</span>
                       <span className="text-muted-foreground">Kualitas KTP</span><span className="text-right">{(privy as any).ktp_quality ?? "—"}</span>
                       <span className="text-muted-foreground">Face Match</span>
-                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.75 ? "text-success" : "text-amber-600"}`}>
-                        {(privy.face_match_score * 100).toFixed(1)}%
+                      <span className={`text-right font-semibold ${privy.face_match_score >= 0.80 ? "text-success" : "text-amber-600"}`}>
+                        {(privy.face_match_score * 100).toFixed(1)}% <span className="text-[10px] font-normal text-muted-foreground">(min 80%)</span>
                       </span>
                       <span className="text-muted-foreground">Ref</span><span className="text-right font-mono text-[10px]">{privy.referenceId}</span>
                     </div>
@@ -564,18 +589,32 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
               guide="ktp"
               bucket="verifikasi-pinjaman"
               userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
               onUploaded={(path, preview) => setKtp({ path, preview })}
             />
             <CameraCapture
               open={openCam === "selfie"}
               onOpenChange={(v) => !v && setOpenCam(null)}
               facingMode="user"
-              title="Ambil Selfie"
-              hint="Lihat ke kamera, wajah dalam lingkaran, pencahayaan cukup."
+              title="Ambil Selfie #1 (Netral)"
+              hint="Lihat ke kamera, wajah dalam lingkaran, ekspresi datar."
               guide="face"
               bucket="verifikasi-pinjaman"
               userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
               onUploaded={(path, preview) => setSelfie({ path, preview })}
+            />
+            <CameraCapture
+              open={openCam === "selfie2"}
+              onOpenChange={(v) => !v && setOpenCam(null)}
+              facingMode="user"
+              title="Ambil Selfie #2 (Tersenyum)"
+              hint="Tersenyum / ekspresi berbeda. Anti screenshot."
+              guide="face"
+              bucket="verifikasi-pinjaman"
+              userId={user.id}
+              watermark={profile?.nama_lengkap ?? undefined}
+              onUploaded={(path, preview) => setSelfie2({ path, preview })}
             />
           </>
         )}
