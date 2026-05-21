@@ -37,6 +37,7 @@ import { Route as AuthenticatedDokumenRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_authenticated/dashboard-belanja'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBukuBesarRouteImport } from './routes/_authenticated/buku-besar'
+import { Route as AuthenticatedBayarQrisRouteImport } from './routes/_authenticated/bayar-qris'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -51,6 +52,7 @@ import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
 import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_authenticated/admin.rekonsiliasi'
+import { Route as AuthenticatedAdminQrisRouteImport } from './routes/_authenticated/admin.qris'
 import { Route as AuthenticatedAdminPinjamanRouteImport } from './routes/_authenticated/admin.pinjaman'
 import { Route as AuthenticatedAdminPenjaminRouteImport } from './routes/_authenticated/admin.penjamin'
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
@@ -219,6 +221,11 @@ const AuthenticatedBukuBesarRoute = AuthenticatedBukuBesarRouteImport.update({
   path: '/buku-besar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBayarQrisRoute = AuthenticatedBayarQrisRouteImport.update({
+  id: '/bayar-qris',
+  path: '/bayar-qris',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
   id: '/approval',
   path: '/approval',
@@ -295,6 +302,11 @@ const AuthenticatedAdminRekonsiliasiRoute =
     path: '/rekonsiliasi',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminQrisRoute = AuthenticatedAdminQrisRouteImport.update({
+  id: '/qris',
+  path: '/qris',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminPinjamanRoute =
   AuthenticatedAdminPinjamanRouteImport.update({
     id: '/pinjaman',
@@ -448,6 +460,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
@@ -489,6 +502,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/admin/qris': typeof AuthenticatedAdminQrisRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -514,6 +528,7 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
@@ -555,6 +570,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/admin/qris': typeof AuthenticatedAdminQrisRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -583,6 +599,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
+  '/_authenticated/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/_authenticated/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dashboard-belanja': typeof AuthenticatedDashboardBelanjaRoute
@@ -624,6 +641,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
   '/_authenticated/admin/penjamin': typeof AuthenticatedAdminPenjaminRoute
   '/_authenticated/admin/pinjaman': typeof AuthenticatedAdminPinjamanRoute
+  '/_authenticated/admin/qris': typeof AuthenticatedAdminQrisRoute
   '/_authenticated/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
@@ -652,6 +670,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/approval'
+    | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
@@ -693,6 +712,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan'
     | '/admin/penjamin'
     | '/admin/pinjaman'
+    | '/admin/qris'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
     | '/admin/shu'
@@ -718,6 +738,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/angsuran'
     | '/approval'
+    | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
     | '/dashboard-belanja'
@@ -759,6 +780,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan'
     | '/admin/penjamin'
     | '/admin/pinjaman'
+    | '/admin/qris'
     | '/admin/rekonsiliasi'
     | '/admin/seller-verify'
     | '/admin/shu'
@@ -786,6 +808,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
+    | '/_authenticated/bayar-qris'
     | '/_authenticated/buku-besar'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard-belanja'
@@ -827,6 +850,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pengaturan'
     | '/_authenticated/admin/penjamin'
     | '/_authenticated/admin/pinjaman'
+    | '/_authenticated/admin/qris'
     | '/_authenticated/admin/rekonsiliasi'
     | '/_authenticated/admin/seller-verify'
     | '/_authenticated/admin/shu'
@@ -1055,6 +1079,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBukuBesarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/bayar-qris': {
+      id: '/_authenticated/bayar-qris'
+      path: '/bayar-qris'
+      fullPath: '/bayar-qris'
+      preLoaderRoute: typeof AuthenticatedBayarQrisRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/approval': {
       id: '/_authenticated/approval'
       path: '/approval'
@@ -1151,6 +1182,13 @@ declare module '@tanstack/react-router' {
       path: '/rekonsiliasi'
       fullPath: '/admin/rekonsiliasi'
       preLoaderRoute: typeof AuthenticatedAdminRekonsiliasiRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/qris': {
+      id: '/_authenticated/admin/qris'
+      path: '/qris'
+      fullPath: '/admin/qris'
+      preLoaderRoute: typeof AuthenticatedAdminQrisRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pinjaman': {
@@ -1346,6 +1384,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
   AuthenticatedAdminPenjaminRoute: typeof AuthenticatedAdminPenjaminRoute
   AuthenticatedAdminPinjamanRoute: typeof AuthenticatedAdminPinjamanRoute
+  AuthenticatedAdminQrisRoute: typeof AuthenticatedAdminQrisRoute
   AuthenticatedAdminRekonsiliasiRoute: typeof AuthenticatedAdminRekonsiliasiRoute
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
@@ -1378,6 +1417,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
   AuthenticatedAdminPenjaminRoute: AuthenticatedAdminPenjaminRoute,
   AuthenticatedAdminPinjamanRoute: AuthenticatedAdminPinjamanRoute,
+  AuthenticatedAdminQrisRoute: AuthenticatedAdminQrisRoute,
   AuthenticatedAdminRekonsiliasiRoute: AuthenticatedAdminRekonsiliasiRoute,
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
@@ -1397,6 +1437,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
+  AuthenticatedBayarQrisRoute: typeof AuthenticatedBayarQrisRoute
   AuthenticatedBukuBesarRoute: typeof AuthenticatedBukuBesarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDashboardBelanjaRoute: typeof AuthenticatedDashboardBelanjaRoute
@@ -1421,6 +1462,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
+  AuthenticatedBayarQrisRoute: AuthenticatedBayarQrisRoute,
   AuthenticatedBukuBesarRoute: AuthenticatedBukuBesarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDashboardBelanjaRoute: AuthenticatedDashboardBelanjaRoute,
