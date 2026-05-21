@@ -63,7 +63,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
   });
   const [ktp, setKtp] = useState<{ path: string; preview: string } | null>(null);
   const [selfie, setSelfie] = useState<{ path: string; preview: string } | null>(null);
-  const [openCam, setOpenCam] = useState<"ktp" | "selfie" | null>(null);
+  const [selfie2, setSelfie2] = useState<{ path: string; preview: string } | null>(null);
+  const [openCam, setOpenCam] = useState<"ktp" | "selfie" | "selfie2" | null>(null);
   const verifyPrivyFn = useServerFn(verifyWithPrivy);
   const [privy, setPrivy] = useState<
     | null
