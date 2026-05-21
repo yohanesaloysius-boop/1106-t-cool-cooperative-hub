@@ -150,12 +150,8 @@ function BayarQRISPage() {
     toast.success(`QRIS ${data.invoice_no} dibuat — berlaku 15 menit`);
   };
 
-  // Mock: simulate payment success
-  const simulatePay = async () => {
-    if (!activeQr) return;
-    const { error } = await supabase.rpc("qris_mark_success", { _id: activeQr.id });
-    if (error) toast.error(error.message);
-  };
+  // Simulasi pembayaran khusus pengurus dipindahkan ke /admin/qris.
+
 
   const countdown = useCountdown(activeQr?.expired_at);
 
