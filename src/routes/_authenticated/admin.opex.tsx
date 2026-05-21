@@ -197,7 +197,7 @@ function AdminOpexPage() {
           {list.isLoading ? (
             <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
           ) : !list.data?.length ? (
-            <EmptyState icon={Receipt} title="Belum ada data OPEX" description="Buat pengajuan pertama dengan tombol di atas." />
+            <EmptyState icon={Receipt} title="Belum ada data OPEX" desc="Buat pengajuan pertama dengan tombol di atas." />
           ) : (
             <div className="overflow-x-auto">
               <Table>
