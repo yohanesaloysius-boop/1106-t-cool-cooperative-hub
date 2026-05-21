@@ -205,7 +205,7 @@ export const verifyWithPrivy = createServerFn({ method: "POST" })
     const { data: profile } = await supabase
       .from("profiles")
       .select("nama_lengkap, nik, tanggal_lahir, alamat, jenis_kelamin")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .maybeSingle();
 
     // 2. Download foto-foto.
