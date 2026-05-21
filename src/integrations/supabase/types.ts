@@ -1360,6 +1360,128 @@ export type Database = {
         }
         Relationships: []
       }
+      opex_categories: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          id: string
+          is_active: boolean
+          kode: string
+          nama: string
+          pajak_jenis: string | null
+          pajak_tarif: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kode: string
+          nama: string
+          pajak_jenis?: string | null
+          pajak_tarif?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kode?: string
+          nama?: string
+          pajak_jenis?: string | null
+          pajak_tarif?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      opex_expenses: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          bukti_url: string | null
+          catatan: string | null
+          category_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deskripsi: string
+          id: string
+          metode_bayar: Database["public"]["Enums"]["opex_metode_bayar"]
+          nominal: number
+          nomor_bukti: string | null
+          paid_at: string | null
+          paid_by: string | null
+          pajak_meta: Json | null
+          pajak_nominal: number
+          penerima: string | null
+          rejected_reason: string | null
+          status: Database["public"]["Enums"]["opex_status"]
+          tanggal: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          bukti_url?: string | null
+          catatan?: string | null
+          category_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deskripsi: string
+          id?: string
+          metode_bayar?: Database["public"]["Enums"]["opex_metode_bayar"]
+          nominal: number
+          nomor_bukti?: string | null
+          paid_at?: string | null
+          paid_by?: string | null
+          pajak_meta?: Json | null
+          pajak_nominal?: number
+          penerima?: string | null
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["opex_status"]
+          tanggal?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          bukti_url?: string | null
+          catatan?: string | null
+          category_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deskripsi?: string
+          id?: string
+          metode_bayar?: Database["public"]["Enums"]["opex_metode_bayar"]
+          nominal?: number
+          nomor_bukti?: string | null
+          paid_at?: string | null
+          paid_by?: string | null
+          pajak_meta?: Json | null
+          pajak_nominal?: number
+          penerima?: string | null
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["opex_status"]
+          tanggal?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opex_expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "opex_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pengumuman: {
         Row: {
           cover_url: string | null
@@ -2301,6 +2423,14 @@ export type Database = {
         | "approval"
         | "transaksi"
         | "sistem"
+      opex_metode_bayar: "tunai" | "transfer" | "wallet" | "lainnya"
+      opex_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "paid"
+        | "cancelled"
       payment_status: "pending" | "verified" | "rejected"
       pinjaman_status:
         | "draft"
@@ -2507,6 +2637,15 @@ export const Constants = {
         "approval",
         "transaksi",
         "sistem",
+      ],
+      opex_metode_bayar: ["tunai", "transfer", "wallet", "lainnya"],
+      opex_status: [
+        "draft",
+        "pending",
+        "approved",
+        "rejected",
+        "paid",
+        "cancelled",
       ],
       payment_status: ["pending", "verified", "rejected"],
       pinjaman_status: [
