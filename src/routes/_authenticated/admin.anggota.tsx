@@ -67,7 +67,7 @@ function AnggotaPage() {
     mutationFn: async ({ id, status }: { id: string; status: "active" | "suspended" | "rejected" }) => {
       if (status === "active") {
         // RPC: aktivasi + buat dompet + tagihan simpanan pokok + notifikasi
-        const { error } = await supabase.rpc("approve_member", { p_user_id: id });
+        const { error } = await (supabase.rpc as any)("approve_member", { p_user_id: id });
         if (error) throw error;
         return;
       }

@@ -2489,55 +2489,13 @@ export type Database = {
       }
     }
     Views: {
-      lowongan_kerja_public: {
-        Row: {
-          created_at: string | null
-          deskripsi: string | null
-          expired_at: string | null
-          gender: string | null
-          id: string | null
-          judul: string | null
-          kontak_nama: string | null
-          lokasi: string | null
-          perusahaan: string | null
-          posisi: string | null
-          status: Database["public"]["Enums"]["lowongan_status"] | null
-        }
-        Insert: {
-          created_at?: string | null
-          deskripsi?: string | null
-          expired_at?: string | null
-          gender?: string | null
-          id?: string | null
-          judul?: string | null
-          kontak_nama?: string | null
-          lokasi?: string | null
-          perusahaan?: string | null
-          posisi?: string | null
-          status?: Database["public"]["Enums"]["lowongan_status"] | null
-        }
-        Update: {
-          created_at?: string | null
-          deskripsi?: string | null
-          expired_at?: string | null
-          gender?: string | null
-          id?: string | null
-          judul?: string | null
-          kontak_nama?: string | null
-          lokasi?: string | null
-          perusahaan?: string | null
-          posisi?: string | null
-          status?: Database["public"]["Enums"]["lowongan_status"] | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       act_on_guarantor_request: {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
-      approve_member: { Args: { p_user_id: string }; Returns: Json }
       compute_asset_depreciation: {
         Args: { _asset_id: string }
         Returns: number
