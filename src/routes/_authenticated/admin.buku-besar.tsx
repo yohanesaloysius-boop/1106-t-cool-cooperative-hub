@@ -54,14 +54,18 @@ function AdminBukuBesarPage() {
     [members.data, memberId],
   );
 
+  const isAll = memberId === "__all__";
   const ledger = useQuery({
     queryKey: ["admin-ledger", memberId, from, to],
     enabled: !!memberId,
     queryFn: async () => {
+      if (isAll) {
+        const { data, error } = await supabase.rpc("get_jurnal_umum", { _from: from, _to: to });
+        if (error) throw error;
+        return data ?? [];
+      }
       const { data, error } = await supabase.rpc("get_member_ledger", {
-        _user_id: memberId,
-        _from: from,
-        _to: to,
+        _user_id: memberId, _from: from, _to: to,
       });
       if (error) throw error;
       return data ?? [];
@@ -141,6 +145,7 @@ function AdminBukuBesarPage() {
             <Select value={memberId} onValueChange={setMemberId}>
               <SelectTrigger><SelectValue placeholder={members.isLoading ? "Memuat..." : "Pilih anggota"} /></SelectTrigger>
               <SelectContent>
+                <SelectItem value="__all__">— Semua Anggota (Jurnal Umum) —</SelectItem>
                 {(members.data ?? []).map((m) => (
                   <SelectItem key={m.id} value={m.id}>
                     {m.nama_lengkap} {m.nomor_anggota ? `(${m.nomor_anggota})` : ""}
@@ -157,14 +162,14 @@ function AdminBukuBesarPage() {
             <label className="text-xs text-muted-foreground">Sampai</label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
-          <Button onClick={exportPdf} disabled={!selected || pdfBusy || !rowsWithBalance.length}>
+          <Button onClick={exportPdf} disabled={!selected || isAll || pdfBusy || !rowsWithBalance.length}>
             {pdfBusy ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <FileText className="h-4 w-4 mr-1" />}
             Export PDF
           </Button>
         </div>
       </Card>
 
-      {selected && (
+      {selected && !isAll && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-1">
             <MemberCard
@@ -192,6 +197,23 @@ function AdminBukuBesarPage() {
         </div>
       )}
 
+      {isAll && (
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Total Masuk (Kredit Koperasi)</p>
+            <p className="text-lg font-bold text-success">{fmt.format(totalIn)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Total Keluar (Debit Koperasi)</p>
+            <p className="text-lg font-bold text-destructive">{fmt.format(totalOut)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs text-muted-foreground">Jumlah Transaksi</p>
+            <p className="text-lg font-bold">{rowsWithBalance.length}</p>
+          </Card>
+        </div>
+      )}
+
       <Card className="overflow-hidden">
         {!memberId ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Pilih anggota terlebih dahulu.</div>
@@ -204,11 +226,12 @@ function AdminBukuBesarPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Tanggal</TableHead>
+                {isAll && <TableHead>Anggota</TableHead>}
                 <TableHead>Jenis</TableHead>
                 <TableHead>Keterangan</TableHead>
                 <TableHead className="text-right">Masuk</TableHead>
                 <TableHead className="text-right">Keluar</TableHead>
-                <TableHead className="text-right">Saldo</TableHead>
+                {!isAll && <TableHead className="text-right">Saldo</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -217,6 +240,12 @@ function AdminBukuBesarPage() {
                 return (
                   <TableRow key={i}>
                     <TableCell className="text-xs whitespace-nowrap">{dfmt(r.tanggal)}</TableCell>
+                    {isAll && (
+                      <TableCell className="text-xs">
+                        <div className="font-medium">{r.nama_anggota ?? "-"}</div>
+                        {r.nomor_anggota && <div className="text-[10px] text-muted-foreground">{r.nomor_anggota}</div>}
+                      </TableCell>
+                    )}
                     <TableCell><Badge variant="outline" className="text-[10px]">{r.jenis}</Badge></TableCell>
                     <TableCell className="text-xs">{r.keterangan}</TableCell>
                     <TableCell className="text-right font-mono text-success text-xs">
@@ -225,7 +254,7 @@ function AdminBukuBesarPage() {
                     <TableCell className="text-right font-mono text-destructive text-xs">
                       {r.arah === "out" ? fmt.format(amt) : "—"}
                     </TableCell>
-                    <TableCell className="text-right font-mono font-semibold text-xs">{fmt.format(r.saldo)}</TableCell>
+                    {!isAll && <TableCell className="text-right font-mono font-semibold text-xs">{fmt.format(r.saldo)}</TableCell>}
                   </TableRow>
                 );
               })}

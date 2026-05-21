@@ -2470,6 +2470,23 @@ export type Database = {
           total_gmv: number
         }[]
       }
+      get_jurnal_umum: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          arah: string
+          debit: number
+          jenis: string
+          keterangan: string
+          kredit: number
+          nama_anggota: string
+          nomor_anggota: string
+          ref_id: string
+          ref_table: string
+          status: string
+          tanggal: string
+          user_id: string
+        }[]
+      }
       get_marketplace_admin_stats: { Args: never; Returns: Json }
       get_marketplace_stats: { Args: never; Returns: Json }
       get_member_ledger: {
