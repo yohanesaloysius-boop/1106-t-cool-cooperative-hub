@@ -47,7 +47,7 @@ function LaporanSakPage() {
         supabase.from("wallet_transactions").select("nominal, arah, jenis, created_at"),
       ]);
 
-      const sum = (arr: any[] | null, f: (x: any) => number) => (arr ?? []).reduce((s, x) => s + Number(f(x) || 0), 0);
+      const sum = (arr: any[] | null | undefined, f: (x: any) => number) => (arr ?? []).reduce((s, x) => s + Number(f(x) || 0), 0);
       const inRange = (d: string) => d >= startDate && d <= endDate + "T23:59:59";
 
       // ASET

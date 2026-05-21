@@ -58,6 +58,7 @@ import { Route as AuthenticatedAdminPenagihanRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminOpexRouteImport } from './routes/_authenticated/admin.opex'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLowonganRouteImport } from './routes/_authenticated/admin.lowongan'
+import { Route as AuthenticatedAdminLaporanSakRouteImport } from './routes/_authenticated/admin.laporan-sak'
 import { Route as AuthenticatedAdminLaporanRatRouteImport } from './routes/_authenticated/admin.laporan-rat'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
 import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
@@ -335,6 +336,12 @@ const AuthenticatedAdminLowonganRoute =
     path: '/lowongan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminLaporanSakRoute =
+  AuthenticatedAdminLaporanSakRouteImport.update({
+    id: '/laporan-sak',
+    path: '/laporan-sak',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminLaporanRatRoute =
   AuthenticatedAdminLaporanRatRouteImport.update({
     id: '/laporan-rat',
@@ -474,6 +481,7 @@ export interface FileRoutesByFullPath {
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
+  '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
@@ -539,6 +547,7 @@ export interface FileRoutesByTo {
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
+  '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
@@ -607,6 +616,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
+  '/_authenticated/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/_authenticated/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/opex': typeof AuthenticatedAdminOpexRoute
@@ -675,6 +685,7 @@ export interface FileRouteTypes {
     | '/admin/komplain'
     | '/admin/laporan'
     | '/admin/laporan-rat'
+    | '/admin/laporan-sak'
     | '/admin/lowongan'
     | '/admin/marketplace'
     | '/admin/opex'
@@ -740,6 +751,7 @@ export interface FileRouteTypes {
     | '/admin/komplain'
     | '/admin/laporan'
     | '/admin/laporan-rat'
+    | '/admin/laporan-sak'
     | '/admin/lowongan'
     | '/admin/marketplace'
     | '/admin/opex'
@@ -807,6 +819,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/komplain'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/laporan-rat'
+    | '/_authenticated/admin/laporan-sak'
     | '/_authenticated/admin/lowongan'
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/opex'
@@ -1189,6 +1202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLowonganRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/laporan-sak': {
+      id: '/_authenticated/admin/laporan-sak'
+      path: '/laporan-sak'
+      fullPath: '/admin/laporan-sak'
+      preLoaderRoute: typeof AuthenticatedAdminLaporanSakRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/laporan-rat': {
       id: '/_authenticated/admin/laporan-rat'
       path: '/laporan-rat'
@@ -1318,6 +1338,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminLaporanRatRoute: typeof AuthenticatedAdminLaporanRatRoute
+  AuthenticatedAdminLaporanSakRoute: typeof AuthenticatedAdminLaporanSakRoute
   AuthenticatedAdminLowonganRoute: typeof AuthenticatedAdminLowonganRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminOpexRoute: typeof AuthenticatedAdminOpexRoute
@@ -1349,6 +1370,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminLaporanRatRoute: AuthenticatedAdminLaporanRatRoute,
+  AuthenticatedAdminLaporanSakRoute: AuthenticatedAdminLaporanSakRoute,
   AuthenticatedAdminLowonganRoute: AuthenticatedAdminLowonganRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminOpexRoute: AuthenticatedAdminOpexRoute,
