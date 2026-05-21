@@ -76,6 +76,7 @@ const navGroups: NavGroup[] = [
       { to: "/admin/shu", label: "Distribusi SHU", icon: Coins, adminOnly: true },
       { to: "/admin/approval", label: "Approval Digital", icon: FileSignature, adminOnly: true },
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
+      { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },
     ],
   },
   {
