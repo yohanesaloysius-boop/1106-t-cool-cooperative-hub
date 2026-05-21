@@ -24,7 +24,7 @@ export function OnboardingChecklist() {
     queryKey: ["onboarding-status", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const [pokokRes, wajibRes, walletRes] = await Promise.all([
+      const [pokokRes, wajibRes, walletRes, profilRes] = await Promise.all([
         supabase
           .from("simpanan")
           .select("id,status")
@@ -43,21 +43,24 @@ export function OnboardingChecklist() {
           .order("created_at", { ascending: false })
           .limit(1),
         supabase.from("wallets").select("id").eq("user_id", user!.id).maybeSingle(),
+        supabase.from("profiles").select("nik,alamat,no_hp,nama_lengkap").eq("id", user!.id).maybeSingle(),
       ]);
       const pokok = pokokRes.data?.[0];
       const wajib = wajibRes.data?.[0];
+      const p = profilRes.data;
       return {
         pokokVerified: pokok?.status === "verified",
         pokokPending: pokok?.status === "pending",
         wajibThisMonth: !!wajib && (wajib.status === "verified" || wajib.status === "pending"),
         walletReady: !!walletRes.data,
+        profilLengkap: !!(p?.nama_lengkap && p?.no_hp && p?.alamat && p?.nik),
       };
     },
   });
 
   if (!profile) return null;
 
-  const profilLengkap = !!(profile.nama_lengkap && profile.no_hp && profile.alamat && profile.nik);
+  const profilLengkap = data?.profilLengkap ?? false;
   const akunAktif = profile.status === "active";
 
   const steps: Step[] = [
