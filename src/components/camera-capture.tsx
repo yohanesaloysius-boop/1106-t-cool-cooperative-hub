@@ -122,6 +122,7 @@ export function CameraCapture({ open, onOpenChange, facingMode = "environment", 
         canvas.getContext("2d")!.drawImage(img, 0, 0);
         const q = estimateBlur(canvas);
         setQuality({ ok: q.variance > 40, reason: q.variance > 40 ? undefined : "Gambar terlalu blur." });
+        drawWatermark(canvas);
         setSnapshot(canvas.toDataURL("image/jpeg", 0.9));
       };
       img.src = reader.result as string;
