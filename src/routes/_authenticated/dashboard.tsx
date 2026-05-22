@@ -184,6 +184,7 @@ function DashboardPage() {
               <Badge variant="secondary" className="rounded-full bg-white/70 px-3 py-1 text-primary border-0 backdrop-blur capitalize">
                 {profile?.status ?? "pending"}
               </Badge>
+              <PushToggle />
             </div>
           </div>
 
