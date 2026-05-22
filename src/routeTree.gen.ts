@@ -38,6 +38,7 @@ import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_aut
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBukuBesarRouteImport } from './routes/_authenticated/buku-besar'
 import { Route as AuthenticatedBayarQrisRouteImport } from './routes/_authenticated/bayar-qris'
+import { Route as AuthenticatedBantuanRouteImport } from './routes/_authenticated/bantuan'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -47,6 +48,7 @@ import { Route as MarketplaceTokoSlugRouteImport } from './routes/marketplace.to
 import { Route as MarketplaceProdukIdRouteImport } from './routes/marketplace.produk.$id'
 import { Route as AuthenticatedAdminVerifikasiPinjamanRouteImport } from './routes/_authenticated/admin.verifikasi-pinjaman'
 import { Route as AuthenticatedAdminTabunganBerjangkaRouteImport } from './routes/_authenticated/admin.tabungan-berjangka'
+import { Route as AuthenticatedAdminSupportRouteImport } from './routes/_authenticated/admin.support'
 import { Route as AuthenticatedAdminStatistikRouteImport } from './routes/_authenticated/admin.statistik'
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
@@ -66,6 +68,7 @@ import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
 import { Route as AuthenticatedAdminFeeRouteImport } from './routes/_authenticated/admin.fee'
 import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenticated/admin.escrow'
+import { Route as AuthenticatedAdminDanaCadanganRouteImport } from './routes/_authenticated/admin.dana-cadangan'
 import { Route as AuthenticatedAdminBukuKasRouteImport } from './routes/_authenticated/admin.buku-kas'
 import { Route as AuthenticatedAdminBukuBesarRouteImport } from './routes/_authenticated/admin.buku-besar'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -226,6 +229,11 @@ const AuthenticatedBayarQrisRoute = AuthenticatedBayarQrisRouteImport.update({
   path: '/bayar-qris',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBantuanRoute = AuthenticatedBantuanRouteImport.update({
+  id: '/bantuan',
+  path: '/bantuan',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
   id: '/approval',
   path: '/approval',
@@ -271,6 +279,12 @@ const AuthenticatedAdminTabunganBerjangkaRoute =
   AuthenticatedAdminTabunganBerjangkaRouteImport.update({
     id: '/tabungan-berjangka',
     path: '/tabungan-berjangka',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSupportRoute =
+  AuthenticatedAdminSupportRouteImport.update({
+    id: '/support',
+    path: '/support',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminStatistikRoute =
@@ -383,6 +397,12 @@ const AuthenticatedAdminEscrowRoute =
     path: '/escrow',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDanaCadanganRoute =
+  AuthenticatedAdminDanaCadanganRouteImport.update({
+    id: '/dana-cadangan',
+    path: '/dana-cadangan',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminBukuKasRoute =
   AuthenticatedAdminBukuKasRouteImport.update({
     id: '/buku-kas',
@@ -460,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bantuan': typeof AuthenticatedBantuanRoute
   '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -489,6 +510,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
+  '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -508,6 +530,7 @@ export interface FileRoutesByFullPath {
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin/statistik': typeof AuthenticatedAdminStatistikRoute
+  '/admin/support': typeof AuthenticatedAdminSupportRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
@@ -528,6 +551,7 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bantuan': typeof AuthenticatedBantuanRoute
   '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -557,6 +581,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
+  '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -576,6 +601,7 @@ export interface FileRoutesByTo {
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/admin/statistik': typeof AuthenticatedAdminStatistikRoute
+  '/admin/support': typeof AuthenticatedAdminSupportRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
@@ -599,6 +625,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
+  '/_authenticated/bantuan': typeof AuthenticatedBantuanRoute
   '/_authenticated/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/_authenticated/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -628,6 +655,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/_authenticated/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
+  '/_authenticated/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
   '/_authenticated/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/_authenticated/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
@@ -647,6 +675,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
   '/_authenticated/admin/statistik': typeof AuthenticatedAdminStatistikRoute
+  '/_authenticated/admin/support': typeof AuthenticatedAdminSupportRoute
   '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/_authenticated/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
@@ -670,6 +699,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/approval'
+    | '/bantuan'
     | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
@@ -699,6 +729,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
+    | '/admin/dana-cadangan'
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
@@ -718,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin/statistik'
+    | '/admin/support'
     | '/admin/tabungan-berjangka'
     | '/admin/verifikasi-pinjaman'
     | '/marketplace/produk/$id'
@@ -738,6 +770,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/angsuran'
     | '/approval'
+    | '/bantuan'
     | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
@@ -767,6 +800,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
+    | '/admin/dana-cadangan'
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
@@ -786,6 +820,7 @@ export interface FileRouteTypes {
     | '/admin/shu'
     | '/admin/simpanan'
     | '/admin/statistik'
+    | '/admin/support'
     | '/admin/tabungan-berjangka'
     | '/admin/verifikasi-pinjaman'
     | '/marketplace/produk/$id'
@@ -808,6 +843,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
+    | '/_authenticated/bantuan'
     | '/_authenticated/bayar-qris'
     | '/_authenticated/buku-besar'
     | '/_authenticated/dashboard'
@@ -837,6 +873,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/buku-besar'
     | '/_authenticated/admin/buku-kas'
+    | '/_authenticated/admin/dana-cadangan'
     | '/_authenticated/admin/escrow'
     | '/_authenticated/admin/fee'
     | '/_authenticated/admin/komplain'
@@ -856,6 +893,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
     | '/_authenticated/admin/statistik'
+    | '/_authenticated/admin/support'
     | '/_authenticated/admin/tabungan-berjangka'
     | '/_authenticated/admin/verifikasi-pinjaman'
     | '/marketplace/produk/$id'
@@ -1086,6 +1124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBayarQrisRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/bantuan': {
+      id: '/_authenticated/bantuan'
+      path: '/bantuan'
+      fullPath: '/bantuan'
+      preLoaderRoute: typeof AuthenticatedBantuanRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/approval': {
       id: '/_authenticated/approval'
       path: '/approval'
@@ -1147,6 +1192,13 @@ declare module '@tanstack/react-router' {
       path: '/tabungan-berjangka'
       fullPath: '/admin/tabungan-berjangka'
       preLoaderRoute: typeof AuthenticatedAdminTabunganBerjangkaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/support': {
+      id: '/_authenticated/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AuthenticatedAdminSupportRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/statistik': {
@@ -1282,6 +1334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEscrowRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/dana-cadangan': {
+      id: '/_authenticated/admin/dana-cadangan'
+      path: '/dana-cadangan'
+      fullPath: '/admin/dana-cadangan'
+      preLoaderRoute: typeof AuthenticatedAdminDanaCadanganRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/buku-kas': {
       id: '/_authenticated/admin/buku-kas'
       path: '/buku-kas'
@@ -1371,6 +1430,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminBukuBesarRoute: typeof AuthenticatedAdminBukuBesarRoute
   AuthenticatedAdminBukuKasRoute: typeof AuthenticatedAdminBukuKasRoute
+  AuthenticatedAdminDanaCadanganRoute: typeof AuthenticatedAdminDanaCadanganRoute
   AuthenticatedAdminEscrowRoute: typeof AuthenticatedAdminEscrowRoute
   AuthenticatedAdminFeeRoute: typeof AuthenticatedAdminFeeRoute
   AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
@@ -1390,6 +1450,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
   AuthenticatedAdminSimpananRoute: typeof AuthenticatedAdminSimpananRoute
   AuthenticatedAdminStatistikRoute: typeof AuthenticatedAdminStatistikRoute
+  AuthenticatedAdminSupportRoute: typeof AuthenticatedAdminSupportRoute
   AuthenticatedAdminTabunganBerjangkaRoute: typeof AuthenticatedAdminTabunganBerjangkaRoute
   AuthenticatedAdminVerifikasiPinjamanRoute: typeof AuthenticatedAdminVerifikasiPinjamanRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -1404,6 +1465,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminBukuBesarRoute: AuthenticatedAdminBukuBesarRoute,
   AuthenticatedAdminBukuKasRoute: AuthenticatedAdminBukuKasRoute,
+  AuthenticatedAdminDanaCadanganRoute: AuthenticatedAdminDanaCadanganRoute,
   AuthenticatedAdminEscrowRoute: AuthenticatedAdminEscrowRoute,
   AuthenticatedAdminFeeRoute: AuthenticatedAdminFeeRoute,
   AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
@@ -1423,6 +1485,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
   AuthenticatedAdminSimpananRoute: AuthenticatedAdminSimpananRoute,
   AuthenticatedAdminStatistikRoute: AuthenticatedAdminStatistikRoute,
+  AuthenticatedAdminSupportRoute: AuthenticatedAdminSupportRoute,
   AuthenticatedAdminTabunganBerjangkaRoute:
     AuthenticatedAdminTabunganBerjangkaRoute,
   AuthenticatedAdminVerifikasiPinjamanRoute:
@@ -1437,6 +1500,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
+  AuthenticatedBantuanRoute: typeof AuthenticatedBantuanRoute
   AuthenticatedBayarQrisRoute: typeof AuthenticatedBayarQrisRoute
   AuthenticatedBukuBesarRoute: typeof AuthenticatedBukuBesarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -1462,6 +1526,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
+  AuthenticatedBantuanRoute: AuthenticatedBantuanRoute,
   AuthenticatedBayarQrisRoute: AuthenticatedBayarQrisRoute,
   AuthenticatedBukuBesarRoute: AuthenticatedBukuBesarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
