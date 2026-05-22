@@ -1699,6 +1699,50 @@ export type Database = {
         }
         Relationships: []
       }
+      official_letters: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          generated_by: string | null
+          id: string
+          letter_type: string
+          member_id: string
+          nomor_surat: string
+          payload: Json
+          perihal: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          generated_by?: string | null
+          id?: string
+          letter_type: string
+          member_id: string
+          nomor_surat: string
+          payload?: Json
+          perihal?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          generated_by?: string | null
+          id?: string
+          letter_type?: string
+          member_id?: string
+          nomor_surat?: string
+          payload?: Json
+          perihal?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "official_letters_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opex_categories: {
         Row: {
           created_at: string
@@ -2011,6 +2055,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          adart_signature_hash: string | null
+          adart_signature_url: string | null
+          adart_signed_at: string | null
+          adart_version: string | null
           alamat: string | null
           barcode: string | null
           card_expired_at: string | null
@@ -2041,6 +2089,10 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          adart_signature_hash?: string | null
+          adart_signature_url?: string | null
+          adart_signed_at?: string | null
+          adart_version?: string | null
           alamat?: string | null
           barcode?: string | null
           card_expired_at?: string | null
@@ -2071,6 +2123,10 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          adart_signature_hash?: string | null
+          adart_signature_url?: string | null
+          adart_signed_at?: string | null
+          adart_version?: string | null
           alamat?: string | null
           barcode?: string | null
           card_expired_at?: string | null
