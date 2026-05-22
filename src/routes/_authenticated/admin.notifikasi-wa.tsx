@@ -55,7 +55,7 @@ function WhatsAppQueuePage() {
           .from("notification_log")
           .select("id", { count: "exact", head: true })
           .eq("channel", "whatsapp")
-          .eq("status", s);
+          .eq("status", s as Item["status"]);
         stats[s] = count ?? 0;
       }
       return stats;

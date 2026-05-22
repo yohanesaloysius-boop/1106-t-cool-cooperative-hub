@@ -63,6 +63,7 @@ import { Route as AuthenticatedAdminPenjaminRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
 import { Route as AuthenticatedAdminPenagihanRouteImport } from './routes/_authenticated/admin.penagihan'
 import { Route as AuthenticatedAdminOpexRouteImport } from './routes/_authenticated/admin.opex'
+import { Route as AuthenticatedAdminNotifikasiWaRouteImport } from './routes/_authenticated/admin.notifikasi-wa'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminLowonganRouteImport } from './routes/_authenticated/admin.lowongan'
 import { Route as AuthenticatedAdminLaporanSakRouteImport } from './routes/_authenticated/admin.laporan-sak'
@@ -82,6 +83,7 @@ import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
+import { Route as ApiPublicHooksAutoDebetWajibRouteImport } from './routes/api/public/hooks/auto-debet-wajib'
 import { Route as ApiPublicHooksAccrueFeesRouteImport } from './routes/api/public/hooks/accrue-fees'
 
 const TentangRoute = TentangRouteImport.update({
@@ -369,6 +371,12 @@ const AuthenticatedAdminOpexRoute = AuthenticatedAdminOpexRouteImport.update({
   path: '/opex',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminNotifikasiWaRoute =
+  AuthenticatedAdminNotifikasiWaRouteImport.update({
+    id: '/notifikasi-wa',
+    path: '/notifikasi-wa',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminMarketplaceRoute =
   AuthenticatedAdminMarketplaceRouteImport.update({
     id: '/marketplace',
@@ -480,6 +488,12 @@ const ApiPublicHooksAutoReleaseEscrowRoute =
     path: '/api/public/hooks/auto-release-escrow',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAutoDebetWajibRoute =
+  ApiPublicHooksAutoDebetWajibRouteImport.update({
+    id: '/api/public/hooks/auto-debet-wajib',
+    path: '/api/public/hooks/auto-debet-wajib',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksAccrueFeesRoute =
   ApiPublicHooksAccrueFeesRouteImport.update({
     id: '/api/public/hooks/accrue-fees',
@@ -539,6 +553,7 @@ export interface FileRoutesByFullPath {
   '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/admin/notifikasi-wa': typeof AuthenticatedAdminNotifikasiWaRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
   '/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -559,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
+  '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -613,6 +629,7 @@ export interface FileRoutesByTo {
   '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/admin/notifikasi-wa': typeof AuthenticatedAdminNotifikasiWaRoute
   '/admin/opex': typeof AuthenticatedAdminOpexRoute
   '/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -633,6 +650,7 @@ export interface FileRoutesByTo {
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
+  '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -690,6 +708,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
   '/_authenticated/admin/lowongan': typeof AuthenticatedAdminLowonganRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/_authenticated/admin/notifikasi-wa': typeof AuthenticatedAdminNotifikasiWaRoute
   '/_authenticated/admin/opex': typeof AuthenticatedAdminOpexRoute
   '/_authenticated/admin/penagihan': typeof AuthenticatedAdminPenagihanRoute
   '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
@@ -710,6 +729,7 @@ export interface FileRoutesById {
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
+  '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -767,6 +787,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-sak'
     | '/admin/lowongan'
     | '/admin/marketplace'
+    | '/admin/notifikasi-wa'
     | '/admin/opex'
     | '/admin/penagihan'
     | '/admin/pengaturan'
@@ -787,6 +808,7 @@ export interface FileRouteTypes {
     | '/marketplace/toko/$slug'
     | '/admin/'
     | '/api/public/hooks/accrue-fees'
+    | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -841,6 +863,7 @@ export interface FileRouteTypes {
     | '/admin/laporan-sak'
     | '/admin/lowongan'
     | '/admin/marketplace'
+    | '/admin/notifikasi-wa'
     | '/admin/opex'
     | '/admin/penagihan'
     | '/admin/pengaturan'
@@ -861,6 +884,7 @@ export interface FileRouteTypes {
     | '/marketplace/toko/$slug'
     | '/admin'
     | '/api/public/hooks/accrue-fees'
+    | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   id:
@@ -917,6 +941,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/laporan-sak'
     | '/_authenticated/admin/lowongan'
     | '/_authenticated/admin/marketplace'
+    | '/_authenticated/admin/notifikasi-wa'
     | '/_authenticated/admin/opex'
     | '/_authenticated/admin/penagihan'
     | '/_authenticated/admin/pengaturan'
@@ -937,6 +962,7 @@ export interface FileRouteTypes {
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
     | '/api/public/hooks/accrue-fees'
+    | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
@@ -952,6 +978,7 @@ export interface RootRouteChildren {
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
   ApiPublicHooksAccrueFeesRoute: typeof ApiPublicHooksAccrueFeesRoute
+  ApiPublicHooksAutoDebetWajibRoute: typeof ApiPublicHooksAutoDebetWajibRoute
   ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
   ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
@@ -1336,6 +1363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOpexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/notifikasi-wa': {
+      id: '/_authenticated/admin/notifikasi-wa'
+      path: '/notifikasi-wa'
+      fullPath: '/admin/notifikasi-wa'
+      preLoaderRoute: typeof AuthenticatedAdminNotifikasiWaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/marketplace': {
       id: '/_authenticated/admin/marketplace'
       path: '/marketplace'
@@ -1469,6 +1503,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAutoReleaseEscrowRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/auto-debet-wajib': {
+      id: '/api/public/hooks/auto-debet-wajib'
+      path: '/api/public/hooks/auto-debet-wajib'
+      fullPath: '/api/public/hooks/auto-debet-wajib'
+      preLoaderRoute: typeof ApiPublicHooksAutoDebetWajibRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/accrue-fees': {
       id: '/api/public/hooks/accrue-fees'
       path: '/api/public/hooks/accrue-fees'
@@ -1497,6 +1538,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminLaporanSakRoute: typeof AuthenticatedAdminLaporanSakRoute
   AuthenticatedAdminLowonganRoute: typeof AuthenticatedAdminLowonganRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
+  AuthenticatedAdminNotifikasiWaRoute: typeof AuthenticatedAdminNotifikasiWaRoute
   AuthenticatedAdminOpexRoute: typeof AuthenticatedAdminOpexRoute
   AuthenticatedAdminPenagihanRoute: typeof AuthenticatedAdminPenagihanRoute
   AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
@@ -1534,6 +1576,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminLaporanSakRoute: AuthenticatedAdminLaporanSakRoute,
   AuthenticatedAdminLowonganRoute: AuthenticatedAdminLowonganRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
+  AuthenticatedAdminNotifikasiWaRoute: AuthenticatedAdminNotifikasiWaRoute,
   AuthenticatedAdminOpexRoute: AuthenticatedAdminOpexRoute,
   AuthenticatedAdminPenagihanRoute: AuthenticatedAdminPenagihanRoute,
   AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
@@ -1645,6 +1688,7 @@ const rootRouteChildren: RootRouteChildren = {
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
   ApiPublicHooksAccrueFeesRoute: ApiPublicHooksAccrueFeesRoute,
+  ApiPublicHooksAutoDebetWajibRoute: ApiPublicHooksAutoDebetWajibRoute,
   ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
   ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
