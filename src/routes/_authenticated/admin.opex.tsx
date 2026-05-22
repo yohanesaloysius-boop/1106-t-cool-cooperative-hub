@@ -361,3 +361,30 @@ function OpexForm({ cats, onSubmit, pending }: { cats: Cat[]; onSubmit: (p: { ca
     </DialogContent>
   );
 }
+
+function BudgetHint({ categoryId, nominal }: { categoryId: string; nominal: number }) {
+  const tahun = new Date().getFullYear();
+  const { data } = useQuery({
+    queryKey: ["opex-budget", categoryId, tahun],
+    enabled: !!categoryId,
+    queryFn: async () => {
+      const { data } = await supabase.rpc("get_opex_budget_status" as any, { _category_id: categoryId, _tahun: tahun });
+      return (Array.isArray(data) ? data[0] : data) as any;
+    },
+  });
+  if (!data?.has_budget) return null;
+  const sisa = Number(data.sisa);
+  const sisaSetelah = sisa - nominal;
+  const over = sisaSetelah < 0;
+  return (
+    <div className={`rounded-md border px-3 py-2 text-xs ${over ? "bg-rose-50 border-rose-200 text-rose-700" : "bg-emerald-50 border-emerald-200 text-emerald-700"}`}>
+      <div className="font-medium">Anggaran RAPB {tahun} — {data.item_label}</div>
+      <div className="mt-0.5">
+        Target: {fmt(Number(data.target_nominal))} · Realisasi: {fmt(Number(data.realisasi))} ({Number(data.persen).toFixed(0)}%)
+      </div>
+      <div className="mt-0.5">
+        Sisa anggaran: <b>{fmt(sisa)}</b>{nominal > 0 && <> → setelah pengajuan ini: <b>{fmt(sisaSetelah)}</b>{over && " ⚠️ MELEBIHI ANGGARAN"}</>}
+      </div>
+    </div>
+  );
+}
