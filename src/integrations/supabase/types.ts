@@ -383,6 +383,86 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_items: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          jenis: Database["public"]["Enums"]["budget_item_jenis"]
+          kategori: string
+          plan_id: string
+          sub_kategori: string | null
+          target_nominal: number
+          updated_at: string
+          urutan: number
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis: Database["public"]["Enums"]["budget_item_jenis"]
+          kategori: string
+          plan_id: string
+          sub_kategori?: string | null
+          target_nominal?: number
+          updated_at?: string
+          urutan?: number
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis?: Database["public"]["Enums"]["budget_item_jenis"]
+          kategori?: string
+          plan_id?: string
+          sub_kategori?: string | null
+          target_nominal?: number
+          updated_at?: string
+          urutan?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "budget_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_plans: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          judul: string
+          status: Database["public"]["Enums"]["budget_status"]
+          tahun: number
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          judul: string
+          status?: Database["public"]["Enums"]["budget_status"]
+          tahun: number
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          judul?: string
+          status?: Database["public"]["Enums"]["budget_status"]
+          tahun?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       collection_cases: {
         Row: {
           catatan: string | null
@@ -2952,6 +3032,18 @@ export type Database = {
           ts: string
         }[]
       }
+      get_rapb_realisasi: {
+        Args: { _plan_id: string }
+        Returns: {
+          item_id: string
+          jenis: Database["public"]["Enums"]["budget_item_jenis"]
+          kategori: string
+          persen: number
+          realisasi: number
+          sub_kategori: string
+          target_nominal: number
+        }[]
+      }
       get_top_products: {
         Args: { _limit?: number }
         Returns: {
@@ -3065,6 +3157,8 @@ export type Database = {
         | "lainnya"
       asset_kondisi: "baik" | "perlu_perbaikan" | "rusak"
       asset_status: "aktif" | "dijual" | "rusak" | "dihapus"
+      budget_item_jenis: "pendapatan" | "beban"
+      budget_status: "draft" | "disahkan" | "ditutup"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
       collection_action:
@@ -3333,6 +3427,8 @@ export const Constants = {
       ],
       asset_kondisi: ["baik", "perlu_perbaikan", "rusak"],
       asset_status: ["aktif", "dijual", "rusak", "dihapus"],
+      budget_item_jenis: ["pendapatan", "beban"],
+      budget_status: ["draft", "disahkan", "ditutup"],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
       collection_action: [

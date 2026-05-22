@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpananVerifyPage } from "./admin.simpanan";
 import { AdminAngsuranPage } from "./admin.angsuran";
 import { PinjamanApprovalPage } from "./admin.pinjaman";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon } from "lucide-react";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
@@ -124,6 +124,30 @@ function AdminDashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2"><TransactionChart title="Arus Kas Koperasi" /></div>
         <ApprovalQueue />
+      </div>
+
+      {/* Modul lanjutan koperasi */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { to: "/admin/rapb", label: "RAPB", desc: "Anggaran tahunan", icon: FileText },
+          { to: "/admin/dana-cadangan", label: "Dana Cadangan", desc: "Sosial & pendidikan", icon: Landmark },
+          { to: "/admin/support", label: "Helpdesk", desc: "Tiket anggota", icon: MessageSquare },
+          { to: "/admin/survei", label: "Survei", desc: "Kepuasan anggota", icon: ClipboardList },
+        ].map((m) => (
+          <Link key={m.to} to={m.to} className="group">
+            <Card className="transition-all hover:border-primary/50 hover:shadow-md h-full" style={{ boxShadow: "var(--shadow-card)" }}>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="rounded-lg bg-primary/10 p-2.5 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <m.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{m.label}</p>
+                  <p className="text-xs text-muted-foreground">{m.desc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       {/* Pusat Verifikasi — gabungan Simpanan, Pinjaman, Angsuran */}

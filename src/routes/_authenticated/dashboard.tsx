@@ -374,6 +374,8 @@ function DashboardPage() {
             <QuickRow label="Bayar Angsuran" desc="Upload bukti transfer" onClick={() => navigate({ to: "/angsuran" })} />
             <QuickRow label="Buka Toko" desc="Marketplace komunitas" onClick={() => navigate({ to: "/marketplace-saya" })} />
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
+            <QuickRow label="Survei Kepuasan" desc="Beri masukan layanan" onClick={() => navigate({ to: "/survei" })} />
+            <QuickRow label="Bantuan & Chat" desc="Hubungi pengurus" onClick={() => navigate({ to: "/bantuan" })} />
           </CardContent>
         </Card>
       </motion.section>
