@@ -3021,6 +3021,17 @@ export type Database = {
           tanggal: string
         }[]
       }
+      get_opex_budget_status: {
+        Args: { _category_id: string; _tahun: number }
+        Returns: {
+          has_budget: boolean
+          item_label: string
+          persen: number
+          realisasi: number
+          sisa: number
+          target_nominal: number
+        }[]
+      }
       get_or_create_wallet: { Args: { _user_id: string }; Returns: string }
       get_public_koperasi_stats: { Args: never; Returns: Json }
       get_public_recent_activity: {
