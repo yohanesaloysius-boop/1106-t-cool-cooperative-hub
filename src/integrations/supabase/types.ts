@@ -1526,6 +1526,54 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          channel: Database["public"]["Enums"]["notif_channel"]
+          created_at: string
+          dedup_key: string | null
+          error_message: string | null
+          id: string
+          payload: Json | null
+          ref_id: string | null
+          ref_table: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["notif_send_status"]
+          target_address: string | null
+          target_user: string | null
+          template: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["notif_channel"]
+          created_at?: string
+          dedup_key?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json | null
+          ref_id?: string | null
+          ref_table?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notif_send_status"]
+          target_address?: string | null
+          target_user?: string | null
+          template: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["notif_channel"]
+          created_at?: string
+          dedup_key?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json | null
+          ref_id?: string | null
+          ref_table?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notif_send_status"]
+          target_address?: string | null
+          target_user?: string | null
+          template?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1692,6 +1740,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pending_iuran: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          jenis: string
+          nominal: number
+          paid_at: string | null
+          paid_simpanan_id: string | null
+          periode: string
+          status: Database["public"]["Enums"]["pending_iuran_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis?: string
+          nominal: number
+          paid_at?: string | null
+          paid_simpanan_id?: string | null
+          periode: string
+          status?: Database["public"]["Enums"]["pending_iuran_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis?: string
+          nominal?: number
+          paid_at?: string | null
+          paid_simpanan_id?: string | null
+          periode?: string
+          status?: Database["public"]["Enums"]["pending_iuran_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       pengumuman: {
         Row: {
@@ -1986,6 +2076,89 @@ export type Database = {
         }
         Relationships: []
       }
+      reserve_fund_movements: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          fund_id: string
+          id: string
+          nominal: number
+          ref_id: string | null
+          ref_table: string | null
+          sumber: string
+          tanggal: string
+          tipe: Database["public"]["Enums"]["reserve_movement_tipe"]
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          fund_id: string
+          id?: string
+          nominal: number
+          ref_id?: string | null
+          ref_table?: string | null
+          sumber?: string
+          tanggal?: string
+          tipe: Database["public"]["Enums"]["reserve_movement_tipe"]
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          fund_id?: string
+          id?: string
+          nominal?: number
+          ref_id?: string | null
+          ref_table?: string | null
+          sumber?: string
+          tanggal?: string
+          tipe?: Database["public"]["Enums"]["reserve_movement_tipe"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reserve_fund_movements_fund_id_fkey"
+            columns: ["fund_id"]
+            isOneToOne: false
+            referencedRelation: "reserve_funds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reserve_funds: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          id: string
+          jenis: Database["public"]["Enums"]["reserve_fund_jenis"]
+          nama: string
+          persen_dari_shu: number
+          saldo: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis: Database["public"]["Enums"]["reserve_fund_jenis"]
+          nama: string
+          persen_dari_shu?: number
+          saldo?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis?: Database["public"]["Enums"]["reserve_fund_jenis"]
+          nama?: string
+          persen_dari_shu?: number
+          saldo?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -2228,6 +2401,207 @@ export type Database = {
           user_id?: string
           verified_at?: string | null
           verified_by?: string | null
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          attachments: Json | null
+          body: string
+          created_at: string
+          id: string
+          is_pengurus: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          body: string
+          created_at?: string
+          id?: string
+          is_pengurus?: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_pengurus?: boolean
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          closed_at: string | null
+          created_at: string
+          id: string
+          kategori: Database["public"]["Enums"]["ticket_kategori"]
+          last_message_at: string
+          prioritas: Database["public"]["Enums"]["ticket_priority"]
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subjek: string
+          unread_for_admin: boolean
+          unread_for_user: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          kategori?: Database["public"]["Enums"]["ticket_kategori"]
+          last_message_at?: string
+          prioritas?: Database["public"]["Enums"]["ticket_priority"]
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subjek: string
+          unread_for_admin?: boolean
+          unread_for_user?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          kategori?: Database["public"]["Enums"]["ticket_kategori"]
+          last_message_at?: string
+          prioritas?: Database["public"]["Enums"]["ticket_priority"]
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subjek?: string
+          unread_for_admin?: boolean
+          unread_for_user?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      survey_questions: {
+        Row: {
+          id: string
+          opsi: Json | null
+          pertanyaan: string
+          survey_id: string
+          tipe: Database["public"]["Enums"]["survey_q_tipe"]
+          urutan: number
+          wajib: boolean
+        }
+        Insert: {
+          id?: string
+          opsi?: Json | null
+          pertanyaan: string
+          survey_id: string
+          tipe: Database["public"]["Enums"]["survey_q_tipe"]
+          urutan?: number
+          wajib?: boolean
+        }
+        Update: {
+          id?: string
+          opsi?: Json | null
+          pertanyaan?: string
+          survey_id?: string
+          tipe?: Database["public"]["Enums"]["survey_q_tipe"]
+          urutan?: number
+          wajib?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_questions_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_responses: {
+        Row: {
+          id: string
+          jawaban: Json
+          submitted_at: string
+          survey_id: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          jawaban: Json
+          submitted_at?: string
+          survey_id: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          jawaban?: Json
+          submitted_at?: string
+          survey_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_responses_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surveys: {
+        Row: {
+          anonim: boolean
+          created_at: string
+          created_by: string | null
+          deskripsi: string | null
+          id: string
+          judul: string
+          mulai: string | null
+          selesai: string | null
+          status: Database["public"]["Enums"]["survey_status"]
+          target: Database["public"]["Enums"]["survey_target"]
+          updated_at: string
+        }
+        Insert: {
+          anonim?: boolean
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          judul: string
+          mulai?: string | null
+          selesai?: string | null
+          status?: Database["public"]["Enums"]["survey_status"]
+          target?: Database["public"]["Enums"]["survey_target"]
+          updated_at?: string
+        }
+        Update: {
+          anonim?: boolean
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          judul?: string
+          mulai?: string | null
+          selesai?: string | null
+          status?: Database["public"]["Enums"]["survey_status"]
+          target?: Database["public"]["Enums"]["survey_target"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2496,6 +2870,15 @@ export type Database = {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
+      auto_debet_simpanan_wajib: {
+        Args: { _periode?: string }
+        Returns: {
+          berhasil: number
+          gagal: number
+          total_anggota: number
+          total_terdebit: number
+        }[]
+      }
       compute_asset_depreciation: {
         Args: { _asset_id: string }
         Returns: number
@@ -2725,6 +3108,7 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "refunded"
+      notif_channel: "whatsapp" | "push" | "email" | "inapp"
       notif_kategori:
         | "info"
         | "sukses"
@@ -2733,6 +3117,7 @@ export type Database = {
         | "approval"
         | "transaksi"
         | "sistem"
+      notif_send_status: "queued" | "sent" | "failed" | "skipped"
       opex_metode_bayar: "tunai" | "transfer" | "wallet" | "lainnya"
       opex_status:
         | "draft"
@@ -2742,6 +3127,7 @@ export type Database = {
         | "paid"
         | "cancelled"
       payment_status: "pending" | "verified" | "rejected"
+      pending_iuran_status: "unpaid" | "paid" | "waived"
       pinjaman_status:
         | "draft"
         | "pending_sekretaris"
@@ -2761,6 +3147,8 @@ export type Database = {
         | "admin"
         | "ppob"
       qris_status: "pending" | "success" | "expired" | "failed" | "cancelled"
+      reserve_fund_jenis: "cadangan" | "sosial" | "pendidikan" | "pengembangan"
+      reserve_movement_tipe: "setor" | "tarik"
       restructure_status:
         | "draft"
         | "pending"
@@ -2770,12 +3158,24 @@ export type Database = {
         | "completed"
       simpanan_jenis: "pokok" | "wajib" | "sukarela"
       store_status: "active" | "inactive" | "suspended" | "pending"
+      survey_q_tipe: "rating_5" | "skala_10" | "pilihan" | "multi" | "teks"
+      survey_status: "draft" | "active" | "closed"
+      survey_target: "semua" | "anggota" | "pengurus"
       tabungan_status:
         | "pending"
         | "active"
         | "matured"
         | "withdrawn"
         | "rejected"
+      ticket_kategori:
+        | "umum"
+        | "pinjaman"
+        | "simpanan"
+        | "marketplace"
+        | "teknis"
+        | "komplain"
+      ticket_priority: "low" | "medium" | "high" | "urgent"
+      ticket_status: "open" | "in_progress" | "resolved" | "closed"
       transaksi_jenis:
         | "simpanan_masuk"
         | "simpanan_keluar"
@@ -2981,6 +3381,7 @@ export const Constants = {
         "cancelled",
         "refunded",
       ],
+      notif_channel: ["whatsapp", "push", "email", "inapp"],
       notif_kategori: [
         "info",
         "sukses",
@@ -2990,6 +3391,7 @@ export const Constants = {
         "transaksi",
         "sistem",
       ],
+      notif_send_status: ["queued", "sent", "failed", "skipped"],
       opex_metode_bayar: ["tunai", "transfer", "wallet", "lainnya"],
       opex_status: [
         "draft",
@@ -3000,6 +3402,7 @@ export const Constants = {
         "cancelled",
       ],
       payment_status: ["pending", "verified", "rejected"],
+      pending_iuran_status: ["unpaid", "paid", "waived"],
       pinjaman_status: [
         "draft",
         "pending_sekretaris",
@@ -3021,6 +3424,8 @@ export const Constants = {
         "ppob",
       ],
       qris_status: ["pending", "success", "expired", "failed", "cancelled"],
+      reserve_fund_jenis: ["cadangan", "sosial", "pendidikan", "pengembangan"],
+      reserve_movement_tipe: ["setor", "tarik"],
       restructure_status: [
         "draft",
         "pending",
@@ -3031,6 +3436,9 @@ export const Constants = {
       ],
       simpanan_jenis: ["pokok", "wajib", "sukarela"],
       store_status: ["active", "inactive", "suspended", "pending"],
+      survey_q_tipe: ["rating_5", "skala_10", "pilihan", "multi", "teks"],
+      survey_status: ["draft", "active", "closed"],
+      survey_target: ["semua", "anggota", "pengurus"],
       tabungan_status: [
         "pending",
         "active",
@@ -3038,6 +3446,16 @@ export const Constants = {
         "withdrawn",
         "rejected",
       ],
+      ticket_kategori: [
+        "umum",
+        "pinjaman",
+        "simpanan",
+        "marketplace",
+        "teknis",
+        "komplain",
+      ],
+      ticket_priority: ["low", "medium", "high", "urgent"],
+      ticket_status: ["open", "in_progress", "resolved", "closed"],
       transaksi_jenis: [
         "simpanan_masuk",
         "simpanan_keluar",
