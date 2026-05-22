@@ -65,7 +65,7 @@ function AdminSuratPage() {
       const { data } = await supabase
         .from("profiles")
         .select("id,nama_lengkap,nomor_anggota,nik,alamat,no_hp,pekerjaan,joined_at")
-        .eq("status", "aktif")
+        .eq("status", "active")
         .order("nama_lengkap")
         .limit(500);
       return data ?? [];
