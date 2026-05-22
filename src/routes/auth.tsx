@@ -300,9 +300,9 @@ function RegisterForm() {
         <div className="grid gap-3 sm:grid-cols-2 rounded-lg border border-success/30 bg-success/5 p-3">
           <FileUpload bucket="ktp" userId={tempUserId} label="Upload KTP" hint="JPG/PNG/PDF, max 4MB" accept="image/*,.pdf" onUploaded={(r) => { ktpRef.current = { path: r.path }; }} />
           <FileUpload bucket="avatars" userId={tempUserId} publicBucket label="Foto Profil" hint="JPG/PNG, max 2MB" maxMB={2} onUploaded={(r) => { avatarRef.current = r; }} />
-          <p className="sm:col-span-2 text-[11px] text-muted-foreground">
-            Anda dapat mengunggah berkas sekarang atau nanti dari halaman profil.
-          </p>
+          <div className="sm:col-span-2">
+            <AdartSignStep userId={tempUserId} fullName={form.nama_lengkap} nik={form.nik} />
+          </div>
         </div>
       )}
 
@@ -313,5 +313,97 @@ function RegisterForm() {
         Pendaftaran akan diverifikasi pengurus sebelum akun aktif penuh.
       </p>
     </form>
+  );
+}
+
+function AdartSignStep({ userId, fullName, nik }: { userId: string; fullName: string; nik: string }) {
+  const [signed, setSigned] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [adart, setAdart] = useState<AdartContent | null>(null);
+  const [koperasi, setKoperasi] = useState<KoperasiInfo | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
+      const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
+      setAdart(map.adart_content as AdartContent);
+      setKoperasi(map.koperasi_info as KoperasiInfo);
+      const { data: prof } = await supabase.from("profiles").select("adart_signed_at").eq("id", userId).maybeSingle();
+      if (prof?.adart_signed_at) setSigned(true);
+    })();
+  }, [userId]);
+
+  const downloadPreview = () => {
+    if (!adart || !koperasi) return;
+    buildAdartPdf(koperasi, adart).save(`AD-ART-${koperasi.nama}.pdf`);
+  };
+
+  const handleSign = async (sig: { dataUrl: string; hash: string; fullName: string }) => {
+    if (!adart) return;
+    setLoading(true);
+    try {
+      // upload signature image (data URL -> blob)
+      const blob = await (await fetch(sig.dataUrl)).blob();
+      const path = `${userId}/adart-${Date.now()}.png`;
+      const up = await supabase.storage.from("signatures").upload(path, blob, { contentType: "image/png", upsert: true });
+      if (up.error) throw up.error;
+      const { data: signed } = await supabase.storage.from("signatures").createSignedUrl(path, 60 * 60 * 24 * 365);
+      await supabase.from("profiles").update({
+        adart_signed_at: new Date().toISOString(),
+        adart_signature_url: signed?.signedUrl ?? path,
+        adart_signature_hash: sig.hash,
+        adart_version: adart.version,
+      }).eq("id", userId);
+      toast.success("AD/ART berhasil ditandatangani");
+      setSigned(true);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (signed) {
+    return (
+      <div className="rounded-lg border border-success/40 bg-success/10 p-3 flex items-center gap-2 text-sm">
+        <CheckCircle2 className="h-4 w-4 text-success" />
+        <span>AD/ART sudah Anda tandatangani. Terima kasih!</span>
+        <Button type="button" size="sm" variant="ghost" onClick={downloadPreview} className="ml-auto">
+          <Download className="h-3 w-3 mr-1" /> Unduh
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+      <div className="flex items-start gap-2">
+        <FileText className="h-4 w-4 mt-0.5 text-primary" />
+        <div className="flex-1">
+          <p className="text-sm font-medium">Tanda Tangani AD/ART Koperasi</p>
+          <p className="text-[11px] text-muted-foreground">
+            Wajib dibaca & ditandatangani sebagai bukti persetujuan menjadi anggota.
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={downloadPreview} disabled={!adart}>
+          <Download className="h-3 w-3 mr-1" /> Pratinjau AD/ART
+        </Button>
+        <SignaturePadDialog
+          title="Tanda Tangan Persetujuan AD/ART"
+          onSign={handleSign}
+          trigger={
+            <Button type="button" size="sm" disabled={loading || !adart}>
+              {loading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : null}
+              Tanda Tangan Sekarang
+            </Button>
+          }
+        />
+      </div>
+      <p className="text-[10px] text-muted-foreground">
+        Penandatangan: <span className="font-medium">{fullName || "—"}</span> (NIK: {nik || "—"})
+      </p>
+    </div>
   );
 }
