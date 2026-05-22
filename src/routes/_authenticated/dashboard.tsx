@@ -375,6 +375,7 @@ function DashboardPage() {
             <QuickRow label="Buka Toko" desc="Marketplace komunitas" onClick={() => navigate({ to: "/marketplace-saya" })} />
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
             <QuickRow label="Survei Kepuasan" desc="Beri masukan layanan" onClick={() => navigate({ to: "/survei" })} />
+            <QuickRow label="E-Voting RAT" desc="Suara keputusan rapat" onClick={() => navigate({ to: "/voting" })} />
             <QuickRow label="Bantuan & Chat" desc="Hubungi pengurus" onClick={() => navigate({ to: "/bantuan" })} />
           </CardContent>
         </Card>
