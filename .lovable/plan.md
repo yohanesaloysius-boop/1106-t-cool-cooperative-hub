@@ -1,64 +1,88 @@
-# Plan: 5 Modul Tata Kelola Koperasi
+# Plan: Modul 2 & 3 Koperasi (Keuangan/Operasional + Pengalaman Anggota)
 
-Menambahkan 5 modul besar: Aset & Inventaris, Laporan Keuangan SAK ETAP, Manajemen Pajak, OPEX, dan Penagihan. Semua menu baru hanya muncul untuk pengurus (super_admin, ketua, sekretaris, bendahara). Menu di beranda anggota tidak diubah.
+Mengerjakan dua kelompok besar dari roadmap. Modul 4–6 (Analitik AI, Marketplace lanjutan, Legal/Dokumen) ditangguhkan untuk remix berikutnya.
 
-## Urutan implementasi (batch)
+## Modul 2 — Keuangan & Operasional
 
-Saya kerjakan bertahap supaya tiap modul bisa dites. Saran urutan:
+### 2.1 Notifikasi WhatsApp otomatis (cron)
+- File `src/routes/api/public/hooks/daily-reminders.ts` sudah ada — perluas:
+  - Kirim pesan WA via `uazapi` proxy (sudah dipakai project) ke anggota yang punya angsuran H-3, H-1, dan jatuh tempo hari ini.
+  - Pengingat simpanan wajib tanggal 25 tiap bulan.
+  - Notifikasi pengurus untuk OPEX pending approval > 24 jam.
+- Tambah tabel `notification_log` (channel, target_user, template, status, ref_id, sent_at) untuk audit & dedup.
+- Daftarkan cron harian via `pg_cron` (08:00 WIB) memanggil endpoint.
 
-1. **Aset & Inventaris** (mandiri, paling sederhana)
-2. **OPEX / Pengeluaran Operasional** (fondasi buku besar)
-3. **Manajemen Pajak** (lanjutan OPEX)
-4. **Modul Penagihan** (pakai data `angsuran` yang sudah ada)
-5. **Laporan Keuangan SAK ETAP** (paling akhir — agregasi semua di atas)
+### 2.2 Auto-debet simpanan wajib
+- RPC SQL `auto_debet_simpanan_wajib(_periode date)`:
+  - Loop anggota aktif → ambil nominal wajib dari `settings.iuran_wajib_default` atau per-anggota → cek saldo `wallets` cukup → debit ke kas koperasi & insert `simpanan` + `wallet_transactions`.
+  - Yang saldonya kurang → masuk `notification_log` "simpanan_wajib_gagal" + buat tagihan `angsuran_simpanan` (atau tabel sederhana `pending_iuran`).
+- Cron bulanan tanggal 5 jam 03:00 WIB memanggil RPC tersebut.
+- Halaman `/admin/simpanan` tambah tombol "Jalankan Auto-Debet Sekarang" (manual override) + tab "Riwayat Auto-Debet".
 
-## Ringkasan tiap modul
+### 2.3 Dana Cadangan & Dana Sosial
+- Tabel `reserve_funds`: jenis (cadangan/sosial/pendidikan), saldo, target_persen_shu, deskripsi.
+- Tabel `reserve_fund_movements`: fund_id, tipe (setor/tarik), nominal, sumber (shu/manual/donasi), ref_id, tanggal, catatan.
+- Halaman `/admin/dana-cadangan`: 3 card saldo (cadangan/sosial/pendidikan), list mutasi, tombol setor/tarik dengan approval bendahara.
+- Integrasi: saat distribusi SHU di `admin.shu.tsx`, otomatis sisihkan ke 3 dana ini sesuai persentase di settings.
 
-### 1. Aset & Inventaris
-- Tabel `assets`: nama, kategori (kendaraan/properti/peralatan/lainnya), nomor_aset, tanggal_perolehan, harga_perolehan, umur_ekonomis_bulan, nilai_residu, lokasi, kondisi, status (aktif/dijual/rusak/dihapus), penanggung_jawab, foto, dokumen.
-- Tabel `asset_depreciations`: snapshot bulanan (asset_id, bulan, beban_bulan, akumulasi, nilai_buku) — di-generate via tombol admin atau cron.
-- Halaman `/admin/aset`: list, filter kategori, CRUD, hitung penyusutan garis lurus.
-- Halaman detail aset: riwayat penyusutan + dokumen.
+### 2.4 RAPB (Rencana Anggaran Pendapatan & Belanja)
+- Tabel `budget_plans`: tahun, status (draft/disahkan/aktif/ditutup), disahkan_pada, disahkan_oleh, catatan.
+- Tabel `budget_items`: plan_id, kategori (pendapatan/beban), sub_kategori (mengacu opex_categories untuk beban), uraian, nominal_rencana, nominal_realisasi (computed view).
+- Halaman `/admin/rapb`: list tahun, detail tahun (form tambah item, total rencana vs realisasi, % serapan, chart bar).
+- RPC `get_rapb_realisasi(_plan_id)` agregasi dari `opex_expenses`, `wallet_transactions`, `simpanan`.
 
-### 2. OPEX (Pengeluaran Operasional)
-- Tabel `opex_categories`: nama, kode (gaji/sewa/listrik/atk/lainnya).
-- Tabel `opex_expenses`: kategori_id, tanggal, deskripsi, nominal, penerima, metode_bayar, status (draft/pending/approved/rejected/paid), bukti_url, created_by, approved_by, paid_at, pajak_terkait (jsonb untuk PPh 21/23).
-- Halaman `/admin/opex`: list + filter periode + kategori, form pengajuan, approval (ketua/super_admin), tandai paid (bendahara), upload bukti.
-- Workflow approval pakai pola yang ada (`approvals` table sudah ada).
+## Modul 3 — Pengalaman Anggota
 
-### 3. Manajemen Pajak
-- Tabel `tax_records`: jenis (pph21/pph23/ppn/spt_tahunan), periode_bulan, periode_tahun, dasar_pengenaan, tarif_persen, nominal_pajak, status (draft/dilaporkan/dibayar), bukti_lapor_url, bukti_bayar_url, ref_opex_id (nullable), catatan.
-- Auto-create record PPh 21 dari OPEX kategori "gaji" & PPh 23 dari kategori "jasa".
-- Halaman `/admin/pajak`: list per jenis, ringkasan tahunan, generate laporan SPT (export CSV/PDF sederhana).
+### 3.1 Chat Support (Anggota ↔ Pengurus)
+- Tabel `support_tickets`: user_id, subjek, kategori (umum/pinjaman/simpanan/teknis/komplain), status (open/in_progress/resolved/closed), prioritas, assigned_to, created_at, resolved_at.
+- Tabel `support_messages`: ticket_id, sender_id, sender_role, body, attachments (jsonb), read_by (jsonb), created_at.
+- Realtime via `supabase.channel` untuk pesan baru.
+- Halaman anggota `/bantuan`: list ticket sendiri + form buat ticket + thread chat.
+- Halaman pengurus `/admin/support`: inbox, filter status/prioritas, assign, balas, tutup.
+- Notifikasi WA opsional saat ticket baru.
 
-### 4. Modul Penagihan
-- Tabel `collection_logs`: angsuran_id, user_id, jenis_kontak (telepon/wa/sms/kunjungan/email), tanggal, hasil (janji_bayar/tidak_diangkat/menolak/sudah_bayar/restrukturisasi), catatan, follow_up_date, created_by.
-- Tabel `loan_restructures`: pinjaman_id, alasan, tenor_baru, bunga_baru, cicilan_baru, status (pending/approved/rejected), approved_by, dokumen_url.
-- Halaman `/admin/penagihan`: 
-  - Tab "Tunggakan" — list angsuran `overdue/unpaid` + jatuh tempo lewat, urut by hari tunggakan, tombol "Log kontak" & "Ajukan restrukturisasi".
-  - Tab "Riwayat kontak" — semua log.
-  - Tab "Restrukturisasi" — pengajuan & approval, kalau approved bikin angsuran baru.
+### 3.2 PWA Push Notifications
+- Tambah `public/sw.js` service worker + `public/manifest.json` (icon, theme color koperasi).
+- Hook `src/hooks/use-push-subscription.ts`: minta permission, subscribe pakai VAPID, simpan ke tabel `push_subscriptions` (user_id, endpoint, p256dh, auth, ua, created_at).
+- Server fn `sendPush(userIds, payload)` pakai `web-push` (Worker-compatible: pakai HTTP API VAPID langsung tanpa lib node, atau library `web-push-libs` jika ada build edge).
+- Trigger push dari event: angsuran jatuh tempo, ticket support, approval pending.
+- Tombol "Aktifkan notifikasi" di `/profil`.
+- Secrets baru: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (mailto).
 
-### 5. Laporan Keuangan SAK ETAP
-- View/RPC SQL untuk agregasi:
-  - `get_neraca(_tanggal)` — aset (kas/bank/piutang/aset tetap-akum.penyusutan) vs kewajiban (simpanan anggota) + ekuitas (modal/SHU ditahan).
-  - `get_laba_rugi(_from, _to)` — pendapatan (bunga pinjaman, fee marketplace, denda) - beban (OPEX, penyusutan, pajak).
-  - `get_arus_kas(_from, _to)` — operasi/investasi/pendanaan dari wallet_transactions + opex + assets.
-  - `get_perubahan_ekuitas(_tahun)` — saldo awal, +SHU, -pembagian, saldo akhir.
-- Halaman `/admin/laporan-keuangan`: 4 tab (Neraca, Laba Rugi, Arus Kas, Perubahan Ekuitas), filter periode, export PDF/Excel (pakai `jspdf` & `xlsx` yang sudah ada atau install).
+### 3.3 E-Voting RAT
+- Tabel `votings`: judul, deskripsi, mulai, selesai, status (draft/open/closed), quorum_persen, created_by.
+- Tabel `voting_options`: voting_id, label, urutan.
+- Tabel `voting_ballots`: voting_id, user_id (unique), option_id, voted_at, ip, ua.
+- Halaman anggota `/rapat` (sudah ada) → tambah section "Voting Aktif": list voting open, halaman detail untuk memilih (1 user 1 suara, anonim opsional dgn flag).
+- Halaman pengurus `/admin/voting`: CRUD voting, lihat hasil real-time (chart), tutup voting, export hasil PDF.
+- RLS: anggota hanya bisa insert ballot sekali per voting; hasil hanya muncul setelah voting closed (atau realtime untuk pengurus).
 
-## Akses & keamanan
+### 3.4 Survei Kepuasan
+- Tabel `surveys`: judul, deskripsi, mulai, selesai, status, target_role (semua/anggota/pengurus).
+- Tabel `survey_questions`: survey_id, urutan, tipe (rating_5/skala_10/pilihan/teks), pertanyaan, opsi (jsonb), wajib.
+- Tabel `survey_responses`: survey_id, user_id (nullable kalau anonim), jawaban (jsonb), submitted_at.
+- Halaman anggota `/survei`: list aktif + form isian.
+- Halaman pengurus `/admin/survei`: builder pertanyaan, ringkasan agregat (rata-rata rating, distribusi, wordcloud teks), export CSV.
 
-- Semua tabel RLS: hanya `is_pengurus(auth.uid())` boleh CRUD, anggota tidak akses (kecuali laporan tertentu kalau diminta).
-- Approval workflow OPEX pakai pola `approvals` table existing.
-- Notifikasi (`notifications`) ke pengurus saat OPEX butuh approval, restrukturisasi diajukan, tunggakan jatuh tempo.
+## Skema akses
+- Semua tabel pengurus: RLS `is_pengurus(auth.uid())`.
+- Chat support, voting, survei: anggota CRUD baris miliknya sendiri, pengurus lihat semua.
+- Tabel push_subscriptions: user_id = auth.uid().
 
-## Catatan UI
+## Urutan eksekusi
 
-- Tambah menu pengurus di `src/routes/_authenticated/admin.tsx` (sidebar/grid pengurus) — Aset, OPEX, Pajak, Penagihan, Laporan Keuangan.
-- Menu beranda anggota TIDAK diubah.
-- Pakai komponen yang sudah ada (shadcn Table, Card, Dialog, Tabs).
+1. **2.1 WA reminder cron** (perluas hook existing + tabel log + jadwalkan cron)
+2. **2.2 Auto-debet simpanan wajib** (RPC + cron + tombol manual)
+3. **2.3 Dana cadangan & sosial** (tabel + halaman + integrasi SHU)
+4. **2.4 RAPB** (tabel + halaman + RPC realisasi)
+5. **3.1 Chat support** (tabel + 2 halaman + realtime)
+6. **3.2 Push notification PWA** (sw + manifest + subscription + trigger)
+7. **3.3 E-voting** (tabel + halaman anggota + halaman pengurus)
+8. **3.4 Survei kepuasan** (tabel + builder + ringkasan)
 
-## Estimasi
+Modul 2 dulu (4 langkah), commit/review, lalu Modul 3.
 
-Tiap modul = 1–2 migrasi DB + 1–3 route file. Total ~5 migrasi + ~10 file route + update menu admin. Saya kerjakan modul **1 dulu (Aset & Inventaris)** dan minta review sebelum lanjut modul berikutnya — supaya tidak menumpuk error dan Anda bisa cek arah desainnya.
+## Modul yang ditangguhkan (untuk remix berikutnya)
+- 4. Analitik & AI (dashboard prediktif, credit scoring AI)
+- 5. Marketplace lanjutan (rating/review, kupon, laporan komisi)
+- 6. Legal & Dokumen (generator AD/ART, template surat)
