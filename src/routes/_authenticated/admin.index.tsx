@@ -127,12 +127,13 @@ function AdminDashboard() {
       </div>
 
       {/* Modul lanjutan koperasi */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[
           { to: "/admin/rapb", label: "RAPB", desc: "Anggaran tahunan", icon: FileText },
           { to: "/admin/dana-cadangan", label: "Dana Cadangan", desc: "Sosial & pendidikan", icon: Landmark },
           { to: "/admin/support", label: "Helpdesk", desc: "Tiket anggota", icon: MessageSquare },
           { to: "/admin/survei", label: "Survei", desc: "Kepuasan anggota", icon: ClipboardList },
+          { to: "/admin/notifikasi-wa", label: "Notif WA", desc: "Antrian reminder", icon: MessageSquare },
         ].map((m) => (
           <Link key={m.to} to={m.to} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-md h-full" style={{ boxShadow: "var(--shadow-card)" }}>

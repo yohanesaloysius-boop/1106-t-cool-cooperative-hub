@@ -350,6 +350,7 @@ function OpexForm({ cats, onSubmit, pending }: { cats: Cat[]; onSubmit: (p: { ca
             Pajak otomatis: <b>{fmt(pajakPreview)}</b> ({cat?.pajak_jenis?.toUpperCase()} {cat?.pajak_tarif}%)
           </div>
         )}
+        <BudgetHint categoryId={category_id} nominal={nominalNum} />
       </div>
       <DialogFooter className="gap-2">
         <Button variant="outline" disabled={pending} onClick={() => submit(false)}>Simpan Draft</Button>
