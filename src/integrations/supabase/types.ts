@@ -2156,6 +2156,83 @@ export type Database = {
         }
         Relationships: []
       }
+      rat_votes: {
+        Row: {
+          id: string
+          pilihan: Json
+          user_id: string
+          voted_at: string
+          voting_id: string
+        }
+        Insert: {
+          id?: string
+          pilihan: Json
+          user_id: string
+          voted_at?: string
+          voting_id: string
+        }
+        Update: {
+          id?: string
+          pilihan?: Json
+          user_id?: string
+          voted_at?: string
+          voting_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rat_votes_voting_id_fkey"
+            columns: ["voting_id"]
+            isOneToOne: false
+            referencedRelation: "rat_votings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rat_votings: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deskripsi: string | null
+          id: string
+          judul: string
+          kuorum_min: number
+          mulai: string
+          multi_select: boolean
+          opsi: Json
+          selesai: string
+          status: Database["public"]["Enums"]["voting_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          judul: string
+          kuorum_min?: number
+          mulai?: string
+          multi_select?: boolean
+          opsi?: Json
+          selesai: string
+          status?: Database["public"]["Enums"]["voting_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          judul?: string
+          kuorum_min?: number
+          mulai?: string
+          multi_select?: boolean
+          opsi?: Json
+          selesai?: string
+          status?: Database["public"]["Enums"]["voting_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reserve_fund_movements: {
         Row: {
           catatan: string | null
@@ -2959,6 +3036,10 @@ export type Database = {
           total_terdebit: number
         }[]
       }
+      cast_rat_vote: {
+        Args: { _pilihan: Json; _voting_id: string }
+        Returns: undefined
+      }
       compute_asset_depreciation: {
         Args: { _asset_id: string }
         Returns: number
@@ -3055,6 +3136,7 @@ export type Database = {
           target_nominal: number
         }[]
       }
+      get_rat_voting_result: { Args: { _voting_id: string }; Returns: Json }
       get_top_products: {
         Args: { _limit?: number }
         Returns: {
@@ -3291,6 +3373,7 @@ export type Database = {
         | "pendapatan_bunga"
         | "lainnya"
       verif_status: "pending" | "verified" | "rejected"
+      voting_status: "draft" | "active" | "closed"
       withdrawal_status: "pending" | "approved" | "rejected" | "paid"
     }
     CompositeTypes: {
@@ -3574,6 +3657,7 @@ export const Constants = {
         "lainnya",
       ],
       verif_status: ["pending", "verified", "rejected"],
+      voting_status: ["draft", "active", "closed"],
       withdrawal_status: ["pending", "approved", "rejected", "paid"],
     },
   },

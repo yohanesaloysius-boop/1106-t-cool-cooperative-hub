@@ -19,6 +19,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketplaceKeranjangRouteImport } from './routes/marketplace.keranjang'
 import { Route as MarketplaceCheckoutRouteImport } from './routes/marketplace.checkout'
+import { Route as AuthenticatedVotingRouteImport } from './routes/_authenticated/voting'
 import { Route as AuthenticatedTransaksiSayaRouteImport } from './routes/_authenticated/transaksi-saya'
 import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
 import { Route as AuthenticatedSurveiRouteImport } from './routes/_authenticated/survei'
@@ -47,6 +48,7 @@ import { Route as VerifyRouteImport } from './routes/verify.'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as MarketplaceTokoSlugRouteImport } from './routes/marketplace.toko.$slug'
 import { Route as MarketplaceProdukIdRouteImport } from './routes/marketplace.produk.$id'
+import { Route as AuthenticatedAdminVotingRouteImport } from './routes/_authenticated/admin.voting'
 import { Route as AuthenticatedAdminVerifikasiPinjamanRouteImport } from './routes/_authenticated/admin.verifikasi-pinjaman'
 import { Route as AuthenticatedAdminTabunganBerjangkaRouteImport } from './routes/_authenticated/admin.tabungan-berjangka'
 import { Route as AuthenticatedAdminSurveiRouteImport } from './routes/_authenticated/admin.survei'
@@ -134,6 +136,11 @@ const MarketplaceCheckoutRoute = MarketplaceCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
   getParentRoute: () => MarketplaceRoute,
+} as any)
+const AuthenticatedVotingRoute = AuthenticatedVotingRouteImport.update({
+  id: '/voting',
+  path: '/voting',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedTransaksiSayaRoute =
   AuthenticatedTransaksiSayaRouteImport.update({
@@ -279,6 +286,12 @@ const MarketplaceProdukIdRoute = MarketplaceProdukIdRouteImport.update({
   path: '/produk/$id',
   getParentRoute: () => MarketplaceRoute,
 } as any)
+const AuthenticatedAdminVotingRoute =
+  AuthenticatedAdminVotingRouteImport.update({
+    id: '/voting',
+    path: '/voting',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminVerifikasiPinjamanRoute =
   AuthenticatedAdminVerifikasiPinjamanRouteImport.update({
     id: '/verifikasi-pinjaman',
@@ -534,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/survei': typeof AuthenticatedSurveiRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -570,6 +584,7 @@ export interface FileRoutesByFullPath {
   '/admin/survei': typeof AuthenticatedAdminSurveiRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
+  '/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -610,6 +625,7 @@ export interface FileRoutesByTo {
   '/survei': typeof AuthenticatedSurveiRoute
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -646,6 +662,7 @@ export interface FileRoutesByTo {
   '/admin/survei': typeof AuthenticatedAdminSurveiRoute
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
+  '/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -689,6 +706,7 @@ export interface FileRoutesById {
   '/_authenticated/survei': typeof AuthenticatedSurveiRoute
   '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/_authenticated/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
+  '/_authenticated/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -725,6 +743,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/survei': typeof AuthenticatedAdminSurveiRoute
   '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/_authenticated/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
+  '/_authenticated/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -768,6 +787,7 @@ export interface FileRouteTypes {
     | '/survei'
     | '/tabungan-berjangka'
     | '/transaksi-saya'
+    | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/admin/anggota'
@@ -804,6 +824,7 @@ export interface FileRouteTypes {
     | '/admin/survei'
     | '/admin/tabungan-berjangka'
     | '/admin/verifikasi-pinjaman'
+    | '/admin/voting'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
@@ -844,6 +865,7 @@ export interface FileRouteTypes {
     | '/survei'
     | '/tabungan-berjangka'
     | '/transaksi-saya'
+    | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/admin/anggota'
@@ -880,6 +902,7 @@ export interface FileRouteTypes {
     | '/admin/survei'
     | '/admin/tabungan-berjangka'
     | '/admin/verifikasi-pinjaman'
+    | '/admin/voting'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
@@ -922,6 +945,7 @@ export interface FileRouteTypes {
     | '/_authenticated/survei'
     | '/_authenticated/tabungan-berjangka'
     | '/_authenticated/transaksi-saya'
+    | '/_authenticated/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/_authenticated/admin/anggota'
@@ -958,6 +982,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/survei'
     | '/_authenticated/admin/tabungan-berjangka'
     | '/_authenticated/admin/verifikasi-pinjaman'
+    | '/_authenticated/admin/voting'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
@@ -1054,6 +1079,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/marketplace/checkout'
       preLoaderRoute: typeof MarketplaceCheckoutRouteImport
       parentRoute: typeof MarketplaceRoute
+    }
+    '/_authenticated/voting': {
+      id: '/_authenticated/voting'
+      path: '/voting'
+      fullPath: '/voting'
+      preLoaderRoute: typeof AuthenticatedVotingRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/transaksi-saya': {
       id: '/_authenticated/transaksi-saya'
@@ -1250,6 +1282,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/marketplace/produk/$id'
       preLoaderRoute: typeof MarketplaceProdukIdRouteImport
       parentRoute: typeof MarketplaceRoute
+    }
+    '/_authenticated/admin/voting': {
+      id: '/_authenticated/admin/voting'
+      path: '/voting'
+      fullPath: '/admin/voting'
+      preLoaderRoute: typeof AuthenticatedAdminVotingRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/verifikasi-pinjaman': {
       id: '/_authenticated/admin/verifikasi-pinjaman'
@@ -1555,6 +1594,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminSurveiRoute: typeof AuthenticatedAdminSurveiRoute
   AuthenticatedAdminTabunganBerjangkaRoute: typeof AuthenticatedAdminTabunganBerjangkaRoute
   AuthenticatedAdminVerifikasiPinjamanRoute: typeof AuthenticatedAdminVerifikasiPinjamanRoute
+  AuthenticatedAdminVotingRoute: typeof AuthenticatedAdminVotingRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -1595,6 +1635,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
     AuthenticatedAdminTabunganBerjangkaRoute,
   AuthenticatedAdminVerifikasiPinjamanRoute:
     AuthenticatedAdminVerifikasiPinjamanRoute,
+  AuthenticatedAdminVotingRoute: AuthenticatedAdminVotingRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -1626,6 +1667,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSurveiRoute: typeof AuthenticatedSurveiRoute
   AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
   AuthenticatedTransaksiSayaRoute: typeof AuthenticatedTransaksiSayaRoute
+  AuthenticatedVotingRoute: typeof AuthenticatedVotingRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -1653,6 +1695,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSurveiRoute: AuthenticatedSurveiRoute,
   AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
   AuthenticatedTransaksiSayaRoute: AuthenticatedTransaksiSayaRoute,
+  AuthenticatedVotingRoute: AuthenticatedVotingRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

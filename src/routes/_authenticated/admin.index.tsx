@@ -13,9 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpananVerifyPage } from "./admin.simpanan";
 import { AdminAngsuranPage } from "./admin.angsuran";
 import { PinjamanApprovalPage } from "./admin.pinjaman";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark } from "lucide-react";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark, Vote } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { PushToggle } from "@/components/notifications/push-toggle";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Dashboard — T-COOL Koperasi" }] }),
@@ -91,11 +92,14 @@ function AdminDashboard() {
             <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#372f2f]">Dashboard Pengurus</h1>
             <p className="mt-1 text-sm text-[#3e3232]">Halo, {profile?.nama_lengkap ?? "Pengurus"} · pantau koperasi secara realtime.</p>
           </div>
-          <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-neutral-950 hover:bg-white/25 backdrop-blur border border-white/20">
-            <Link to="/admin/pengaturan">
-              <SettingsIcon className="h-4 w-4" /> Pengaturan
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <PushToggle variant="secondary" />
+            <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-neutral-950 hover:bg-white/25 backdrop-blur border border-white/20">
+              <Link to="/admin/pengaturan">
+                <SettingsIcon className="h-4 w-4" /> Pengaturan
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -127,12 +131,13 @@ function AdminDashboard() {
       </div>
 
       {/* Modul lanjutan koperasi */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
         {[
           { to: "/admin/rapb", label: "RAPB", desc: "Anggaran tahunan", icon: FileText },
           { to: "/admin/dana-cadangan", label: "Dana Cadangan", desc: "Sosial & pendidikan", icon: Landmark },
           { to: "/admin/support", label: "Helpdesk", desc: "Tiket anggota", icon: MessageSquare },
           { to: "/admin/survei", label: "Survei", desc: "Kepuasan anggota", icon: ClipboardList },
+          { to: "/admin/voting", label: "E-Voting RAT", desc: "Suara digital", icon: Vote },
           { to: "/admin/notifikasi-wa", label: "Notif WA", desc: "Antrian reminder", icon: MessageSquare },
         ].map((m) => (
           <Link key={m.to} to={m.to} className="group">

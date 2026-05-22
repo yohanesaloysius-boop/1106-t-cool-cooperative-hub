@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import { Users, UserCheck, UserPlus, UserX, Sparkles, ArrowUpRight, TrendingUp, PiggyBank, HandCoins, CalendarClock, Wallet } from "lucide-react";
 import hero3d from "@/assets/hero-3d.png";
+import { PushToggle } from "@/components/notifications/push-toggle";
 
 const fmtRp = (n: number) => "Rp " + new Intl.NumberFormat("id-ID").format(Math.round(n || 0));
 
@@ -183,6 +184,7 @@ function DashboardPage() {
               <Badge variant="secondary" className="rounded-full bg-white/70 px-3 py-1 text-primary border-0 backdrop-blur capitalize">
                 {profile?.status ?? "pending"}
               </Badge>
+              <PushToggle />
             </div>
           </div>
 
@@ -375,6 +377,7 @@ function DashboardPage() {
             <QuickRow label="Buka Toko" desc="Marketplace komunitas" onClick={() => navigate({ to: "/marketplace-saya" })} />
             <QuickRow label="Lihat SHU" desc="Riwayat pembagian" onClick={() => navigate({ to: "/shu" })} />
             <QuickRow label="Survei Kepuasan" desc="Beri masukan layanan" onClick={() => navigate({ to: "/survei" })} />
+            <QuickRow label="E-Voting RAT" desc="Suara keputusan rapat" onClick={() => navigate({ to: "/voting" })} />
             <QuickRow label="Bantuan & Chat" desc="Hubungi pengurus" onClick={() => navigate({ to: "/bantuan" })} />
           </CardContent>
         </Card>
