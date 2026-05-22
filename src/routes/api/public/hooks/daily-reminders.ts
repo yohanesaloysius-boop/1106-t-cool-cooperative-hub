@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-// Daily follow-up reminders (in-app notifications only)
+// Daily follow-up reminders.
+// - In-app notifications (table: notifications) — always
+// - WhatsApp queue (table: notification_log channel=whatsapp) — added per item bila
+//   anggota punya nomor telepon. Pengurus tinggal klik "Kirim" di /admin/notifikasi-wa
+//   untuk membuka WA dengan pesan otomatis.
 // Triggered by pg_cron once a day. Idempotent: skips if a notification with the
 // same ref_table/ref_id was already created today.
 
@@ -14,6 +18,24 @@ type NotifInsert = {
   ref_table?: string | null;
   ref_id?: string | null;
 };
+
+type WaInsert = {
+  user_id: string;
+  template: string;
+  pesan: string;
+  ref_table: string;
+  ref_id: string;
+};
+
+function normalizePhone(raw?: string | null): string | null {
+  if (!raw) return null;
+  let s = raw.replace(/[^0-9+]/g, "");
+  if (s.startsWith("+")) s = s.slice(1);
+  if (s.startsWith("0")) s = "62" + s.slice(1);
+  if (s.startsWith("8")) s = "62" + s;
+  if (!/^\d{8,15}$/.test(s)) return null;
+  return s;
+}
 
 async function alreadySentToday(user_id: string, ref_table: string, ref_id: string) {
   const since = new Date();
@@ -44,6 +66,55 @@ async function enqueue(items: NotifInsert[]) {
   }
   return fresh.length;
 }
+
+async function enqueueWa(items: WaInsert[]) {
+  if (!items.length) return 0;
+  // Lookup phones in batch
+  const userIds = Array.from(new Set(items.map((i) => i.user_id)));
+  const { data: profs } = await supabaseAdmin
+    .from("profiles")
+    .select("id, nama_lengkap, no_telepon")
+    .in("id", userIds);
+  const profMap = new Map((profs ?? []).map((p: any) => [p.id, p]));
+
+  // Dedup vs existing same-day same-ref entries to avoid double queueing
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  const rows: any[] = [];
+  for (const it of items) {
+    const p = profMap.get(it.user_id);
+    if (!p) continue;
+    const phone = normalizePhone((p as any).no_telepon);
+    if (!phone) continue;
+    const dedupKey = `${it.ref_table}:${it.ref_id}:wa:${new Date().toISOString().slice(0, 10)}`;
+    const { data: exists } = await supabaseAdmin
+      .from("notification_log")
+      .select("id")
+      .eq("dedup_key", dedupKey)
+      .limit(1)
+      .maybeSingle();
+    if (exists) continue;
+    rows.push({
+      target_user: it.user_id,
+      target_address: phone,
+      channel: "whatsapp",
+      template: it.template,
+      payload: { nama: (p as any).nama_lengkap ?? "", pesan: it.pesan },
+      status: "queued",
+      ref_table: it.ref_table,
+      ref_id: it.ref_id,
+      dedup_key: dedupKey,
+    });
+  }
+  if (!rows.length) return 0;
+  const { error } = await supabaseAdmin.from("notification_log").insert(rows);
+  if (error) {
+    console.error("wa enqueue error", error);
+    return 0;
+  }
+  return rows.length;
+}
+
 
 export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
