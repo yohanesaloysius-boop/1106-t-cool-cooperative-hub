@@ -295,6 +295,15 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
               ref_id: a.id,
             })),
           );
+          summary.wa_queued += await enqueueWa(
+            overdue.map((a) => ({
+              user_id: a.user_id,
+              template: "angsuran",
+              pesan: `Halo, cicilan ke-${a.cicilan_ke} sebesar Rp ${Number(a.nominal).toLocaleString("id-ID")} telah TERLAMBAT (jatuh tempo ${a.jatuh_tempo}). Mohon segera lakukan pembayaran ke Koperasi T-COOL untuk menghindari denda lanjutan 🙏`,
+              ref_table: "angsuran:overdue",
+              ref_id: a.id,
+            })),
+          );
           // mark overdue
           await supabaseAdmin
             .from("angsuran")
