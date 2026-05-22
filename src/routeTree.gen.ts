@@ -38,6 +38,7 @@ import { Route as AuthenticatedDashboardBelanjaRouteImport } from './routes/_aut
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBukuBesarRouteImport } from './routes/_authenticated/buku-besar'
 import { Route as AuthenticatedBayarQrisRouteImport } from './routes/_authenticated/bayar-qris'
+import { Route as AuthenticatedBantuanRouteImport } from './routes/_authenticated/bantuan'
 import { Route as AuthenticatedApprovalRouteImport } from './routes/_authenticated/approval'
 import { Route as AuthenticatedAngsuranRouteImport } from './routes/_authenticated/angsuran'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -226,6 +227,11 @@ const AuthenticatedBukuBesarRoute = AuthenticatedBukuBesarRouteImport.update({
 const AuthenticatedBayarQrisRoute = AuthenticatedBayarQrisRouteImport.update({
   id: '/bayar-qris',
   path: '/bayar-qris',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBantuanRoute = AuthenticatedBantuanRouteImport.update({
+  id: '/bantuan',
+  path: '/bantuan',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedApprovalRoute = AuthenticatedApprovalRouteImport.update({
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bantuan': typeof AuthenticatedBantuanRoute
   '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -544,6 +551,7 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
   '/approval': typeof AuthenticatedApprovalRoute
+  '/bantuan': typeof AuthenticatedBantuanRoute
   '/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -617,6 +625,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/angsuran': typeof AuthenticatedAngsuranRoute
   '/_authenticated/approval': typeof AuthenticatedApprovalRoute
+  '/_authenticated/bantuan': typeof AuthenticatedBantuanRoute
   '/_authenticated/bayar-qris': typeof AuthenticatedBayarQrisRoute
   '/_authenticated/buku-besar': typeof AuthenticatedBukuBesarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -690,6 +699,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/angsuran'
     | '/approval'
+    | '/bantuan'
     | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
@@ -760,6 +770,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/angsuran'
     | '/approval'
+    | '/bantuan'
     | '/bayar-qris'
     | '/buku-besar'
     | '/dashboard'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/angsuran'
     | '/_authenticated/approval'
+    | '/_authenticated/bantuan'
     | '/_authenticated/bayar-qris'
     | '/_authenticated/buku-besar'
     | '/_authenticated/dashboard'
@@ -1110,6 +1122,13 @@ declare module '@tanstack/react-router' {
       path: '/bayar-qris'
       fullPath: '/bayar-qris'
       preLoaderRoute: typeof AuthenticatedBayarQrisRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/bantuan': {
+      id: '/_authenticated/bantuan'
+      path: '/bantuan'
+      fullPath: '/bantuan'
+      preLoaderRoute: typeof AuthenticatedBantuanRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/approval': {
@@ -1481,6 +1500,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
   AuthenticatedApprovalRoute: typeof AuthenticatedApprovalRoute
+  AuthenticatedBantuanRoute: typeof AuthenticatedBantuanRoute
   AuthenticatedBayarQrisRoute: typeof AuthenticatedBayarQrisRoute
   AuthenticatedBukuBesarRoute: typeof AuthenticatedBukuBesarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -1506,6 +1526,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAngsuranRoute: AuthenticatedAngsuranRoute,
   AuthenticatedApprovalRoute: AuthenticatedApprovalRoute,
+  AuthenticatedBantuanRoute: AuthenticatedBantuanRoute,
   AuthenticatedBayarQrisRoute: AuthenticatedBayarQrisRoute,
   AuthenticatedBukuBesarRoute: AuthenticatedBukuBesarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
