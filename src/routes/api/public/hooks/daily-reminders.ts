@@ -120,7 +120,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
     handlers: {
       POST: async () => {
-        const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0 };
+        const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0, wa_queued: 0 };
 
         // ===== Iuran wajib bulanan =====
         // - Tanggal 25 / 28 / akhir bulan → reminder kalau belum setor iuran wajib bulan berjalan
@@ -169,6 +169,15 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
                   pesan: `Iuran wajib bulan ${thisMonthKey} jatuh tempo ${labelWaktu}. Mohon segera setor untuk menjaga keanggotaan aktif.`,
                   kategori: "peringatan",
                   url: "/simpanan",
+                  ref_table: `simpanan:wajib:${thisMonthKey}`,
+                  ref_id: m.id,
+                })),
+              );
+              summary.wa_queued += await enqueueWa(
+                targets.map((m) => ({
+                  user_id: m.id,
+                  template: "simpanan",
+                  pesan: `Halo ${m.nama_lengkap}, mengingatkan setoran simpanan wajib bulan ${thisMonthKey} di Koperasi T-COOL — jatuh tempo ${labelWaktu}. Terima kasih 🌱`,
                   ref_table: `simpanan:wajib:${thisMonthKey}`,
                   ref_id: m.id,
                 })),
@@ -252,6 +261,15 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
               pesan: `Cicilan ke-${a.cicilan_ke} sebesar Rp ${Number(a.nominal).toLocaleString("id-ID")} jatuh tempo ${a.jatuh_tempo}.`,
               kategori: "peringatan",
               url: "/angsuran",
+              ref_table: "angsuran:h3",
+              ref_id: a.id,
+            })),
+          );
+          summary.wa_queued += await enqueueWa(
+            dueSoon.map((a) => ({
+              user_id: a.user_id,
+              template: "angsuran",
+              pesan: `Halo, mengingatkan jatuh tempo angsuran cicilan ke-${a.cicilan_ke} sebesar Rp ${Number(a.nominal).toLocaleString("id-ID")} pada ${a.jatuh_tempo} di Koperasi T-COOL. Mohon segera diselesaikan 🙏`,
               ref_table: "angsuran:h3",
               ref_id: a.id,
             })),
