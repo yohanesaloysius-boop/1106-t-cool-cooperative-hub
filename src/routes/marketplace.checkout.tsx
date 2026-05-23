@@ -115,6 +115,9 @@ function CheckoutPage() {
           });
         }
       }
+      if (coupon) {
+        await consumeCoupon(coupon.id, coupon.used_count);
+      }
       cart.clear();
       toast.success("Pesanan dibuat! Lanjut transfer ke rekening koperasi & upload bukti.");
       navigate({ to: "/transaksi-saya" });
