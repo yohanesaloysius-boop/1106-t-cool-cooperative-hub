@@ -43,12 +43,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isPengurus = realPengurus && !viewAsMember;
 
   const loadProfile = async (uid: string) => {
-    const [{ data: p }, { data: r }] = await Promise.all([
-      supabase.from("profiles").select("id,nomor_anggota,nama_lengkap,email,no_hp,status,foto_url").eq("id", uid).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", uid),
-    ]);
-    setProfile((p as Profile) ?? null);
-    setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+    try {
+      const [{ data: p, error: profileError }, { data: r, error: roleError }] = await Promise.all([
+        supabase.from("profiles").select("id,nomor_anggota,nama_lengkap,email,no_hp,status,foto_url").eq("id", uid).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", uid).is("deleted_at", null),
+      ]);
+
+      if (profileError) throw profileError;
+      if (roleError) throw roleError;
+
+      setProfile((p as Profile) ?? null);
+      setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+    } catch (error) {
+      console.error("Gagal memuat profil/role", error);
+      setProfile(null);
+      setRoles([]);
+    }
   };
 
   const hydrateAuthState = async (nextSession: Session | null) => {
@@ -65,8 +75,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setViewAsMemberState(false);
-    await loadProfile(nextSession.user.id);
-    setLoading(false);
+    try {
+      await loadProfile(nextSession.user.id);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
