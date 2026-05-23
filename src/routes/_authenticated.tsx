@@ -236,7 +236,54 @@ function AuthLayout() {
             })}
           </Accordion>
         </nav>
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 space-y-3">
+          {realPengurus && (
+            <div
+              role="tablist"
+              aria-label="Mode tampilan"
+              className="flex w-full items-center rounded-full border border-border bg-muted/60 p-0.5 text-xs font-semibold shadow-inner"
+            >
+              <button
+                role="tab"
+                aria-selected={!viewAsMember}
+                onClick={() => {
+                  if (!viewAsMember) {
+                    if (!pathname.startsWith("/admin")) navigate({ to: "/admin" });
+                    return;
+                  }
+                  setViewAsMember(false);
+                  toast.success("Mode Pengurus aktif");
+                  navigate({ to: "/admin" });
+                }}
+                className={cn(
+                  "flex-1 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                  !viewAsMember
+                    ? "bg-emerald-500 text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <ShieldCheck className="h-3.5 w-3.5" /> Admin
+              </button>
+              <button
+                role="tab"
+                aria-selected={viewAsMember}
+                onClick={() => {
+                  if (viewAsMember) return;
+                  setViewAsMember(true);
+                  toast.success("Mode Anggota aktif");
+                  if (pathname.startsWith("/admin")) navigate({ to: "/dashboard" });
+                }}
+                className={cn(
+                  "flex-1 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
+                  viewAsMember
+                    ? "bg-rose-500 text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <UserIcon className="h-3.5 w-3.5" /> Anggota
+              </button>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9"><AvatarFallback>{initials}</AvatarFallback></Avatar>
             <div className="min-w-0 flex-1">
