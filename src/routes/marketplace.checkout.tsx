@@ -1,14 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { cartItemEffectivePrice, useCart, type CartItem } from "@/lib/cart";
-import { createTransaction, fmtIDR } from "@/lib/marketplace-api";
+import { createTransaction, fmtIDR, validateCoupon, calcCouponDiscount, consumeCoupon, type DbCoupon } from "@/lib/marketplace-api";
 import { getMarketplaceRekening } from "@/lib/escrow-api";
-import { ArrowLeft, CheckCircle2, Copy, Landmark, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Copy, Landmark, ShieldCheck, Ticket, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/marketplace/checkout")({
