@@ -27,8 +27,6 @@ interface AuthCtx {
   refresh: () => Promise<void>;
 }
 
-const VIEW_AS_KEY = "tcool.viewAsMember";
-
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -37,54 +35,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewAsMember, setViewAsMemberState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem(VIEW_AS_KEY) === "1";
-  });
+  const [viewAsMember, setViewAsMemberState] = useState(false);
   const setViewAsMember = (v: boolean) => {
     setViewAsMemberState(v);
-    if (typeof window !== "undefined") window.localStorage.setItem(VIEW_AS_KEY, v ? "1" : "0");
   };
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
   const isPengurus = realPengurus && !viewAsMember;
 
   const loadProfile = async (uid: string) => {
-    const [{ data: p }, { data: r }] = await Promise.all([
-      supabase.from("profiles").select("id,nomor_anggota,nama_lengkap,email,no_hp,status,foto_url").eq("id", uid).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", uid),
-    ]);
-    setProfile((p as Profile) ?? null);
-    setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+    try {
+      const [{ data: p, error: profileError }, { data: r, error: roleError }] = await Promise.all([
+        supabase.from("profiles").select("id,nomor_anggota,nama_lengkap,email,no_hp,status,foto_url").eq("id", uid).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", uid).is("deleted_at", null),
+      ]);
+
+      if (profileError) throw profileError;
+      if (roleError) throw roleError;
+
+      setProfile((p as Profile) ?? null);
+      setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+    } catch (error) {
+      console.error("Gagal memuat profil/role", error);
+      setProfile(null);
+      setRoles([]);
+    }
+  };
+
+  const hydrateAuthState = async (nextSession: Session | null) => {
+    setLoading(true);
+    setSession(nextSession);
+    setUser(nextSession?.user ?? null);
+
+    if (!nextSession?.user) {
+      setProfile(null);
+      setRoles([]);
+      setViewAsMemberState(false);
+      setLoading(false);
+      return;
+    }
+
+    setViewAsMemberState(false);
+    try {
+      await loadProfile(nextSession.user.id);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        setTimeout(() => void loadProfile(s.user.id), 0);
-        if (event === "SIGNED_IN") {
-          setTimeout(() => {
-            void supabase.from("audit_logs").insert({
-              actor_id: s.user.id,
-              action: "auth.login",
-              entity: "auth",
-              entity_id: s.user.id,
-              user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-              new_data: { email: s.user.email, at: new Date().toISOString() },
-            });
-          }, 0);
-        }
-      } else {
-        setProfile(null);
-        setRoles([]);
+      void hydrateAuthState(s);
+      if (event === "SIGNED_IN" && s?.user) {
+        setTimeout(() => {
+          void supabase.from("audit_logs").insert({
+            actor_id: s.user.id,
+            action: "auth.login",
+            entity: "auth",
+            entity_id: s.user.id,
+            user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+            new_data: { email: s.user.email, at: new Date().toISOString() },
+          });
+        }, 0);
       }
     });
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) void loadProfile(data.session.user.id);
-      setLoading(false);
+      void hydrateAuthState(data.session);
     });
     return () => sub.subscription.unsubscribe();
   }, []);

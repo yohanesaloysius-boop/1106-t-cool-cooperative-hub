@@ -54,11 +54,14 @@ const registerSchema = z.object({
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, roles, viewAsMember } = useAuth();
+  const hasAdminRole = roles.some((role) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(role));
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/dashboard" });
-  }, [user, loading, navigate]);
+    if (!loading && user) {
+      navigate({ to: hasAdminRole && !viewAsMember ? "/admin" : "/dashboard" });
+    }
+  }, [user, loading, hasAdminRole, viewAsMember, navigate]);
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
