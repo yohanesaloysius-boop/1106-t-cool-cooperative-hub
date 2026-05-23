@@ -23,11 +23,53 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState<DbCoupon | null>(null);
+  const [validating, setValidating] = useState(false);
 
   const groups = cart.items.reduce<Record<string, CartItem[]>>((acc, it) => {
     (acc[it.store_id] ||= []).push(it);
     return acc;
   }, {});
+
+  const couponDiscount = useMemo(() => {
+    if (!coupon) return 0;
+    if (coupon.store_id) {
+      const subtotal = cart.items
+        .filter((it) => it.store_id === coupon.store_id)
+        .reduce((s, it) => s + cartItemEffectivePrice(it) * it.qty, 0);
+      return calcCouponDiscount(coupon, subtotal);
+    }
+    return calcCouponDiscount(coupon, cart.total);
+  }, [coupon, cart.items, cart.total]);
+
+  const grandTotal = Math.max(0, cart.total - couponDiscount);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setValidating(true);
+    try {
+      const c = await validateCoupon(couponCode);
+      if (c.store_id) {
+        const subtotal = cart.items
+          .filter((it) => it.store_id === c.store_id)
+          .reduce((s, it) => s + cartItemEffectivePrice(it) * it.qty, 0);
+        if (subtotal === 0) throw new Error("Kupon hanya berlaku untuk toko tertentu yang tidak ada di keranjang");
+        if (subtotal < Number(c.min_belanja)) {
+          throw new Error(`Minimal belanja ${fmtIDR(Number(c.min_belanja))} untuk toko terkait`);
+        }
+      } else if (cart.total < Number(c.min_belanja)) {
+        throw new Error(`Minimal belanja ${fmtIDR(Number(c.min_belanja))}`);
+      }
+      setCoupon(c);
+      toast.success(`Kupon ${c.code} diterapkan`);
+    } catch (e: any) {
+      toast.error(e.message);
+      setCoupon(null);
+    } finally {
+      setValidating(false);
+    }
+  };
 
   if (loading) return null;
 
