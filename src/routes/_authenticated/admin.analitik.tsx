@@ -120,12 +120,12 @@ function AnalitikPage() {
             <AreaChart data={cashflow}>
               <defs>
                 <linearGradient id="in" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--success)" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="var(--success)" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="out" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--destructive)" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="var(--destructive)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
@@ -133,8 +133,8 @@ function AnalitikPage() {
               <YAxis fontSize={11} tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}jt`} />
               <Tooltip formatter={(v: any) => fmt(Number(v))} />
               <Legend />
-              <Area type="monotone" dataKey="inflow" name="Inflow" stroke="hsl(var(--success))" fill="url(#in)" />
-              <Area type="monotone" dataKey="outflow" name="Outflow" stroke="hsl(var(--destructive))" fill="url(#out)" />
+              <Area type="monotone" dataKey="inflow" name="Inflow" stroke="var(--success)" fill="url(#in)" />
+              <Area type="monotone" dataKey="outflow" name="Outflow" stroke="var(--destructive)" fill="url(#out)" />
             </AreaChart>
           </ResponsiveContainer>
           <p className="text-xs text-muted-foreground mt-2">3 bulan terakhir di grafik adalah prediksi berbasis rata-rata 6 bulan terakhir.</p>
@@ -154,7 +154,7 @@ function AnalitikPage() {
                   <XAxis dataKey="month" fontSize={11} />
                   <YAxis fontSize={11} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="count" stroke="hsl(var(--warning))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="count" stroke="var(--warning)" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -173,7 +173,7 @@ function AnalitikPage() {
                   <XAxis type="number" fontSize={11} />
                   <YAxis dataKey="nama" type="category" fontSize={11} width={120} />
                   <Tooltip />
-                  <Bar dataKey="count" fill="hsl(var(--destructive))" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="count" fill="var(--destructive)" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
