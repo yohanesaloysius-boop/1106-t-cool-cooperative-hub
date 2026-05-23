@@ -192,15 +192,55 @@ function CheckoutPage() {
               </p>
             </div>
 
-            <div className="sticky top-24 rounded-3xl border border-border bg-card p-5" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="sticky top-24 rounded-3xl border border-border bg-card p-5 space-y-3" style={{ boxShadow: "var(--shadow-card)" }}>
               <h2 className="text-base font-semibold">Total Pembayaran</h2>
-              <div className="mt-3 flex justify-between text-sm">
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <Ticket className="h-3 w-3" /> Kode Kupon
+                </label>
+                {coupon ? (
+                  <div className="mt-1 flex items-center justify-between rounded-lg border border-primary/40 bg-primary/5 px-3 py-2">
+                    <div>
+                      <p className="text-sm font-semibold text-primary">{coupon.code}</p>
+                      <p className="text-[11px] text-muted-foreground">−{fmtIDR(couponDiscount)}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setCoupon(null); setCouponCode(""); }}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-1 flex gap-2">
+                    <Input
+                      placeholder="MASUKKAN KODE"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      className="h-9 text-sm"
+                    />
+                    <Button size="sm" variant="outline" onClick={applyCoupon} disabled={validating || !couponCode.trim()}>
+                      {validating ? "..." : "Pakai"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Total barang</span>
                 <span className="font-semibold">{cart.count}</span>
               </div>
-              <div className="mt-3 border-t border-border pt-3 flex justify-between">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-semibold">{fmtIDR(cart.total)}</span>
+              </div>
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-sm text-primary">
+                  <span>Diskon kupon</span>
+                  <span className="font-semibold">−{fmtIDR(couponDiscount)}</span>
+                </div>
+              )}
+              <div className="border-t border-border pt-3 flex justify-between">
                 <span className="font-semibold">Total Transfer</span>
-                <span className="text-lg font-bold text-primary">{fmtIDR(cart.total)}</span>
+                <span className="text-lg font-bold text-primary">{fmtIDR(grandTotal)}</span>
               </div>
               <Button className="mt-4 w-full rounded-full" onClick={submit} disabled={submitting}>
                 <ShieldCheck className="mr-2 h-4 w-4" />
