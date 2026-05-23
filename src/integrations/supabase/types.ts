@@ -1025,6 +1025,78 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_coupons: {
+        Row: {
+          berlaku_dari: string
+          berlaku_sampai: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          deskripsi: string | null
+          id: string
+          is_active: boolean
+          kuota: number | null
+          max_diskon: number | null
+          min_belanja: number
+          nilai: number
+          store_id: string | null
+          tipe: Database["public"]["Enums"]["mp_coupon_type"]
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          berlaku_dari?: string
+          berlaku_sampai?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kuota?: number | null
+          max_diskon?: number | null
+          min_belanja?: number
+          nilai: number
+          store_id?: string | null
+          tipe?: Database["public"]["Enums"]["mp_coupon_type"]
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          berlaku_dari?: string
+          berlaku_sampai?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kuota?: number | null
+          max_diskon?: number | null
+          min_belanja?: number
+          nilai?: number
+          store_id?: string | null
+          tipe?: Database["public"]["Enums"]["mp_coupon_type"]
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_coupons_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_coupons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_favorites: {
         Row: {
           created_at: string
@@ -3343,6 +3415,7 @@ export type Database = {
       lowongan_status: "pending" | "approved" | "rejected" | "expired"
       meeting_status: "scheduled" | "ongoing" | "completed" | "cancelled"
       member_status: "pending" | "active" | "suspended" | "rejected"
+      mp_coupon_type: "percent" | "fixed"
       mp_trx_status:
         | "pending"
         | "confirmed"
@@ -3618,6 +3691,7 @@ export const Constants = {
       lowongan_status: ["pending", "approved", "rejected", "expired"],
       meeting_status: ["scheduled", "ongoing", "completed", "cancelled"],
       member_status: ["pending", "active", "suspended", "rejected"],
+      mp_coupon_type: ["percent", "fixed"],
       mp_trx_status: [
         "pending",
         "confirmed",

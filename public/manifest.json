@@ -1,0 +1,13 @@
+{
+  "name": "T-COOL Koperasi",
+  "short_name": "T-COOL",
+  "description": "Sistem manajemen koperasi T-COOL: simpanan, pinjaman, marketplace komunitas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "icons": []
+}
+
