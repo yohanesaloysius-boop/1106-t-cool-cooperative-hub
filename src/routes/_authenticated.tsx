@@ -272,9 +272,13 @@ function AuthLayout() {
                   aria-selected={!viewAsMember}
                   title="Mode Admin / Pengurus"
                   onClick={() => {
-                    if (!viewAsMember) return;
+                    if (!viewAsMember) {
+                      if (!pathname.startsWith("/admin")) navigate({ to: "/admin" });
+                      return;
+                    }
                     setViewAsMember(false);
                     toast.success("Mode Pengurus aktif", { description: "Akses pengurus dipulihkan." });
+                    navigate({ to: "/admin" });
                   }}
                   className={cn(
                     "relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all",
