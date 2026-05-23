@@ -72,6 +72,7 @@ import { Route as AuthenticatedAdminLowonganRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminLaporanSakRouteImport } from './routes/_authenticated/admin.laporan-sak'
 import { Route as AuthenticatedAdminLaporanRatRouteImport } from './routes/_authenticated/admin.laporan-rat'
 import { Route as AuthenticatedAdminLaporanRouteImport } from './routes/_authenticated/admin.laporan'
+import { Route as AuthenticatedAdminKuponRouteImport } from './routes/_authenticated/admin.kupon'
 import { Route as AuthenticatedAdminKomplainRouteImport } from './routes/_authenticated/admin.komplain'
 import { Route as AuthenticatedAdminFeeRouteImport } from './routes/_authenticated/admin.fee'
 import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenticated/admin.escrow'
@@ -84,6 +85,7 @@ import { Route as AuthenticatedAdminArsipTransaksiRouteImport } from './routes/_
 import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authenticated/admin.approval'
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
+import { Route as AuthenticatedAdminAnalitikRouteImport } from './routes/_authenticated/admin.analitik'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
 import { Route as ApiPublicHooksAutoDebetWajibRouteImport } from './routes/api/public/hooks/auto-debet-wajib'
@@ -426,6 +428,11 @@ const AuthenticatedAdminLaporanRoute =
     path: '/laporan',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminKuponRoute = AuthenticatedAdminKuponRouteImport.update({
+  id: '/kupon',
+  path: '/kupon',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminKomplainRoute =
   AuthenticatedAdminKomplainRouteImport.update({
     id: '/komplain',
@@ -495,6 +502,12 @@ const AuthenticatedAdminAnggotaRoute =
     path: '/anggota',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAnalitikRoute =
+  AuthenticatedAdminAnalitikRouteImport.update({
+    id: '/analitik',
+    path: '/analitik',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const ApiPublicHooksDailyRemindersRoute =
   ApiPublicHooksDailyRemindersRouteImport.update({
     id: '/api/public/hooks/daily-reminders',
@@ -556,6 +569,7 @@ export interface FileRoutesByFullPath {
   '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -568,6 +582,7 @@ export interface FileRoutesByFullPath {
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
+  '/admin/kupon': typeof AuthenticatedAdminKuponRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
@@ -635,6 +650,7 @@ export interface FileRoutesByTo {
   '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -647,6 +663,7 @@ export interface FileRoutesByTo {
   '/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/admin/komplain': typeof AuthenticatedAdminKomplainRoute
+  '/admin/kupon': typeof AuthenticatedAdminKuponRoute
   '/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
@@ -717,6 +734,7 @@ export interface FileRoutesById {
   '/_authenticated/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/_authenticated/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
   '/_authenticated/admin/approval': typeof AuthenticatedAdminApprovalRoute
@@ -729,6 +747,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/escrow': typeof AuthenticatedAdminEscrowRoute
   '/_authenticated/admin/fee': typeof AuthenticatedAdminFeeRoute
   '/_authenticated/admin/komplain': typeof AuthenticatedAdminKomplainRoute
+  '/_authenticated/admin/kupon': typeof AuthenticatedAdminKuponRoute
   '/_authenticated/admin/laporan': typeof AuthenticatedAdminLaporanRoute
   '/_authenticated/admin/laporan-rat': typeof AuthenticatedAdminLaporanRatRoute
   '/_authenticated/admin/laporan-sak': typeof AuthenticatedAdminLaporanSakRoute
@@ -799,6 +818,7 @@ export interface FileRouteTypes {
     | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -811,6 +831,7 @@ export interface FileRouteTypes {
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
+    | '/admin/kupon'
     | '/admin/laporan'
     | '/admin/laporan-rat'
     | '/admin/laporan-sak'
@@ -878,6 +899,7 @@ export interface FileRouteTypes {
     | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
     | '/admin/approval'
@@ -890,6 +912,7 @@ export interface FileRouteTypes {
     | '/admin/escrow'
     | '/admin/fee'
     | '/admin/komplain'
+    | '/admin/kupon'
     | '/admin/laporan'
     | '/admin/laporan-rat'
     | '/admin/laporan-sak'
@@ -959,6 +982,7 @@ export interface FileRouteTypes {
     | '/_authenticated/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/_authenticated/admin/analitik'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
     | '/_authenticated/admin/approval'
@@ -971,6 +995,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/escrow'
     | '/_authenticated/admin/fee'
     | '/_authenticated/admin/komplain'
+    | '/_authenticated/admin/kupon'
     | '/_authenticated/admin/laporan'
     | '/_authenticated/admin/laporan-rat'
     | '/_authenticated/admin/laporan-sak'
@@ -1463,6 +1488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLaporanRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/kupon': {
+      id: '/_authenticated/admin/kupon'
+      path: '/kupon'
+      fullPath: '/admin/kupon'
+      preLoaderRoute: typeof AuthenticatedAdminKuponRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/komplain': {
       id: '/_authenticated/admin/komplain'
       path: '/komplain'
@@ -1547,6 +1579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnggotaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/analitik': {
+      id: '/_authenticated/admin/analitik'
+      path: '/analitik'
+      fullPath: '/admin/analitik'
+      preLoaderRoute: typeof AuthenticatedAdminAnalitikRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/api/public/hooks/daily-reminders': {
       id: '/api/public/hooks/daily-reminders'
       path: '/api/public/hooks/daily-reminders'
@@ -1579,6 +1618,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAnalitikRoute: typeof AuthenticatedAdminAnalitikRoute
   AuthenticatedAdminAnggotaRoute: typeof AuthenticatedAdminAnggotaRoute
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
   AuthenticatedAdminApprovalRoute: typeof AuthenticatedAdminApprovalRoute
@@ -1591,6 +1631,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminEscrowRoute: typeof AuthenticatedAdminEscrowRoute
   AuthenticatedAdminFeeRoute: typeof AuthenticatedAdminFeeRoute
   AuthenticatedAdminKomplainRoute: typeof AuthenticatedAdminKomplainRoute
+  AuthenticatedAdminKuponRoute: typeof AuthenticatedAdminKuponRoute
   AuthenticatedAdminLaporanRoute: typeof AuthenticatedAdminLaporanRoute
   AuthenticatedAdminLaporanRatRoute: typeof AuthenticatedAdminLaporanRatRoute
   AuthenticatedAdminLaporanSakRoute: typeof AuthenticatedAdminLaporanSakRoute
@@ -1619,6 +1660,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAnalitikRoute: AuthenticatedAdminAnalitikRoute,
   AuthenticatedAdminAnggotaRoute: AuthenticatedAdminAnggotaRoute,
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
   AuthenticatedAdminApprovalRoute: AuthenticatedAdminApprovalRoute,
@@ -1631,6 +1673,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminEscrowRoute: AuthenticatedAdminEscrowRoute,
   AuthenticatedAdminFeeRoute: AuthenticatedAdminFeeRoute,
   AuthenticatedAdminKomplainRoute: AuthenticatedAdminKomplainRoute,
+  AuthenticatedAdminKuponRoute: AuthenticatedAdminKuponRoute,
   AuthenticatedAdminLaporanRoute: AuthenticatedAdminLaporanRoute,
   AuthenticatedAdminLaporanRatRoute: AuthenticatedAdminLaporanRatRoute,
   AuthenticatedAdminLaporanSakRoute: AuthenticatedAdminLaporanSakRoute,
