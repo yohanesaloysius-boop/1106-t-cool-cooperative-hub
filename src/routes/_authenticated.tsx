@@ -157,6 +157,7 @@ export const navGroups: NavGroup[] = [
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
       { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },
       { to: "/admin/lowongan", label: "Kelola Lowongan", icon: Briefcase, adminOnly: true },
+      { to: "/admin/gereja/pengadaan", label: "Pengadaan Gereja (Admin)", icon: Church, adminOnly: true },
     ],
   },
 ];
