@@ -204,6 +204,17 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
           <Label>Tujuan / Keterangan</Label>
           <Textarea value={tujuan} onChange={(e) => setTujuan(e.target.value)} placeholder="Untuk kegiatan apa & kapan dibutuhkan" />
         </div>
+        <div className="grid gap-3 sm:grid-cols-2 rounded-lg border p-3 bg-muted/30">
+          <div className="sm:col-span-2 text-xs font-medium text-muted-foreground">Vendor (opsional — isi jika sudah ada referensi toko/supplier)</div>
+          <div>
+            <Label>Nama Vendor</Label>
+            <Input value={vendorNama} onChange={(e) => setVendorNama(e.target.value)} placeholder="Mis. Toko Sinar Jaya" />
+          </div>
+          <div>
+            <Label>No. Telepon Vendor</Label>
+            <Input value={vendorTelepon} onChange={(e) => setVendorTelepon(e.target.value)} placeholder="08xxxxxxxxxx" />
+          </div>
+        </div>
         <div>
           <div className="flex items-center justify-between mb-2">
             <Label>Rincian Barang</Label>
