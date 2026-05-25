@@ -84,6 +84,14 @@ export const navGroups: NavGroup[] = [
       { to: "/rapat", label: "Rapat", icon: CalendarDays },
     ],
   },
+  {
+    id: "gereja",
+    label: "Pengadaan Gereja",
+    icon: Church,
+    items: [
+      { to: "/gereja/pengadaan", label: "Pengadaan Gereja", icon: Church },
+    ],
+  },
   // ============ ADMIN GROUPS ============
   {
     id: "admin-anggota",
