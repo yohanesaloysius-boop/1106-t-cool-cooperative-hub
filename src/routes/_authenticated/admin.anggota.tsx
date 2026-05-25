@@ -309,13 +309,6 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
   );
 }
 
-function MemberDetailDialog({ id, onClose }: { id: string | null; onClose: () => void }) {
-
-
-
-  return null as never;
-}
-
 function ChurchRequesterDialog({ member, onClose }: { member: { id: string; nama_lengkap: string } | null; onClose: () => void }) {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -428,7 +421,7 @@ function ChurchRequesterDialog({ member, onClose }: { member: { id: string; nama
   );
 }
 
-function MemberDetailDialogReal({ id, onClose }: { id: string | null; onClose: () => void }) {
+function MemberDetailDialog({ id, onClose }: { id: string | null; onClose: () => void }) {
   const { data, isLoading } = useQuery({
     queryKey: ["member-detail", id],
     enabled: !!id,
