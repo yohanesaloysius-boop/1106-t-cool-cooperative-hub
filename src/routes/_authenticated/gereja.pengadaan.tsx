@@ -171,7 +171,7 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader><DialogTitle>Permintaan Pembelian Baru</DialogTitle></DialogHeader>
-      <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+      <div className="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label>Divisi/Pelayanan</Label>
@@ -200,12 +200,8 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
           <Label>Judul</Label>
           <Input value={judul} onChange={(e) => setJudul(e.target.value)} placeholder="Mis. Pembelian sound system" />
         </div>
-        <div>
-          <Label>Tujuan / Keterangan</Label>
-          <Textarea value={tujuan} onChange={(e) => setTujuan(e.target.value)} placeholder="Untuk kegiatan apa & kapan dibutuhkan" />
-        </div>
         <div className="grid gap-3 sm:grid-cols-2 rounded-lg border p-3 bg-muted/30">
-          <div className="sm:col-span-2 text-xs font-medium text-muted-foreground">Vendor (opsional — isi jika sudah ada referensi toko/supplier)</div>
+          <div className="sm:col-span-2 text-sm font-semibold">Data Vendor / Toko</div>
           <div>
             <Label>Nama Vendor</Label>
             <Input value={vendorNama} onChange={(e) => setVendorNama(e.target.value)} placeholder="Mis. Toko Sinar Jaya" />
@@ -214,6 +210,10 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
             <Label>No. Telepon Vendor</Label>
             <Input value={vendorTelepon} onChange={(e) => setVendorTelepon(e.target.value)} placeholder="08xxxxxxxxxx" />
           </div>
+        </div>
+        <div>
+          <Label>Tujuan / Keterangan</Label>
+          <Textarea value={tujuan} onChange={(e) => setTujuan(e.target.value)} placeholder="Untuk kegiatan apa & kapan dibutuhkan" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
