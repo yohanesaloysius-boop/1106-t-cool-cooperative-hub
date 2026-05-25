@@ -133,6 +133,7 @@ function AdminDashboard() {
       {/* Modul lanjutan koperasi */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
         {[
+          { to: "/admin/gereja/pengadaan", label: "Pengadaan Gereja", desc: "PR · vendor · fee 2%", icon: Church },
           { to: "/admin/analitik", label: "Analitik & AI", desc: "Forecast & insight", icon: Sparkles },
           { to: "/admin/kupon", label: "Kupon", desc: "Diskon marketplace", icon: Ticket },
           { to: "/admin/rapb", label: "RAPB", desc: "Anggaran tahunan", icon: FileText },
