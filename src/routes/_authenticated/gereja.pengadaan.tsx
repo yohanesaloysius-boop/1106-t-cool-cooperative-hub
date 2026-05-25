@@ -144,6 +144,8 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
         division_id: divisionId,
         requester_id: user!.id,
         judul, tujuan, urgensi,
+        vendor_nama: vendorNama || null,
+        vendor_telepon: vendorTelepon || null,
         est_total: total,
         status: asDraft ? "draft" : "submitted",
       }).select().single();
