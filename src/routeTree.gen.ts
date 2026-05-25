@@ -91,6 +91,7 @@ import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/p
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
 import { Route as ApiPublicHooksAutoDebetWajibRouteImport } from './routes/api/public/hooks/auto-debet-wajib'
 import { Route as ApiPublicHooksAccrueFeesRouteImport } from './routes/api/public/hooks/accrue-fees'
+import { Route as AuthenticatedGerejaPengadaanIdRouteImport } from './routes/_authenticated/gereja.pengadaan.$id'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -539,6 +540,12 @@ const ApiPublicHooksAccrueFeesRoute =
     path: '/api/public/hooks/accrue-fees',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedGerejaPengadaanIdRoute =
+  AuthenticatedGerejaPengadaanIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedGerejaPengadaanRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -614,10 +621,11 @@ export interface FileRoutesByFullPath {
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/admin/voting': typeof AuthenticatedAdminVotingRoute
-  '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRoute
+  '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/gereja/pengadaan/$id': typeof AuthenticatedGerejaPengadaanIdRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
@@ -696,10 +704,11 @@ export interface FileRoutesByTo {
   '/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/admin/voting': typeof AuthenticatedAdminVotingRoute
-  '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRoute
+  '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/gereja/pengadaan/$id': typeof AuthenticatedGerejaPengadaanIdRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
@@ -781,10 +790,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/tabungan-berjangka': typeof AuthenticatedAdminTabunganBerjangkaRoute
   '/_authenticated/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/_authenticated/admin/voting': typeof AuthenticatedAdminVotingRoute
-  '/_authenticated/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRoute
+  '/_authenticated/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/gereja/pengadaan/$id': typeof AuthenticatedGerejaPengadaanIdRoute
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
@@ -870,6 +880,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
+    | '/gereja/pengadaan/$id'
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
@@ -952,6 +963,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
+    | '/gereja/pengadaan/$id'
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
@@ -1036,6 +1048,7 @@ export interface FileRouteTypes {
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
+    | '/_authenticated/gereja/pengadaan/$id'
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
@@ -1634,6 +1647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAccrueFeesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/gereja/pengadaan/$id': {
+      id: '/_authenticated/gereja/pengadaan/$id'
+      path: '/$id'
+      fullPath: '/gereja/pengadaan/$id'
+      preLoaderRoute: typeof AuthenticatedGerejaPengadaanIdRouteImport
+      parentRoute: typeof AuthenticatedGerejaPengadaanRoute
+    }
   }
 }
 
@@ -1726,6 +1746,20 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedGerejaPengadaanRouteChildren {
+  AuthenticatedGerejaPengadaanIdRoute: typeof AuthenticatedGerejaPengadaanIdRoute
+}
+
+const AuthenticatedGerejaPengadaanRouteChildren: AuthenticatedGerejaPengadaanRouteChildren =
+  {
+    AuthenticatedGerejaPengadaanIdRoute: AuthenticatedGerejaPengadaanIdRoute,
+  }
+
+const AuthenticatedGerejaPengadaanRouteWithChildren =
+  AuthenticatedGerejaPengadaanRoute._addFileChildren(
+    AuthenticatedGerejaPengadaanRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAngsuranRoute: typeof AuthenticatedAngsuranRoute
@@ -1752,7 +1786,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedTabunganBerjangkaRoute: typeof AuthenticatedTabunganBerjangkaRoute
   AuthenticatedTransaksiSayaRoute: typeof AuthenticatedTransaksiSayaRoute
   AuthenticatedVotingRoute: typeof AuthenticatedVotingRoute
-  AuthenticatedGerejaPengadaanRoute: typeof AuthenticatedGerejaPengadaanRoute
+  AuthenticatedGerejaPengadaanRoute: typeof AuthenticatedGerejaPengadaanRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -1781,7 +1815,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedTabunganBerjangkaRoute: AuthenticatedTabunganBerjangkaRoute,
   AuthenticatedTransaksiSayaRoute: AuthenticatedTransaksiSayaRoute,
   AuthenticatedVotingRoute: AuthenticatedVotingRoute,
-  AuthenticatedGerejaPengadaanRoute: AuthenticatedGerejaPengadaanRoute,
+  AuthenticatedGerejaPengadaanRoute:
+    AuthenticatedGerejaPengadaanRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
