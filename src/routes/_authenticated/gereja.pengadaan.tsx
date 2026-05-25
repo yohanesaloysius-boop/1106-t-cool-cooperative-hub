@@ -120,6 +120,8 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
   const [tujuan, setTujuan] = useState("");
   const [divisionId, setDivisionId] = useState("");
   const [urgensi, setUrgensi] = useState("normal");
+  const [vendorNama, setVendorNama] = useState("");
+  const [vendorTelepon, setVendorTelepon] = useState("");
   const [items, setItems] = useState<{ nama: string; qty: number; harga: number }[]>([{ nama: "", qty: 1, harga: 0 }]);
   const [saving, setSaving] = useState(false);
 
