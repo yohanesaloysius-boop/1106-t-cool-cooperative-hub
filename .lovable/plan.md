@@ -1,88 +1,102 @@
-# Plan: Modul 2 & 3 Koperasi (Keuangan/Operasional + Pengalaman Anggota)
+# Framework: Pengadaan Barang Gereja via Koperasi
 
-Mengerjakan dua kelompok besar dari roadmap. Modul 4–6 (Analitik AI, Marketplace lanjutan, Legal/Dokumen) ditangguhkan untuk remix berikutnya.
+Modul baru untuk menangani permintaan pengadaan dari divisi/pelayanan gereja, dengan koperasi sebagai jasa pengadaan (fee 2%). Belum dieksekusi — minta persetujuan dulu.
 
-## Modul 2 — Keuangan & Operasional
+## Alur Bisnis (9 langkah)
 
-### 2.1 Notifikasi WhatsApp otomatis (cron)
-- File `src/routes/api/public/hooks/daily-reminders.ts` sudah ada — perluas:
-  - Kirim pesan WA via `uazapi` proxy (sudah dipakai project) ke anggota yang punya angsuran H-3, H-1, dan jatuh tempo hari ini.
-  - Pengingat simpanan wajib tanggal 25 tiap bulan.
-  - Notifikasi pengurus untuk OPEX pending approval > 24 jam.
-- Tambah tabel `notification_log` (channel, target_user, template, status, ref_id, sent_at) untuk audit & dedup.
-- Daftarkan cron harian via `pg_cron` (08:00 WIB) memanggil endpoint.
+```text
+[Divisi]                [Keuangan Gereja]        [Koperasi]              [Vendor]
+   │                          │                       │                      │
+1. Butuh barang               │                       │                      │
+   │                          │                       │                      │
+2. Buat PR ──────────────────►│                       │                      │
+   (item, qty, est harga,     │                       │                      │
+    tujuan, urgensi)          │                       │                      │
+   │                     3. Cek budget                │                      │
+   │                        approve/reject            │                      │
+   │                          │                       │                      │
+   │                     4. Sistem hitung fee 2%      │                      │
+   │                        (auto, locked)            │                      │
+   │                          │                       │                      │
+   │                     5. PR approved ─────────────►│                      │
+   │                          │                  6. Cari/pilih vendor        │
+   │                          │                     (saran sistem +          │
+   │                          │                      vendor tersimpan)       │
+   │                          │                       │                      │
+   │                          │                  Buat PO ───────────────────►│
+   │                          │                       │                      │
+   │                     7. Bayar langsung ──────────────────────────────────►│
+   │                        ke vendor                 │                      │
+   │                          │                       │                      │
+   │                     8. Bayar fee 2% ────────────►│                      │
+   │                        ke koperasi               │                      │
+   │                          │                       │                      │
+   │◄──────────────── 9. Barang diterima ◄────────────┴──────────────────────│
+   │                     (langsung / via koperasi)                           │
+   │                                                                         │
+   └──► Histori: PR, approval, vendor, PO, nota, pembayaran, fee, serah-terima
+```
 
-### 2.2 Auto-debet simpanan wajib
-- RPC SQL `auto_debet_simpanan_wajib(_periode date)`:
-  - Loop anggota aktif → ambil nominal wajib dari `settings.iuran_wajib_default` atau per-anggota → cek saldo `wallets` cukup → debit ke kas koperasi & insert `simpanan` + `wallet_transactions`.
-  - Yang saldonya kurang → masuk `notification_log` "simpanan_wajib_gagal" + buat tagihan `angsuran_simpanan` (atau tabel sederhana `pending_iuran`).
-- Cron bulanan tanggal 5 jam 03:00 WIB memanggil RPC tersebut.
-- Halaman `/admin/simpanan` tambah tombol "Jalankan Auto-Debet Sekarang" (manual override) + tab "Riwayat Auto-Debet".
+## Status PR (Purchase Request)
 
-### 2.3 Dana Cadangan & Dana Sosial
-- Tabel `reserve_funds`: jenis (cadangan/sosial/pendidikan), saldo, target_persen_shu, deskripsi.
-- Tabel `reserve_fund_movements`: fund_id, tipe (setor/tarik), nominal, sumber (shu/manual/donasi), ref_id, tanggal, catatan.
-- Halaman `/admin/dana-cadangan`: 3 card saldo (cadangan/sosial/pendidikan), list mutasi, tombol setor/tarik dengan approval bendahara.
-- Integrasi: saat distribusi SHU di `admin.shu.tsx`, otomatis sisihkan ke 3 dana ini sesuai persentase di settings.
+`draft → submitted → approved_finance → forwarded_to_koperasi → vendor_selected → po_issued → paid_vendor → fee_paid → received → closed`
 
-### 2.4 RAPB (Rencana Anggaran Pendapatan & Belanja)
-- Tabel `budget_plans`: tahun, status (draft/disahkan/aktif/ditutup), disahkan_pada, disahkan_oleh, catatan.
-- Tabel `budget_items`: plan_id, kategori (pendapatan/beban), sub_kategori (mengacu opex_categories untuk beban), uraian, nominal_rencana, nominal_realisasi (computed view).
-- Halaman `/admin/rapb`: list tahun, detail tahun (form tambah item, total rencana vs realisasi, % serapan, chart bar).
-- RPC `get_rapb_realisasi(_plan_id)` agregasi dari `opex_expenses`, `wallet_transactions`, `simpanan`.
+Cabang: `rejected` (oleh keuangan), `cancelled` (oleh pemohon).
 
-## Modul 3 — Pengalaman Anggota
+## Entitas Data (rancangan tabel)
 
-### 3.1 Chat Support (Anggota ↔ Pengurus)
-- Tabel `support_tickets`: user_id, subjek, kategori (umum/pinjaman/simpanan/teknis/komplain), status (open/in_progress/resolved/closed), prioritas, assigned_to, created_at, resolved_at.
-- Tabel `support_messages`: ticket_id, sender_id, sender_role, body, attachments (jsonb), read_by (jsonb), created_at.
-- Realtime via `supabase.channel` untuk pesan baru.
-- Halaman anggota `/bantuan`: list ticket sendiri + form buat ticket + thread chat.
-- Halaman pengurus `/admin/support`: inbox, filter status/prioritas, assign, balas, tutup.
-- Notifikasi WA opsional saat ticket baru.
+1. **church_divisions** — divisi/pelayanan (nama, PIC, kontak)
+2. **church_vendors** — master vendor (nama, kategori, kontak, rekening, rating, catatan)
+3. **church_purchase_requests** (PR)
+   - division_id, requester_id, judul, tujuan, urgensi, status, est_total, fee_persen (default 2), fee_nominal, approved_by, approved_at, rejected_reason, koperasi_handler_id, timestamps
+4. **church_pr_items** — pr_id, nama_barang, qty, satuan, est_harga_satuan, est_subtotal, harga_aktual, catatan
+5. **church_purchase_orders** (PO) — pr_id, vendor_id, no_po, total_nilai, tanggal_po, status (issued/paid/delivered), file_po
+6. **church_pr_payments** — pr_id, tipe (`to_vendor` | `fee_koperasi`), nominal, tanggal, metode, bukti_url, verified_by
+7. **church_pr_receipts** — pr_id, tanggal_terima, penerima_id, kondisi, foto_url, catatan
+8. **church_pr_audit** — pr_id, actor_id, action, from_status, to_status, payload jsonb, created_at
 
-### 3.2 PWA Push Notifications
-- Tambah `public/sw.js` service worker + `public/manifest.json` (icon, theme color koperasi).
-- Hook `src/hooks/use-push-subscription.ts`: minta permission, subscribe pakai VAPID, simpan ke tabel `push_subscriptions` (user_id, endpoint, p256dh, auth, ua, created_at).
-- Server fn `sendPush(userIds, payload)` pakai `web-push` (Worker-compatible: pakai HTTP API VAPID langsung tanpa lib node, atau library `web-push-libs` jika ada build edge).
-- Trigger push dari event: angsuran jatuh tempo, ticket support, approval pending.
-- Tombol "Aktifkan notifikasi" di `/profil`.
-- Secrets baru: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (mailto).
+Fee 2% di-generate trigger saat status pindah ke `approved_finance` dan **locked** (tidak bisa diubah pemohon).
 
-### 3.3 E-Voting RAT
-- Tabel `votings`: judul, deskripsi, mulai, selesai, status (draft/open/closed), quorum_persen, created_by.
-- Tabel `voting_options`: voting_id, label, urutan.
-- Tabel `voting_ballots`: voting_id, user_id (unique), option_id, voted_at, ip, ua.
-- Halaman anggota `/rapat` (sudah ada) → tambah section "Voting Aktif": list voting open, halaman detail untuk memilih (1 user 1 suara, anonim opsional dgn flag).
-- Halaman pengurus `/admin/voting`: CRUD voting, lihat hasil real-time (chart), tutup voting, export hasil PDF.
-- RLS: anggota hanya bisa insert ballot sekali per voting; hasil hanya muncul setelah voting closed (atau realtime untuk pengurus).
+## Peran & Akses (RLS)
 
-### 3.4 Survei Kepuasan
-- Tabel `surveys`: judul, deskripsi, mulai, selesai, status, target_role (semua/anggota/pengurus).
-- Tabel `survey_questions`: survey_id, urutan, tipe (rating_5/skala_10/pilihan/teks), pertanyaan, opsi (jsonb), wajib.
-- Tabel `survey_responses`: survey_id, user_id (nullable kalau anonim), jawaban (jsonb), submitted_at.
-- Halaman anggota `/survei`: list aktif + form isian.
-- Halaman pengurus `/admin/survei`: builder pertanyaan, ringkasan agregat (rata-rata rating, distribusi, wordcloud teks), export CSV.
+| Peran | Akses |
+|---|---|
+| **Anggota divisi (pemohon)** | CRUD PR miliknya (draft/submitted), lihat status & histori PR sendiri |
+| **Keuangan gereja** | Lihat semua PR, approve/reject, verifikasi bukti bayar vendor & fee |
+| **Koperasi (pengurus)** | Lihat PR `forwarded_to_koperasi`+, pilih vendor, buat PO, catat serah terima |
+| **Ketua/Super admin** | Read-only semua + laporan |
 
-## Skema akses
-- Semua tabel pengurus: RLS `is_pengurus(auth.uid())`.
-- Chat support, voting, survei: anggota CRUD baris miliknya sendiri, pengurus lihat semua.
-- Tabel push_subscriptions: user_id = auth.uid().
+## Halaman yang dibuat
 
-## Urutan eksekusi
+**Sisi Gereja:**
+- `/gereja/pengadaan` — list PR divisi, tombol "Ajukan PR Baru"
+- `/gereja/pengadaan/$id` — detail PR + timeline status + dokumen
+- `/admin/gereja/keuangan` — antrian approval keuangan gereja, tombol approve/reject, lihat budget tersisa
+- `/admin/gereja/vendor` — master vendor gereja
 
-1. **2.1 WA reminder cron** (perluas hook existing + tabel log + jadwalkan cron)
-2. **2.2 Auto-debet simpanan wajib** (RPC + cron + tombol manual)
-3. **2.3 Dana cadangan & sosial** (tabel + halaman + integrasi SHU)
-4. **2.4 RAPB** (tabel + halaman + RPC realisasi)
-5. **3.1 Chat support** (tabel + 2 halaman + realtime)
-6. **3.2 Push notification PWA** (sw + manifest + subscription + trigger)
-7. **3.3 E-voting** (tabel + halaman anggota + halaman pengurus)
-8. **3.4 Survei kepuasan** (tabel + builder + ringkasan)
+**Sisi Koperasi:**
+- `/admin/gereja/pengadaan` — PR yang masuk ke koperasi (tab: butuh vendor / PO aktif / menunggu serah terima / selesai)
+- Action: pilih vendor → terbitkan PO → catat pembayaran vendor (oleh gereja) → catat fee diterima → catat serah terima
 
-Modul 2 dulu (4 langkah), commit/review, lalu Modul 3.
+**Laporan:**
+- `/admin/gereja/laporan-pengadaan` — rekap per periode: total PR, nilai pengadaan, fee koperasi, top vendor, top divisi, rata-rata lead time, export PDF/CSV
 
-## Modul yang ditangguhkan (untuk remix berikutnya)
-- 4. Analitik & AI (dashboard prediktif, credit scoring AI)
-- 5. Marketplace lanjutan (rating/review, kupon, laporan komisi)
-- 6. Legal & Dokumen (generator AD/ART, template surat)
+## Otomatisasi
+
+- **Auto fee 2%**: trigger SQL saat `status='approved_finance'` → `fee_nominal = ROUND(est_total * fee_persen/100)`.
+- **Notifikasi WA** (pakai pipeline `notification_log` yang sudah ada):
+  - Keuangan: PR baru menunggu approval
+  - Koperasi: PR baru masuk
+  - Pemohon: status berubah (approved / vendor dipilih / barang siap)
+- **Audit log**: setiap perubahan status masuk `church_pr_audit` (immutable).
+- **Bukti wajib**: status `paid_vendor` & `fee_paid` butuh upload bukti transfer; status `received` butuh foto + tanda tangan PIC.
+
+## Yang Belum Diputuskan (mohon konfirmasi)
+
+1. **Budget gereja**: apakah perlu tabel `church_budgets` (per divisi per tahun) supaya keuangan bisa cek sisa otomatis, atau cek manual saja dulu?
+2. **Fee 2%**: tetap fixed 2% atau bisa per-kategori (mis. jasa 2%, barang 1.5%)?
+3. **Pembayaran fee**: dipotong dari pembayaran vendor (koperasi yang teruskan ke vendor) **atau** gereja bayar 2 transaksi terpisah (vendor + fee koperasi)? Alur kamu = terpisah, saya ikuti itu.
+4. **Multi-vendor per PR**: 1 PR = 1 vendor, atau boleh split ke beberapa vendor?
+5. **Approval bertingkat**: cukup keuangan saja (sesuai keputusan sebelumnya), tidak ada ketua yayasan — confirmed?
+
+Setelah ini di-approve & 5 poin di atas dijawab, saya kerjakan migration + UI bertahap (Modul Gereja saja, sekolah ditangguhkan).
