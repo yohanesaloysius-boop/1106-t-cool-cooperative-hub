@@ -767,6 +767,8 @@ export type Database = {
           tujuan: string | null
           updated_at: string
           urgensi: Database["public"]["Enums"]["church_pr_urgensi"]
+          vendor_nama: string | null
+          vendor_telepon: string | null
         }
         Insert: {
           approved_finance_at?: string | null
@@ -793,6 +795,8 @@ export type Database = {
           tujuan?: string | null
           updated_at?: string
           urgensi?: Database["public"]["Enums"]["church_pr_urgensi"]
+          vendor_nama?: string | null
+          vendor_telepon?: string | null
         }
         Update: {
           approved_finance_at?: string | null
@@ -819,6 +823,8 @@ export type Database = {
           tujuan?: string | null
           updated_at?: string
           urgensi?: Database["public"]["Enums"]["church_pr_urgensi"]
+          vendor_nama?: string | null
+          vendor_telepon?: string | null
         }
         Relationships: [
           {

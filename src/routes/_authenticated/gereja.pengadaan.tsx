@@ -120,6 +120,8 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
   const [tujuan, setTujuan] = useState("");
   const [divisionId, setDivisionId] = useState("");
   const [urgensi, setUrgensi] = useState("normal");
+  const [vendorNama, setVendorNama] = useState("");
+  const [vendorTelepon, setVendorTelepon] = useState("");
   const [items, setItems] = useState<{ nama: string; qty: number; harga: number }[]>([{ nama: "", qty: 1, harga: 0 }]);
   const [saving, setSaving] = useState(false);
 
@@ -142,6 +144,8 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
         division_id: divisionId,
         requester_id: user!.id,
         judul, tujuan, urgensi,
+        vendor_nama: vendorNama || null,
+        vendor_telepon: vendorTelepon || null,
         est_total: total,
         status: asDraft ? "draft" : "submitted",
       }).select().single();
@@ -199,6 +203,17 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
         <div>
           <Label>Tujuan / Keterangan</Label>
           <Textarea value={tujuan} onChange={(e) => setTujuan(e.target.value)} placeholder="Untuk kegiatan apa & kapan dibutuhkan" />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 rounded-lg border p-3 bg-muted/30">
+          <div className="sm:col-span-2 text-xs font-medium text-muted-foreground">Vendor (opsional — isi jika sudah ada referensi toko/supplier)</div>
+          <div>
+            <Label>Nama Vendor</Label>
+            <Input value={vendorNama} onChange={(e) => setVendorNama(e.target.value)} placeholder="Mis. Toko Sinar Jaya" />
+          </div>
+          <div>
+            <Label>No. Telepon Vendor</Label>
+            <Input value={vendorTelepon} onChange={(e) => setVendorTelepon(e.target.value)} placeholder="08xxxxxxxxxx" />
+          </div>
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
