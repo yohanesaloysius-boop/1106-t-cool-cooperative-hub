@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send, Church } from "lucide-react";
 import { MemberCardPrint } from "@/components/member-card-print";
 import { useServerFn } from "@tanstack/react-start";
 import { importMembersCsv, deleteDemoMembers } from "@/lib/admin-members.functions";
@@ -40,6 +40,7 @@ function AnggotaPage() {
   const [q, setQ] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [roleMember, setRoleMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
+  const [churchMember, setChurchMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
   const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
 
@@ -194,6 +195,9 @@ function AnggotaPage() {
                               <ShieldCheck className="h-4 w-4 text-primary" />
                             </Button>
                           )}
+                          <Button size="sm" variant="ghost" onClick={() => setChurchMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Wewenang Pengadaan Gereja">
+                            <Church className="h-4 w-4 text-violet-600" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -208,6 +212,7 @@ function AnggotaPage() {
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
       <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
       <AssignRoleDialog member={roleMember} onClose={() => setRoleMember(null)} />
+      <ChurchRequesterDialog member={churchMember} onClose={() => setChurchMember(null)} />
       <BroadcastWaDialog open={broadcastOpen} onClose={() => setBroadcastOpen(false)} members={data ?? []} />
     </div>
   );
@@ -299,6 +304,118 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
           </div>
         )}
         <DialogFooter><Button variant="outline" onClick={onClose}>Tutup</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChurchRequesterDialog({ member, onClose }: { member: { id: string; nama_lengkap: string } | null; onClose: () => void }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [jabatan, setJabatan] = useState("");
+  const [divisionId, setDivisionId] = useState<string>("");
+  const [busy, setBusy] = useState(false);
+
+  const { data: current, refetch } = useQuery({
+    queryKey: ["church-requester", member?.id],
+    enabled: !!member?.id,
+    queryFn: async () => {
+      const { data } = await supabase.from("church_requesters" as any)
+        .select("*").eq("user_id", member!.id).maybeSingle();
+      return data as any;
+    },
+  });
+
+  const { data: divisions } = useQuery({
+    queryKey: ["church-divisions-all"],
+    queryFn: async () => {
+      const { data } = await supabase.from("church_divisions" as any).select("id,nama").order("nama");
+      return (data ?? []) as any[];
+    },
+  });
+
+  useEffect(() => {
+    if (current) {
+      setJabatan(current.jabatan ?? "");
+      setDivisionId(current.division_id ?? "");
+    } else {
+      setJabatan(""); setDivisionId("");
+    }
+  }, [current]);
+
+  const appoint = async () => {
+    if (!member || !jabatan.trim()) { toast.error("Isi jabatan terlebih dulu"); return; }
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("church_requesters" as any).upsert({
+        user_id: member.id,
+        jabatan: jabatan.trim(),
+        division_id: divisionId || null,
+        is_active: true,
+        appointed_by: user?.id,
+      }, { onConflict: "user_id" });
+      if (error) throw error;
+      await supabase.from("notifications").insert({
+        user_id: member.id,
+        judul: "⛪ Wewenang Pengadaan Gereja diberikan",
+        pesan: `Anda diangkat sebagai ${jabatan.trim()} dan dapat mengajukan permintaan pembelian gereja.`,
+        kategori: "sukses", url: "/gereja/pengadaan",
+      });
+      toast.success("Wewenang diberikan");
+      refetch(); qc.invalidateQueries({ queryKey: ["is-church-requester"] });
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  const revoke = async () => {
+    if (!member) return;
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("church_requesters" as any)
+        .update({ is_active: false }).eq("user_id", member.id);
+      if (error) throw error;
+      toast.success("Wewenang dicabut");
+      refetch(); qc.invalidateQueries({ queryKey: ["is-church-requester"] });
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <Dialog open={!!member} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Church className="h-4 w-4 text-violet-600" /> Wewenang Pengadaan Gereja
+          </DialogTitle>
+        </DialogHeader>
+        {member && (
+          <div className="space-y-3">
+            <p className="text-sm">Berikan wewenang kepada <span className="font-semibold">{member.nama_lengkap}</span> untuk mengajukan permintaan pembelian gereja sesuai posisi pelayanannya.</p>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium">Jabatan / Posisi Pelayanan</label>
+              <Input value={jabatan} onChange={(e) => setJabatan(e.target.value)} placeholder="Mis. Koordinator Musik, PIC Multimedia" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium">Divisi (opsional)</label>
+              <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={divisionId} onChange={(e) => setDivisionId(e.target.value)}>
+                <option value="">— Tanpa divisi default —</option>
+                {divisions?.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
+              </select>
+            </div>
+            {current && (
+              <div className={`rounded-md border p-2 text-xs ${current.is_active ? "border-success/40 bg-success/10 text-success" : "border-muted bg-muted text-muted-foreground"}`}>
+                Status saat ini: <b>{current.is_active ? "Aktif" : "Dicabut"}</b>
+                {current.appointed_at && <> · {new Date(current.appointed_at).toLocaleDateString("id-ID")}</>}
+              </div>
+            )}
+          </div>
+        )}
+        <DialogFooter className="gap-2">
+          {current?.is_active && (
+            <Button variant="outline" disabled={busy} onClick={revoke} className="text-destructive">Cabut Wewenang</Button>
+          )}
+          <Button onClick={appoint} disabled={busy}>{current?.is_active ? "Perbarui" : "Berikan Wewenang"}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

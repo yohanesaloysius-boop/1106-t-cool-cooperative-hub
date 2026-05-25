@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -165,8 +167,25 @@ export const navGroups: NavGroup[] = [
 function AuthLayout() {
   const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+  const { data: isChurchRequester } = useQuery({
+    queryKey: ["is-church-requester", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("church_requesters" as any)
+        .select("id")
+        .eq("user_id", user!.id)
+        .eq("is_active", true)
+        .maybeSingle();
+      return !!data;
+    },
+  });
   const visibleGroups = navGroups
-    .filter((g) => !g.adminOnly || isPengurus)
+    .filter((g) => {
+      if (g.adminOnly) return isPengurus;
+      if (g.id === "gereja") return isPengurus || !!isChurchRequester;
+      return true;
+    })
     .map((g) => ({ ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) }));
   const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
