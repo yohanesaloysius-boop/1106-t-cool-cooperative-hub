@@ -463,6 +463,430 @@ export type Database = {
         }
         Relationships: []
       }
+      church_divisions: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          id: string
+          is_active: boolean
+          kontak: string | null
+          nama: string
+          pic_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kontak?: string | null
+          nama: string
+          pic_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          is_active?: boolean
+          kontak?: string | null
+          nama?: string
+          pic_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      church_pr_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["church_pr_status"] | null
+          id: string
+          payload: Json | null
+          pr_id: string
+          to_status: Database["public"]["Enums"]["church_pr_status"] | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["church_pr_status"] | null
+          id?: string
+          payload?: Json | null
+          pr_id: string
+          to_status?: Database["public"]["Enums"]["church_pr_status"] | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["church_pr_status"] | null
+          id?: string
+          payload?: Json | null
+          pr_id?: string
+          to_status?: Database["public"]["Enums"]["church_pr_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_pr_audit_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "church_purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_pr_items: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          est_harga_satuan: number
+          est_subtotal: number
+          harga_aktual: number | null
+          id: string
+          nama_barang: string
+          pr_id: string
+          qty: number
+          satuan: string | null
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          est_harga_satuan?: number
+          est_subtotal?: number
+          harga_aktual?: number | null
+          id?: string
+          nama_barang: string
+          pr_id: string
+          qty?: number
+          satuan?: string | null
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          est_harga_satuan?: number
+          est_subtotal?: number
+          harga_aktual?: number | null
+          id?: string
+          nama_barang?: string
+          pr_id?: string
+          qty?: number
+          satuan?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_pr_items_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "church_purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_pr_payments: {
+        Row: {
+          bukti_url: string | null
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          metode: string | null
+          nominal: number
+          pr_id: string
+          tanggal: string
+          tipe: Database["public"]["Enums"]["church_payment_type"]
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          bukti_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metode?: string | null
+          nominal: number
+          pr_id: string
+          tanggal?: string
+          tipe: Database["public"]["Enums"]["church_payment_type"]
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          bukti_url?: string | null
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metode?: string | null
+          nominal?: number
+          pr_id?: string
+          tanggal?: string
+          tipe?: Database["public"]["Enums"]["church_payment_type"]
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_pr_payments_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "church_purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_pr_receipts: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          foto_url: string | null
+          id: string
+          kondisi: string | null
+          penerima_id: string
+          pr_id: string
+          tanggal_terima: string
+          ttd_url: string | null
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          kondisi?: string | null
+          penerima_id: string
+          pr_id: string
+          tanggal_terima?: string
+          ttd_url?: string | null
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          kondisi?: string | null
+          penerima_id?: string
+          pr_id?: string
+          tanggal_terima?: string
+          ttd_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_pr_receipts_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "church_purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_purchase_orders: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          file_po_url: string | null
+          id: string
+          nomor_po: string | null
+          pr_id: string
+          status: Database["public"]["Enums"]["church_po_status"]
+          tanggal_po: string
+          total_nilai: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_po_url?: string | null
+          id?: string
+          nomor_po?: string | null
+          pr_id: string
+          status?: Database["public"]["Enums"]["church_po_status"]
+          tanggal_po?: string
+          total_nilai?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_po_url?: string | null
+          id?: string
+          nomor_po?: string | null
+          pr_id?: string
+          status?: Database["public"]["Enums"]["church_po_status"]
+          tanggal_po?: string
+          total_nilai?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_purchase_orders_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "church_purchase_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "church_purchase_orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "church_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_purchase_requests: {
+        Row: {
+          approved_finance_at: string | null
+          approved_finance_by: string | null
+          approved_ketua_at: string | null
+          approved_ketua_by: string | null
+          catatan: string | null
+          closed_at: string | null
+          created_at: string
+          division_id: string
+          est_total: number
+          fee_nominal: number
+          fee_persen: number
+          forwarded_at: string | null
+          id: string
+          judul: string
+          koperasi_handler_id: string | null
+          nomor_pr: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          requester_id: string
+          status: Database["public"]["Enums"]["church_pr_status"]
+          tujuan: string | null
+          updated_at: string
+          urgensi: Database["public"]["Enums"]["church_pr_urgensi"]
+        }
+        Insert: {
+          approved_finance_at?: string | null
+          approved_finance_by?: string | null
+          approved_ketua_at?: string | null
+          approved_ketua_by?: string | null
+          catatan?: string | null
+          closed_at?: string | null
+          created_at?: string
+          division_id: string
+          est_total?: number
+          fee_nominal?: number
+          fee_persen?: number
+          forwarded_at?: string | null
+          id?: string
+          judul: string
+          koperasi_handler_id?: string | null
+          nomor_pr?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          requester_id: string
+          status?: Database["public"]["Enums"]["church_pr_status"]
+          tujuan?: string | null
+          updated_at?: string
+          urgensi?: Database["public"]["Enums"]["church_pr_urgensi"]
+        }
+        Update: {
+          approved_finance_at?: string | null
+          approved_finance_by?: string | null
+          approved_ketua_at?: string | null
+          approved_ketua_by?: string | null
+          catatan?: string | null
+          closed_at?: string | null
+          created_at?: string
+          division_id?: string
+          est_total?: number
+          fee_nominal?: number
+          fee_persen?: number
+          forwarded_at?: string | null
+          id?: string
+          judul?: string
+          koperasi_handler_id?: string | null
+          nomor_pr?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          requester_id?: string
+          status?: Database["public"]["Enums"]["church_pr_status"]
+          tujuan?: string | null
+          updated_at?: string
+          urgensi?: Database["public"]["Enums"]["church_pr_urgensi"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_purchase_requests_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "church_divisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      church_vendors: {
+        Row: {
+          alamat: string | null
+          bank_atas_nama: string | null
+          bank_nama: string | null
+          bank_no_rek: string | null
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          kategori: string | null
+          kontak_nama: string | null
+          nama: string
+          rating: number | null
+          telepon: string | null
+          updated_at: string
+        }
+        Insert: {
+          alamat?: string | null
+          bank_atas_nama?: string | null
+          bank_nama?: string | null
+          bank_no_rek?: string | null
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          kategori?: string | null
+          kontak_nama?: string | null
+          nama: string
+          rating?: number | null
+          telepon?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alamat?: string | null
+          bank_atas_nama?: string | null
+          bank_nama?: string | null
+          bank_no_rek?: string | null
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          kategori?: string | null
+          kontak_nama?: string | null
+          nama?: string
+          rating?: number | null
+          telepon?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       collection_cases: {
         Row: {
           catatan: string | null
@@ -3305,6 +3729,7 @@ export type Database = {
         Returns: undefined
       }
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
+      is_ketua: { Args: { _uid: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
       mp_auto_release_escrow: {
         Args: { _days?: number }
@@ -3382,6 +3807,23 @@ export type Database = {
       budget_status: "draft" | "disahkan" | "ditutup"
       bunga_jenis: "flat" | "efektif" | "menurun"
       card_status: "active" | "inactive" | "expired" | "blocked" | "lost"
+      church_payment_type: "to_vendor" | "fee_koperasi"
+      church_po_status: "issued" | "paid" | "delivered" | "cancelled"
+      church_pr_status:
+        | "draft"
+        | "submitted"
+        | "approved_finance"
+        | "approved_ketua"
+        | "forwarded_to_koperasi"
+        | "vendor_selected"
+        | "po_issued"
+        | "paid_vendor"
+        | "fee_paid"
+        | "received"
+        | "closed"
+        | "rejected"
+        | "cancelled"
+      church_pr_urgensi: "rendah" | "normal" | "tinggi" | "mendesak"
       collection_action:
         | "call"
         | "visit"
@@ -3654,6 +4096,24 @@ export const Constants = {
       budget_status: ["draft", "disahkan", "ditutup"],
       bunga_jenis: ["flat", "efektif", "menurun"],
       card_status: ["active", "inactive", "expired", "blocked", "lost"],
+      church_payment_type: ["to_vendor", "fee_koperasi"],
+      church_po_status: ["issued", "paid", "delivered", "cancelled"],
+      church_pr_status: [
+        "draft",
+        "submitted",
+        "approved_finance",
+        "approved_ketua",
+        "forwarded_to_koperasi",
+        "vendor_selected",
+        "po_issued",
+        "paid_vendor",
+        "fee_paid",
+        "received",
+        "closed",
+        "rejected",
+        "cancelled",
+      ],
+      church_pr_urgensi: ["rendah", "normal", "tinggi", "mendesak"],
       collection_action: [
         "call",
         "visit",
