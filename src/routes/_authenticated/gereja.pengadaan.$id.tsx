@@ -62,6 +62,10 @@ function PRDetail() {
             <Info label="Urgensi" value={pr.urgensi} />
             <Info label="Diajukan" value={new Date(pr.created_at).toLocaleDateString("id-ID")} />
           </div>
+          <div className="grid sm:grid-cols-2 gap-3 rounded-lg border bg-muted/30 p-3">
+            <Info label="Nama Vendor" value={pr.vendor_nama ?? "—"} />
+            <Info label="No. Telepon Vendor" value={pr.vendor_telepon ?? "—"} />
+          </div>
           {pr.tujuan && <Info label="Tujuan" value={pr.tujuan} />}
           <div className="grid sm:grid-cols-3 gap-3 pt-2 border-t">
             <Info label="Estimasi Total" value={fmtRp(Number(pr.est_total))} />

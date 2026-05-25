@@ -128,6 +128,11 @@ function PRRow({ pr, action, refresh }: { pr: any; action: string; refresh: () =
         <p className="text-xs text-muted-foreground mt-0.5">
           <span className="font-mono">{pr.nomor_pr}</span> · {pr.church_divisions?.nama ?? "—"} · {new Date(pr.created_at).toLocaleDateString("id-ID")}
         </p>
+        {(pr.vendor_nama || pr.vendor_telepon) && (
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Vendor: {pr.vendor_nama ?? "—"}{pr.vendor_telepon ? ` · ${pr.vendor_telepon}` : ""}
+          </p>
+        )}
         <p className="text-sm mt-1">{fmtRp(Number(pr.est_total))} <span className="text-muted-foreground">(fee {fmtRp(Number(pr.fee_nominal))})</span></p>
       </div>
       <div className="flex items-center gap-2 flex-wrap">
