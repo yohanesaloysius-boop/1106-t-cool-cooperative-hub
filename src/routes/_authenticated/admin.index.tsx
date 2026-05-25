@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpananVerifyPage } from "./admin.simpanan";
 import { AdminAngsuranPage } from "./admin.angsuran";
 import { PinjamanApprovalPage } from "./admin.pinjaman";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark, Vote, Sparkles, Ticket } from "lucide-react";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark, Vote, Sparkles, Ticket, Church } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { PushToggle } from "@/components/notifications/push-toggle";
