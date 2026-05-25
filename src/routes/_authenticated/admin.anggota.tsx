@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send, Church } from "lucide-react";
 import { MemberCardPrint } from "@/components/member-card-print";
 import { useServerFn } from "@tanstack/react-start";
 import { importMembersCsv, deleteDemoMembers } from "@/lib/admin-members.functions";
@@ -40,6 +40,7 @@ function AnggotaPage() {
   const [q, setQ] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [roleMember, setRoleMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
+  const [churchMember, setChurchMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
   const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
 
@@ -194,6 +195,9 @@ function AnggotaPage() {
                               <ShieldCheck className="h-4 w-4 text-primary" />
                             </Button>
                           )}
+                          <Button size="sm" variant="ghost" onClick={() => setChurchMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Wewenang Pengadaan Gereja">
+                            <Church className="h-4 w-4 text-violet-600" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -208,6 +212,7 @@ function AnggotaPage() {
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
       <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
       <AssignRoleDialog member={roleMember} onClose={() => setRoleMember(null)} />
+      <ChurchRequesterDialog member={churchMember} onClose={() => setChurchMember(null)} />
       <BroadcastWaDialog open={broadcastOpen} onClose={() => setBroadcastOpen(false)} members={data ?? []} />
     </div>
   );
