@@ -830,6 +830,50 @@ export type Database = {
           },
         ]
       }
+      church_requesters: {
+        Row: {
+          appointed_at: string
+          appointed_by: string | null
+          created_at: string
+          division_id: string | null
+          id: string
+          is_active: boolean
+          jabatan: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointed_at?: string
+          appointed_by?: string | null
+          created_at?: string
+          division_id?: string | null
+          id?: string
+          is_active?: boolean
+          jabatan: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointed_at?: string
+          appointed_by?: string | null
+          created_at?: string
+          division_id?: string | null
+          id?: string
+          is_active?: boolean
+          jabatan?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_requesters_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "church_divisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       church_vendors: {
         Row: {
           alamat: string | null
@@ -3729,6 +3773,7 @@ export type Database = {
         Returns: undefined
       }
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
+      is_church_requester: { Args: { _uid: string }; Returns: boolean }
       is_ketua: { Args: { _uid: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
       mp_auto_release_escrow: {
