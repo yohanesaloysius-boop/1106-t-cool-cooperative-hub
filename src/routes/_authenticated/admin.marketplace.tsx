@@ -143,7 +143,7 @@ function AdminMarketplacePage() {
         <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
         <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold backdrop-blur text-[#231f1f]">
               <ShieldCheck className="h-3 w-3" /> Admin Marketplace
             </div>
             <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Manajemen Marketplace</h1>
