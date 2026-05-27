@@ -30,6 +30,7 @@ const fmtNum = new Intl.NumberFormat("id-ID");
 function DashboardPage() {
   const { user, profile, isPengurus } = useAuth();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["dashboard-anggota-stats"],
