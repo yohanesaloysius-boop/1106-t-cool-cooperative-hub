@@ -90,7 +90,7 @@ export const navGroups: NavGroup[] = [
     label: "Pengadaan/Belanja",
     icon: Church,
     items: [
-      { to: "/gereja/pengadaan", label: "Pengadaan Gereja", icon: Church },
+      { to: "/gereja/pengadaan", label: "Belanja Gereja", icon: Church },
       { to: "/sekolah/pengadaan", label: "Pengadaan Sekolah", icon: GraduationCap },
     ],
   },
@@ -159,7 +159,7 @@ export const navGroups: NavGroup[] = [
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
       { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },
       { to: "/admin/lowongan", label: "Kelola Lowongan", icon: Briefcase, adminOnly: true },
-      { to: "/admin/gereja/pengadaan", label: "Pengadaan Gereja (Admin)", icon: Church, adminOnly: true },
+      { to: "/admin/gereja/pengadaan", label: "Belanja Gereja (Admin)", icon: Church, adminOnly: true },
       { to: "/admin/sekolah/pengadaan", label: "Pengadaan Sekolah (Admin)", icon: GraduationCap, adminOnly: true },
     ],
   },
