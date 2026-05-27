@@ -144,7 +144,7 @@ function AdminAsetPage() {
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Package className="h-4 w-4" /> Aset & Inventaris
         </div>
-        <h1 className="mt-1 text-2xl md:text-3xl font-bold">Manajemen Aset Koperasi</h1>
+        <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#2c2626]">Manajemen Aset Koperasi</h1>
         <p className="mt-1 text-sm opacity-90">Catat kendaraan, properti, dan peralatan koperasi beserta penyusutannya.</p>
       </div>
 
