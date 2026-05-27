@@ -87,12 +87,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "YesKoperasi" },
       { name: "keywords", content: "koperasi, simpanan, pinjaman, angsuran, SHU, fintech koperasi, manajemen koperasi" },
       { property: "og:title", content: "YesKoperasi — Sistem Manajemen Koperasi Modern" },
-      { property: "og:description", content: "Aplikasi koperasi digital: simpanan, pinjaman, angsuran, dan SHU realtime. Transparan & mobile friendly." },
+      { property: "og:description", content: "Aplikasi koperasi modern YesKoperasi: simpanan, pinjaman, angsuran, SHU, dan dashboard realtime untuk pengurus & anggota." },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "YesKoperasi" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@YesKoperasi" },
       { rel: "canonical", href: "/" },
+      { name: "twitter:title", content: "YesKoperasi — Sistem Manajemen Koperasi Modern" },
+      { name: "twitter:description", content: "Aplikasi koperasi modern YesKoperasi: simpanan, pinjaman, angsuran, SHU, dan dashboard realtime untuk pengurus & anggota." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5acb1c55-d249-41a6-ab43-8d3eb01165af/id-preview-cbf39eb4--002a8fb1-69f9-4f3d-80c7-6b9a5713858f.lovable.app-1779878414922.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5acb1c55-d249-41a6-ab43-8d3eb01165af/id-preview-cbf39eb4--002a8fb1-69f9-4f3d-80c7-6b9a5713858f.lovable.app-1779878414922.png" },
     ],
     links: [
       {
