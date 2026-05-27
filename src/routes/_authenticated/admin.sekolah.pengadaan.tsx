@@ -16,7 +16,7 @@ import { Plus, CheckCircle2, XCircle, GraduationCap, Store, Send, Receipt } from
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/sekolah/pengadaan")({
-  head: () => ({ meta: [{ title: "Admin Pengadaan Sekolah — T-COOL" }] }),
+  head: () => ({ meta: [{ title: "Admin Belanja Sekolah — T-COOL" }] }),
   component: AdminPengadaanPage,
 });
 
@@ -34,7 +34,7 @@ function AdminPengadaanPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Pengadaan Sekolah</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Belanja Sekolah</h1>
         <p className="text-sm text-muted-foreground">Kelola permintaan pembelian dari unit/program sekolah.</p>
       </div>
 
