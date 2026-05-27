@@ -92,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "YesKoperasi" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@YesKoperasi" },
-      { rel: "canonical", href: "https://yeskoperasi.com" },
+      { rel: "canonical", href: "/" },
     ],
     links: [
       {
