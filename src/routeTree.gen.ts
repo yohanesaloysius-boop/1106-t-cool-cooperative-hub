@@ -47,6 +47,7 @@ import { Route as VerifyRouteImport } from './routes/verify.'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as MarketplaceTokoSlugRouteImport } from './routes/marketplace.toko.$slug'
 import { Route as MarketplaceProdukIdRouteImport } from './routes/marketplace.produk.$id'
+import { Route as AuthenticatedSekolahPengadaanRouteImport } from './routes/_authenticated/sekolah.pengadaan'
 import { Route as AuthenticatedGerejaPengadaanRouteImport } from './routes/_authenticated/gereja.pengadaan'
 import { Route as AuthenticatedAdminVotingRouteImport } from './routes/_authenticated/admin.voting'
 import { Route as AuthenticatedAdminVerifikasiPinjamanRouteImport } from './routes/_authenticated/admin.verifikasi-pinjaman'
@@ -286,6 +287,12 @@ const MarketplaceProdukIdRoute = MarketplaceProdukIdRouteImport.update({
   path: '/produk/$id',
   getParentRoute: () => MarketplaceRoute,
 } as any)
+const AuthenticatedSekolahPengadaanRoute =
+  AuthenticatedSekolahPengadaanRouteImport.update({
+    id: '/sekolah/pengadaan',
+    path: '/sekolah/pengadaan',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedGerejaPengadaanRoute =
   AuthenticatedGerejaPengadaanRouteImport.update({
     id: '/gereja/pengadaan',
@@ -622,6 +629,7 @@ export interface FileRoutesByFullPath {
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
+  '/sekolah/pengadaan': typeof AuthenticatedSekolahPengadaanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -705,6 +713,7 @@ export interface FileRoutesByTo {
   '/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
+  '/sekolah/pengadaan': typeof AuthenticatedSekolahPengadaanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -791,6 +800,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/verifikasi-pinjaman': typeof AuthenticatedAdminVerifikasiPinjamanRoute
   '/_authenticated/admin/voting': typeof AuthenticatedAdminVotingRoute
   '/_authenticated/gereja/pengadaan': typeof AuthenticatedGerejaPengadaanRouteWithChildren
+  '/_authenticated/sekolah/pengadaan': typeof AuthenticatedSekolahPengadaanRoute
   '/marketplace/produk/$id': typeof MarketplaceProdukIdRoute
   '/marketplace/toko/$slug': typeof MarketplaceTokoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -877,6 +887,7 @@ export interface FileRouteTypes {
     | '/admin/verifikasi-pinjaman'
     | '/admin/voting'
     | '/gereja/pengadaan'
+    | '/sekolah/pengadaan'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin/'
@@ -960,6 +971,7 @@ export interface FileRouteTypes {
     | '/admin/verifikasi-pinjaman'
     | '/admin/voting'
     | '/gereja/pengadaan'
+    | '/sekolah/pengadaan'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/admin'
@@ -1045,6 +1057,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/verifikasi-pinjaman'
     | '/_authenticated/admin/voting'
     | '/_authenticated/gereja/pengadaan'
+    | '/_authenticated/sekolah/pengadaan'
     | '/marketplace/produk/$id'
     | '/marketplace/toko/$slug'
     | '/_authenticated/admin/'
@@ -1339,6 +1352,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/marketplace/produk/$id'
       preLoaderRoute: typeof MarketplaceProdukIdRouteImport
       parentRoute: typeof MarketplaceRoute
+    }
+    '/_authenticated/sekolah/pengadaan': {
+      id: '/_authenticated/sekolah/pengadaan'
+      path: '/sekolah/pengadaan'
+      fullPath: '/sekolah/pengadaan'
+      preLoaderRoute: typeof AuthenticatedSekolahPengadaanRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/gereja/pengadaan': {
       id: '/_authenticated/gereja/pengadaan'
@@ -1790,6 +1810,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedTransaksiSayaRoute: typeof AuthenticatedTransaksiSayaRoute
   AuthenticatedVotingRoute: typeof AuthenticatedVotingRoute
   AuthenticatedGerejaPengadaanRoute: typeof AuthenticatedGerejaPengadaanRouteWithChildren
+  AuthenticatedSekolahPengadaanRoute: typeof AuthenticatedSekolahPengadaanRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -1819,6 +1840,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedVotingRoute: AuthenticatedVotingRoute,
   AuthenticatedGerejaPengadaanRoute:
     AuthenticatedGerejaPengadaanRouteWithChildren,
+  AuthenticatedSekolahPengadaanRoute: AuthenticatedSekolahPengadaanRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -1861,13 +1883,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
