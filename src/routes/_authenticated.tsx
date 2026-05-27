@@ -1,15 +1,16 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap, Menu as MenuIcon, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { CommandPalette } from "@/components/command-palette";
 
@@ -230,9 +231,11 @@ function AuthLayout() {
       return { ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) };
     });
 
-  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
+  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 4);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -326,8 +329,90 @@ function AuthLayout() {
         {/* Top bar */}
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
           <div className="flex items-center gap-2 lg:hidden">
-            <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
-            <span className="font-bold">T-COOL</span>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full" aria-label="Buka menu">
+                  <MenuIcon className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[88vw] max-w-[340px] p-0 flex flex-col">
+                <SheetHeader className="border-b px-5 py-4">
+                  <SheetTitle className="flex items-center gap-2 text-left">
+                    <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
+                    <span>T-COOL <span className="text-primary">Koperasi</span></span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex items-center gap-3 border-b px-5 py-3">
+                  <Avatar className="h-9 w-9"><AvatarFallback>{initials}</AvatarFallback></Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{profile?.nama_lengkap ?? "Anggota"}</p>
+                    <p className="truncate text-xs text-muted-foreground">{profile?.nomor_anggota ?? "—"}</p>
+                  </div>
+                  <Badge variant="secondary" className="rounded-full px-2 py-0 text-[10px] font-semibold">
+                    {roleLabel(roles, viewAsMember)}
+                  </Badge>
+                </div>
+                <nav className="flex-1 overflow-y-auto p-3">
+                  <Accordion
+                    type="single"
+                    collapsible
+                    defaultValue={visibleGroups.find((g) => g.items.some((i) => pathname === i.to))?.id ?? visibleGroups[0]?.id}
+                    className="space-y-1"
+                  >
+                    {visibleGroups.map((group) => {
+                      const groupActive = group.items.some((i) => pathname === i.to);
+                      return (
+                        <AccordionItem key={group.id} value={group.id} className="border-none">
+                          <AccordionTrigger
+                            className={cn(
+                              "group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold no-underline hover:no-underline transition-colors",
+                              groupActive ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted",
+                            )}
+                          >
+                            <span className="flex flex-1 items-center gap-3">
+                              <group.icon className="h-4 w-4" />
+                              {group.label}
+                            </span>
+                          </AccordionTrigger>
+                          <AccordionContent className="pb-1 pt-1">
+                            <div className="ml-3 space-y-0.5 border-l border-border/60 pl-2">
+                              {group.items.map((n) => {
+                                const active = pathname === n.to;
+                                return (
+                                  <Link
+                                    key={n.to}
+                                    to={n.to}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(
+                                      "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                                      active
+                                        ? "bg-primary text-primary-foreground shadow-sm"
+                                        : "text-foreground/70 hover:bg-muted",
+                                    )}
+                                  >
+                                    <n.icon className="h-4 w-4" />
+                                    {n.label}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                </nav>
+                <div className="border-t p-3">
+                  <Button variant="outline" className="w-full gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
+                    <LogOut className="h-4 w-4" /> Keluar
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
+              <span className="font-bold">T-COOL</span>
+            </Link>
           </div>
           <div className="hidden lg:block">
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
@@ -416,17 +501,26 @@ function AuthLayout() {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card lg:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/95 backdrop-blur lg:hidden pb-[env(safe-area-inset-bottom)]">
           <div className="grid grid-cols-5">
             {mobileNav.map((n) => {
               const active = pathname === n.to;
               return (
-                <Link key={n.to} to={n.to} className={cn("flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
-                  <n.icon className="h-5 w-5" />
-                  {n.label}
+                <Link key={n.to} to={n.to} className={cn("flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium leading-tight text-center px-1", active ? "text-primary" : "text-muted-foreground")}>
+                  <n.icon className="h-5 w-5 shrink-0" />
+                  <span className="truncate w-full">{n.label}</span>
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium leading-tight text-muted-foreground active:bg-muted"
+              aria-label="Buka semua menu"
+            >
+              <MoreHorizontal className="h-5 w-5 shrink-0" />
+              <span>Menu</span>
+            </button>
           </div>
         </nav>
       </div>

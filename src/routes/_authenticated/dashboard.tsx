@@ -150,7 +150,7 @@ function DashboardPage() {
 
   return (
     <motion.div
-      className="space-y-8"
+      className="space-y-5 md:space-y-8"
       initial="hidden"
       animate="visible"
       variants={{
@@ -161,13 +161,13 @@ function DashboardPage() {
       {/* 1+2. Hero Section dengan ilustrasi 3D utama */}
       <motion.section
         variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } }}
-        className="glass relative overflow-hidden rounded-[2rem] p-6 md:p-10"
+        className="glass relative overflow-hidden rounded-2xl p-4 sm:rounded-[2rem] sm:p-6 md:p-10"
         style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-soft)" }}
       >
         <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 animate-float-slow rounded-full bg-white/40 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 animate-float rounded-full bg-primary/15 blur-3xl" />
 
-        <div className="relative grid items-center gap-8 md:grid-cols-2">
+        <div className="relative grid items-center gap-6 md:grid-cols-2 md:gap-8">
           <div>
             <motion.span
               initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
@@ -175,24 +175,24 @@ function DashboardPage() {
             >
               <Sparkles className="h-3 w-3 animate-pulse" /> T-Cool Koperasi
             </motion.span>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+            <h1 className="mt-3 text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl md:mt-4 md:text-4xl lg:text-5xl">
               Halo{" "}
-              <span className="shimmer-text">
+              <span className="shimmer-text break-words">
                 {profile?.nama_lengkap ?? "Anggota"}
               </span>
               {" "}👋
             </h1>
-            <p className="mt-3 max-w-md text-sm text-muted-foreground md:text-base">
+            <p className="mt-2 max-w-md text-sm text-muted-foreground md:mt-3 md:text-base">
               Pantau pertumbuhan anggota dan aktivitas koperasi dalam satu dashboard yang ringan dan modern.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Button onClick={() => navigate({ to: "/simpanan" })} className="rounded-full px-5 shadow-sm animate-glow">
+            <div className="mt-4 flex flex-wrap items-center gap-2 md:mt-6 md:gap-2.5">
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="flex-1 sm:flex-none min-w-[140px]">
+                <Button onClick={() => navigate({ to: "/simpanan" })} className="w-full rounded-full px-5 shadow-sm animate-glow sm:w-auto">
                   Setor Simpanan
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Button variant="outline" onClick={() => navigate({ to: "/pinjaman" })} className="rounded-full bg-white/70 px-5 backdrop-blur">
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="flex-1 sm:flex-none min-w-[140px]">
+                <Button variant="outline" onClick={() => navigate({ to: "/pinjaman" })} className="w-full rounded-full bg-white/70 px-5 backdrop-blur sm:w-auto">
                   Ajukan Pinjaman
                 </Button>
               </motion.div>
@@ -203,8 +203,8 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* 3. Ilustrasi 3D utama */}
-          <div className="relative mx-auto w-full max-w-md md:max-w-none">
+          {/* Ilustrasi 3D utama — disembunyikan di HP untuk hemat ruang */}
+          <div className="relative mx-auto hidden w-full max-w-md sm:block md:max-w-none">
             <div className="absolute inset-x-8 bottom-2 h-10 rounded-full bg-primary/20 blur-2xl" />
             <motion.img
               src={hero3d}
