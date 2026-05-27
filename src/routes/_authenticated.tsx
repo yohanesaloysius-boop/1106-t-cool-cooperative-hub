@@ -180,13 +180,38 @@ function AuthLayout() {
       return !!data;
     },
   });
+  const { data: isSchoolRequester } = useQuery({
+    queryKey: ["is-school-requester", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("school_requesters" as any)
+        .select("id")
+        .eq("user_id", user!.id)
+        .eq("is_active", true)
+        .maybeSingle();
+      return !!data;
+    },
+  });
   const visibleGroups = navGroups
     .filter((g) => {
       if (g.adminOnly) return isPengurus;
-      if (g.id === "gereja") return isPengurus || !!isChurchRequester;
+      if (g.id === "gereja") return isPengurus || !!isChurchRequester || !!isSchoolRequester;
       return true;
     })
-    .map((g) => ({ ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) }));
+    .map((g) => {
+      if (g.id === "gereja") {
+        return {
+          ...g,
+          items: g.items.filter((i) => {
+            if (i.to === "/gereja/pengadaan") return isPengurus || !!isChurchRequester;
+            if (i.to === "/sekolah/pengadaan") return isPengurus || !!isSchoolRequester;
+            return true;
+          }),
+        };
+      }
+      return { ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) };
+    });
   const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
