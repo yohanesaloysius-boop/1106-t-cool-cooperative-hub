@@ -191,13 +191,10 @@ function AnggotaPage() {
                             </Button>
                           )}
                           {isSuperAdmin && (
-                            <Button size="sm" variant="ghost" onClick={() => setRoleMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Jadikan Pengurus">
+                            <Button size="sm" variant="ghost" onClick={() => setRoleMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Jadikan Pengurus / Wewenang">
                               <ShieldCheck className="h-4 w-4 text-primary" />
                             </Button>
                           )}
-                          <Button size="sm" variant="ghost" onClick={() => setChurchMember({ id: m.id, nama_lengkap: m.nama_lengkap })} title="Wewenang Pengadaan Gereja">
-                            <Church className="h-4 w-4 text-violet-600" />
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
