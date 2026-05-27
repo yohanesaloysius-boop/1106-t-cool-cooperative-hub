@@ -329,8 +329,90 @@ function AuthLayout() {
         {/* Top bar */}
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
           <div className="flex items-center gap-2 lg:hidden">
-            <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
-            <span className="font-bold">T-COOL</span>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full" aria-label="Buka menu">
+                  <MenuIcon className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[88vw] max-w-[340px] p-0 flex flex-col">
+                <SheetHeader className="border-b px-5 py-4">
+                  <SheetTitle className="flex items-center gap-2 text-left">
+                    <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
+                    <span>T-COOL <span className="text-primary">Koperasi</span></span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex items-center gap-3 border-b px-5 py-3">
+                  <Avatar className="h-9 w-9"><AvatarFallback>{initials}</AvatarFallback></Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{profile?.nama_lengkap ?? "Anggota"}</p>
+                    <p className="truncate text-xs text-muted-foreground">{profile?.nomor_anggota ?? "—"}</p>
+                  </div>
+                  <Badge variant="secondary" className="rounded-full px-2 py-0 text-[10px] font-semibold">
+                    {roleLabel(roles, viewAsMember)}
+                  </Badge>
+                </div>
+                <nav className="flex-1 overflow-y-auto p-3">
+                  <Accordion
+                    type="single"
+                    collapsible
+                    defaultValue={visibleGroups.find((g) => g.items.some((i) => pathname === i.to))?.id ?? visibleGroups[0]?.id}
+                    className="space-y-1"
+                  >
+                    {visibleGroups.map((group) => {
+                      const groupActive = group.items.some((i) => pathname === i.to);
+                      return (
+                        <AccordionItem key={group.id} value={group.id} className="border-none">
+                          <AccordionTrigger
+                            className={cn(
+                              "group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold no-underline hover:no-underline transition-colors",
+                              groupActive ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted",
+                            )}
+                          >
+                            <span className="flex flex-1 items-center gap-3">
+                              <group.icon className="h-4 w-4" />
+                              {group.label}
+                            </span>
+                          </AccordionTrigger>
+                          <AccordionContent className="pb-1 pt-1">
+                            <div className="ml-3 space-y-0.5 border-l border-border/60 pl-2">
+                              {group.items.map((n) => {
+                                const active = pathname === n.to;
+                                return (
+                                  <Link
+                                    key={n.to}
+                                    to={n.to}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(
+                                      "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                                      active
+                                        ? "bg-primary text-primary-foreground shadow-sm"
+                                        : "text-foreground/70 hover:bg-muted",
+                                    )}
+                                  >
+                                    <n.icon className="h-4 w-4" />
+                                    {n.label}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                </nav>
+                <div className="border-t p-3">
+                  <Button variant="outline" className="w-full gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => signOut()}>
+                    <LogOut className="h-4 w-4" /> Keluar
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
+              <span className="font-bold">T-COOL</span>
+            </Link>
           </div>
           <div className="hidden lg:block">
             <p className="font-semibold">{profile?.nama_lengkap ?? "Anggota"}</p>
