@@ -108,7 +108,7 @@ function LowonganPage() {
           <Briefcase className="h-4 w-4" /> Lowongan Kerja Komunitas
         </div>
         <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#2c2626]">Pasang & Cari Lowongan</h1>
-        <p className="mt-1 text-sm opacity-90">Bantu anggota lain menemukan pekerjaan. Setiap iklan diverifikasi pengurus terlebih dahulu.</p>
+        <p className="mt-1 text-sm opacity-90 text-[#272121]">Bantu anggota lain menemukan pekerjaan. Setiap iklan diverifikasi pengurus terlebih dahulu.</p>
       </div>
 
       <Tabs defaultValue="list" className="space-y-4">
