@@ -209,7 +209,7 @@ function AnggotaPage() {
       <MemberDetailDialog id={detailId} onClose={() => setDetailId(null)} />
       <MemberCardPrint open={!!printMember} onClose={() => setPrintMember(null)} member={printMember} />
       <AssignRoleDialog member={roleMember} onClose={() => setRoleMember(null)} />
-      <ChurchRequesterDialog member={churchMember} onClose={() => setChurchMember(null)} />
+      
       <BroadcastWaDialog open={broadcastOpen} onClose={() => setBroadcastOpen(false)} members={data ?? []} />
     </div>
   );
