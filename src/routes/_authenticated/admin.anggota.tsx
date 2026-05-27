@@ -275,14 +275,16 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
 
   return (
     <Dialog open={!!member} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Kelola Jabatan Pengurus</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Jadikan Pengurus / Wewenang</DialogTitle>
         </DialogHeader>
         {member && (
-          <div className="space-y-3">
+          <div className="space-y-4 overflow-y-auto pr-1 -mr-1 flex-1">
             <p className="text-sm">Pilih jabatan untuk <span className="font-semibold">{member.nama_lengkap}</span>. Jabatan dapat diaktifkan/dicabut kapan saja.</p>
+
             <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Jabatan Pengurus Koperasi</p>
               {ROLE_OPTIONS.map((opt) => {
                 const has = currentRoles?.includes(opt.value);
                 return (
@@ -297,6 +299,11 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
                   </div>
                 );
               })}
+            </div>
+
+            <div className="space-y-2 pt-2 border-t">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wewenang Pengadaan</p>
+              <ChurchRequesterSection member={member} />
             </div>
           </div>
         )}
