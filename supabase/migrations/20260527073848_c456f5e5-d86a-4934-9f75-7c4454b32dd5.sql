@@ -1,0 +1,37 @@
+
+-- Revoke anon EXECUTE from SECURITY DEFINER functions that should be authenticated-only
+REVOKE EXECUTE ON FUNCTION public.act_on_guarantor_request(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.apply_reserve_movement() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.auto_debet_simpanan_wajib(date) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.cast_rat_vote(uuid, jsonb) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.compute_asset_depreciation(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_fee_breakdown() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_jurnal_umum(date, date) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_marketplace_admin_stats() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_member_ledger(uuid, date, date) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_opex_budget_status(uuid, integer) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_or_create_wallet(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_rapb_realisasi(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_rat_voting_result(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.get_user_marketplace_activity(uuid, integer) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_active_seller(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_church_requester(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_ketua(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_pengurus(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_school_requester(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_auto_release_escrow(integer) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_confirm_received(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_file_complaint(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_process_withdrawal(uuid, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_reject_withdrawal(uuid, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_resolve_complaint(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_review_loan_verification(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_set_store_status(uuid, public.store_status, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_ship(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_upload_bukti(uuid, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.mp_verify_payment(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.qris_expire_pending() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.qris_mark_success(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.sync_collection_cases() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.validate_guarantor(uuid, numeric) FROM anon;
