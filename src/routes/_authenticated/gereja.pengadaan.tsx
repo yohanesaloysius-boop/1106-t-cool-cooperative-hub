@@ -15,7 +15,7 @@ import { Plus, Trash2, Building2, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/gereja/pengadaan")({
-  head: () => ({ meta: [{ title: "Pengadaan Gereja — T-COOL" }] }),
+  head: () => ({ meta: [{ title: "Belanja Gereja — T-COOL" }] }),
   component: PengadaanGerejaPage,
 });
 
@@ -60,7 +60,7 @@ function PengadaanGerejaPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pengadaan Gereja</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Belanja Gereja</h1>
           <p className="text-sm text-muted-foreground">Ajukan kebutuhan barang/jasa divisi pelayanan.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
