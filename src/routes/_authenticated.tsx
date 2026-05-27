@@ -251,7 +251,7 @@ function AuthLayout() {
                 <AccordionItem key={group.id} value={group.id} className="border-none">
                   <AccordionTrigger
                     className={cn(
-                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold no-underline hover:no-underline transition-colors",
+                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#241e1e] no-underline hover:no-underline transition-colors",
                       groupActive
                         ? "bg-primary/10 text-primary"
                         : "text-foreground/80 hover:bg-muted hover:text-foreground",
