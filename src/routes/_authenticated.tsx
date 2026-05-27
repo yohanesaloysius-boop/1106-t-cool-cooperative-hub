@@ -231,9 +231,11 @@ function AuthLayout() {
       return { ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) };
     });
 
-  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
+  const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 4);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
