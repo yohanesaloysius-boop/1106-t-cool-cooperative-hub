@@ -75,7 +75,7 @@ function AdminLowonganPage() {
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
         <div className="flex items-center gap-2 text-sm font-semibold text-[#393232]"><Briefcase className="h-4 w-4" /> Manajemen Lowongan Kerja</div>
         <h1 className="mt-1 text-2xl md:text-3xl font-bold drop-shadow-sm text-[#292424]">Persetujuan Iklan Lowongan</h1>
-        <p className="mt-1 text-sm opacity-90">Setujui atau tolak lowongan yang dipasang anggota.</p>
+        <p className="mt-1 text-sm opacity-90 text-[#272121]">Setujui atau tolak lowongan yang dipasang anggota.</p>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
