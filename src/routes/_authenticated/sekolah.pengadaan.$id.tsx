@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, FileText, CheckCircle2, Clock, XCircle, Package, Receipt } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/sekolah/pengadaan/$id")({
-  head: () => ({ meta: [{ title: "Detail PR — Pengadaan Sekolah" }] }),
+  head: () => ({ meta: [{ title: "Detail PR — Belanja Sekolah" }] }),
   component: PRDetail,
 });
 
