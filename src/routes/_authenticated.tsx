@@ -501,17 +501,26 @@ function AuthLayout() {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card lg:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/95 backdrop-blur lg:hidden pb-[env(safe-area-inset-bottom)]">
           <div className="grid grid-cols-5">
             {mobileNav.map((n) => {
               const active = pathname === n.to;
               return (
-                <Link key={n.to} to={n.to} className={cn("flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
-                  <n.icon className="h-5 w-5" />
-                  {n.label}
+                <Link key={n.to} to={n.to} className={cn("flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium leading-tight text-center px-1", active ? "text-primary" : "text-muted-foreground")}>
+                  <n.icon className="h-5 w-5 shrink-0" />
+                  <span className="truncate w-full">{n.label}</span>
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium leading-tight text-muted-foreground active:bg-muted"
+              aria-label="Buka semua menu"
+            >
+              <MoreHorizontal className="h-5 w-5 shrink-0" />
+              <span>Menu</span>
+            </button>
           </div>
         </nav>
       </div>
