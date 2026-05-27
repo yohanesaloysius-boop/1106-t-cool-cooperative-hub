@@ -209,7 +209,7 @@ function AdminShu() {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="flex items-center gap-2 text-sm text-white/80"><Coins className="h-4 w-4" /> Distribusi SHU</div>
+        <div className="flex items-center gap-2 text-sm text-[#312b2b]"><Coins className="h-4 w-4" /> Distribusi SHU</div>
         <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Pembagian Sisa Hasil Usaha</h1>
         <p className="mt-1 text-sm text-[#3e3232]">Workflow: Bendahara hitung & usulkan → Ketua approve dengan tanda tangan digital.</p>
       </div>

@@ -194,7 +194,7 @@ function AdminLaporan() {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="flex items-center gap-2 text-sm text-white/80"><FileBarChart2 className="h-4 w-4" /> Laporan Keuangan</div>
+        <div className="flex items-center gap-2 text-sm text-[#312b2b]"><FileBarChart2 className="h-4 w-4" /> Laporan Keuangan</div>
         <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Ringkasan Arus Kas Koperasi</h1>
         <p className="mt-1 text-sm text-[#3e3232]">Pilih periode, lihat grafik, dan unduh laporan dalam format PDF atau Excel.</p>
       </div>
