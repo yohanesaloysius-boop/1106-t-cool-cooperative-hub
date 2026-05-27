@@ -4141,6 +4141,7 @@ export type Database = {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
+      approve_member: { Args: { p_user_id: string }; Returns: undefined }
       auto_debet_simpanan_wajib: {
         Args: { _periode?: string }
         Returns: {
