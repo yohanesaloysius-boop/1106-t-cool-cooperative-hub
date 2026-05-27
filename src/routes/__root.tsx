@@ -82,14 +82,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "T-COOL Koperasi — Sistem Manajemen Koperasi Modern" },
-      { name: "description", content: "Aplikasi koperasi modern: simpanan, pinjaman, angsuran, SHU, dan dashboard realtime untuk pengurus & anggota." },
-      { name: "author", content: "T-COOL Koperasi" },
-      { property: "og:title", content: "T-COOL Koperasi" },
-      { property: "og:description", content: "Sistem koperasi digital fintech-style: transparan, realtime, mobile friendly." },
+      { title: "YesKoperasi — Sistem Manajemen Koperasi Modern" },
+      { name: "description", content: "Aplikasi koperasi modern YesKoperasi: simpanan, pinjaman, angsuran, SHU, dan dashboard realtime untuk pengurus & anggota." },
+      { name: "author", content: "YesKoperasi" },
+      { name: "keywords", content: "koperasi, simpanan, pinjaman, angsuran, SHU, fintech koperasi, manajemen koperasi" },
+      { property: "og:title", content: "YesKoperasi — Sistem Manajemen Koperasi Modern" },
+      { property: "og:description", content: "Aplikasi koperasi digital: simpanan, pinjaman, angsuran, dan SHU realtime. Transparan & mobile friendly." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { property: "og:site_name", content: "YesKoperasi" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@YesKoperasi" },
+      { rel: "canonical", href: "https://yeskoperasi.com" },
     ],
     links: [
       {
@@ -113,7 +116,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <HeadContent />
       </head>

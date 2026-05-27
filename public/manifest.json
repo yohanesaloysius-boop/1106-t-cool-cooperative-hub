@@ -1,7 +1,7 @@
 {
-  "name": "T-COOL Koperasi",
-  "short_name": "T-COOL",
-  "description": "Sistem manajemen koperasi T-COOL: simpanan, pinjaman, marketplace komunitas.",
+  "name": "YesKoperasi",
+  "short_name": "YesKoperasi",
+  "description": "Aplikasi koperasi modern YesKoperasi: simpanan, pinjaman, marketplace komunitas.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,4 +10,3 @@
   "orientation": "portrait-primary",
   "icons": []
 }
-

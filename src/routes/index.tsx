@@ -32,17 +32,19 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "T-COOL Koperasi — Koperasi Modern di Genggaman Anda" },
+      { title: "YesKoperasi — Koperasi Modern di Genggaman Anda" },
       {
         name: "description",
         content:
-          "Kelola simpanan pokok, wajib, sukarela, ajukan pinjaman, dan pantau cicilan — semua dalam satu dasbor anggota yang elegan.",
+          "Kelola simpanan pokok, wajib, sukarela, ajukan pinjaman, dan pantau cicilan — semua dalam satu dasbor anggota yang elegan. Powered by YesKoperasi.",
       },
-      { property: "og:title", content: "T-COOL Koperasi — Modern di Genggaman" },
+      { property: "og:title", content: "YesKoperasi — Koperasi Modern di Genggaman Anda" },
       {
         property: "og:description",
-        content: "Dasbor koperasi modern: simpanan, pinjaman, dan SHU realtime.",
+        content: "Dasbor koperasi modern: simpanan, pinjaman, dan SHU realtime. Transparan & mobile friendly.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "YesKoperasi" },
     ],
   }),
   component: Landing,
