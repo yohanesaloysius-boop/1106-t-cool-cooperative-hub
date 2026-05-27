@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
+import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download, QrCode, Clock, Copy, Landmark, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload } from "@/components/file-upload";
 import { downloadBuktiSimpanan } from "@/lib/bukti-pdf";
@@ -42,12 +44,22 @@ const tabjangkaSchema = z.object({
   bukti_url: z.string().min(1, "Bukti transfer wajib"),
 });
 
+const DUMMY_ACCOUNTS = [
+  { bank: "BRI", no: "1123 4567 8901 2345", atas_nama: "Koperasi T-COOL Sejahtera" },
+  { bank: "BCA", no: "8721 0543 2109 8765", atas_nama: "Koperasi T-COOL Sejahtera" },
+  { bank: "Mandiri", no: "1450 0023 4567 8901", atas_nama: "Koperasi T-COOL Sejahtera" },
+];
+
 function SimpananPage() {
   const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ jenis: "wajib" as Jenis, nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" });
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [payMethod, setPayMethod] = useState<"transfer" | "qris">("transfer");
+  const [activeQr, setActiveQr] = useState<any | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [creatingQr, setCreatingQr] = useState(false);
 
   const openPay = (r: { id: string; jenis: string; nominal: number | string; catatan?: string | null }) => {
     setPayingId(r.id);
@@ -110,7 +122,7 @@ function SimpananPage() {
         });
         if (error) throw error;
       } else {
-        const parsed = simpananSchema.parse({ ...form, jenis: form.jenis });
+        const parsed = simpananSchema.parse({ ...form, jenis: form.jenis as any });
         if (payingId) {
           const { error } = await supabase
             .from("simpanan")
@@ -150,7 +162,45 @@ function SimpananPage() {
     },
   });
 
+  const generateQris = async () => {
+    if (!user) return;
+    if (!form.nominal || Number(form.nominal) < 1000) return toast.error("Nominal minimal Rp 1.000");
+    if (form.jenis === "tabungan_berjangka") return toast.error("QRIS hanya untuk simpanan pokok/wajib/sukarela");
+
+    setCreatingQr(true);
+    const finalNominal = Number(form.nominal);
+    const kett = `Setor simpanan ${form.jenis}`;
+    const qrPayload = `00020101021126620014ID.TCOOL.QRIS01189360000${user.id.slice(0, 12)}0303UMI51440014ID.CO.QRIS.WWW0215ID20232556012345303UMI5204549953033605802ID5912TCOOL KOPERAS6007JAKARTA61051234062${String(finalNominal).length + 9}07${finalNominal}6304`;
+
+    const { data, error } = await supabase.from("qris_payments").insert({
+      user_id: user.id,
+      jenis: "simpanan",
+      nominal: finalNominal,
+      qr_string: qrPayload,
+      keterangan: kett,
+      ref_id: null,
+      ref_table: null,
+      metadata: { jenis_simpanan: form.jenis },
+    }).select().single();
+
+    setCreatingQr(false);
+    if (error) return toast.error(error.message);
+
+    const row = data as any;
+    setActiveQr(row);
+    qc.invalidateQueries({ queryKey: ["qris", user.id] });
+    toast.success(`QRIS ${row.invoice_no} dibuat — berlaku 15 menit`);
+  };
+
+  useEffect(() => {
+    if (!activeQr) { setQrDataUrl(""); return; }
+    QRCode.toDataURL(activeQr.qr_string, { width: 280, margin: 1, color: { dark: "#0f172a", light: "#ffffff" } }).then(setQrDataUrl);
+  }, [activeQr]);
+
+  const countdown = useCountdown(activeQr?.expired_at);
+
   const isTabjangka = form.jenis === "tabungan_berjangka";
+  const showTransfer = isTabjangka || payMethod === "transfer";
 
   return (
     <div className="space-y-6">
@@ -159,16 +209,17 @@ function SimpananPage() {
           <h1 className="text-2xl font-bold tracking-tight">Simpanan Saya</h1>
           <p className="text-sm text-muted-foreground">Pokok, wajib, sukarela, dan tabungan berjangka.</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setPayingId(null); }}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setPayingId(null); setActiveQr(null); setQrDataUrl(""); } }}>
           <DialogTrigger asChild>
-            <Button onClick={() => setPayingId(null)}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
+            <Button onClick={() => { setPayingId(null); setPayMethod("transfer"); setActiveQr(null); }}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{payingId ? "Bayar Tagihan Simpanan" : "Setor Simpanan"}</DialogTitle></DialogHeader>
+            
             <div className="space-y-4">
               <div>
                 <Label>Jenis Simpanan</Label>
-                <Select value={form.jenis} onValueChange={(v) => setForm({ ...form, jenis: v as Jenis })}>
+                <Select value={form.jenis} onValueChange={(v) => { setForm({ ...form, jenis: v as Jenis }); setActiveQr(null); }}>
                   <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pokok">Pokok</SelectItem>
@@ -207,40 +258,179 @@ function SimpananPage() {
                 </div>
               )}
 
-              <div>
-                <Label className="flex items-center gap-1">
-                  Bukti Transfer <span className="text-destructive">*</span>
-                </Label>
-                <div className="mt-2">
-                  <FileUpload
-                    bucket="bukti-transfer"
-                    userId={user!.id}
-                    accept="image/*,application/pdf"
-                    label="Unggah bukti transfer"
-                    hint="Wajib. Format: gambar atau PDF, maks 4MB."
-                    maxMB={4}
-                    onUploaded={(res) => setForm({ ...form, bukti_url: res.path })}
-                  />
-                  {form.bukti_url && <p className="mt-1 text-[11px] text-success">✓ File terunggah</p>}
-                </div>
-              </div>
+              {!isTabjangka && !payingId && (
+                <Tabs value={payMethod} onValueChange={(v) => { setPayMethod(v as "transfer" | "qris"); setActiveQr(null); }}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="transfer"><Landmark className="mr-1.5 h-4 w-4" />Transfer Bank</TabsTrigger>
+                    <TabsTrigger value="qris"><QrCode className="mr-1.5 h-4 w-4" />QRIS</TabsTrigger>
+                  </TabsList>
 
-              {!isTabjangka && (
+                  <TabsContent value="transfer" className="mt-4 space-y-4">
+                    <div className="rounded-xl border bg-muted/40 p-3 space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground">Rekening Koperasi T-COOL (Transfer ke sini)</p>
+                      {DUMMY_ACCOUNTS.map((acc) => (
+                        <div key={acc.bank} className="flex items-center justify-between rounded-lg bg-background px-3 py-2">
+                          <div>
+                            <p className="text-sm font-semibold">{acc.bank} <span className="text-xs font-normal text-muted-foreground">— {acc.atas_nama}</span></p>
+                            <p className="font-mono text-sm">{acc.no}</p>
+                          </div>
+                          <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(acc.no.replace(/ /g, "")); toast.success(`Nomor ${acc.bank} disalin`); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div>
+                      <Label className="flex items-center gap-1">
+                        Bukti Transfer <span className="text-destructive">*</span>
+                      </Label>
+                      <div className="mt-2">
+                        <FileUpload
+                          bucket="bukti-transfer"
+                          userId={user!.id}
+                          accept="image/*,application/pdf"
+                          label="Unggah bukti transfer"
+                          hint="Wajib. Format: gambar atau PDF, maks 4MB."
+                          maxMB={4}
+                          onUploaded={(res) => setForm({ ...form, bukti_url: res.path })}
+                        />
+                        {form.bukti_url && <p className="mt-1 text-[11px] text-success">✓ File terunggah</p>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>Catatan (opsional)</Label>
+                      <Textarea className="mt-2" rows={3} maxLength={500} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="qris" className="mt-4 space-y-4">
+                    {!activeQr ? (
+                      <div className="space-y-3">
+                        <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm">
+                          <p className="font-medium">Bayar via QRIS</p>
+                          <p className="text-muted-foreground">Klik tombol di bawah untuk membuat kode QRIS. Scan dengan aplikasi e-wallet atau m-banking Anda.</p>
+                        </div>
+                        <Button onClick={generateQris} disabled={creatingQr || !form.nominal} className="w-full">
+                          {creatingQr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <QrCode className="mr-2 h-4 w-4" />}
+                          Generate QRIS
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="rounded-xl bg-gradient-to-br from-primary/5 via-white to-primary/10 p-4 text-center">
+                          <p className="text-xs text-muted-foreground">Total Pembayaran</p>
+                          <p className="text-3xl font-bold tracking-tight">{fmt.format(Number(activeQr.nominal))}</p>
+                          <p className="text-[10px] text-muted-foreground">{activeQr.invoice_no}</p>
+                        </div>
+                        {activeQr.status === "pending" ? (
+                          <>
+                            <div className="flex justify-center rounded-xl border-2 border-dashed border-primary/30 bg-white p-4">
+                              {qrDataUrl ? <img src={qrDataUrl} alt="QRIS" className="h-56 w-56" /> : <Loader2 className="h-8 w-8 animate-spin text-primary" />}
+                            </div>
+                            <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-xs">
+                              <span className="flex items-center gap-1.5 text-muted-foreground"><Clock className="h-3.5 w-3.5" />Berlaku selama</span>
+                              <span className="font-mono font-semibold text-amber-700">{countdown}</span>
+                            </div>
+                            <p className="text-center text-xs text-muted-foreground">
+                              Scan dengan aplikasi e-wallet/m-banking yang mendukung QRIS (GoPay, OVO, DANA, BCA, Mandiri, dll.)
+                            </p>
+                            <Button variant="outline" className="w-full" onClick={() => { navigator.clipboard.writeText(activeQr.qr_string); toast.success("Kode QR disalin"); }}>
+                              <Copy className="mr-1.5 h-3.5 w-3.5" /> Salin Kode QR
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full" onClick={() => setActiveQr(null)}>
+                              <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Buat QRIS Baru
+                            </Button>
+                          </>
+                        ) : activeQr.status === "success" ? (
+                          <div className="flex flex-col items-center gap-2 rounded-xl bg-emerald-50 p-6 text-center">
+                            <CheckCircle2 className="h-12 w-12 text-emerald-600" />
+                            <p className="font-semibold text-emerald-900">Pembayaran Berhasil</p>
+                            <p className="text-xs text-emerald-700">Dana telah tercatat di jurnal koperasi.</p>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 rounded-xl bg-muted p-6 text-center">
+                            <XCircle className="h-12 w-12 text-muted-foreground" />
+                            <p className="font-semibold capitalize">{activeQr.status}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              )}
+
+              {(isTabjangka || payingId) && (
+                <div>
+                  <Label className="flex items-center gap-1">
+                    Bukti Transfer <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="mt-2">
+                    <FileUpload
+                      bucket="bukti-transfer"
+                      userId={user!.id}
+                      accept="image/*,application/pdf"
+                      label="Unggah bukti transfer"
+                      hint="Wajib. Format: gambar atau PDF, maks 4MB."
+                      maxMB={4}
+                      onUploaded={(res) => setForm({ ...form, bukti_url: res.path })}
+                    />
+                    {form.bukti_url && <p className="mt-1 text-[11px] text-success">✓ File terunggah</p>}
+                  </div>
+                </div>
+              )}
+
+              {isTabjangka && (
                 <div>
                   <Label>Catatan (opsional)</Label>
                   <Textarea className="mt-2" rows={3} maxLength={500} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} />
                 </div>
               )}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
-              <Button onClick={() => create.mutate()} disabled={create.isPending}>
-                {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Kirim
-              </Button>
-            </DialogFooter>
+
+            {(isTabjangka || payingId || payMethod === "transfer") && (
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
+                <Button onClick={() => create.mutate()} disabled={create.isPending}>
+                  {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Kirim
+                </Button>
+              </DialogFooter>
+            )}
+
+            {!isTabjangka && !payingId && payMethod === "qris" && (
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>Tutup</Button>
+              </DialogFooter>
+            )}
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Rekening Koperasi Info Card */}
+      <Card className="border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Landmark className="h-4 w-4 text-primary" />
+            <p className="text-sm font-semibold">Rekening Koperasi T-COOL</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {DUMMY_ACCOUNTS.map((acc) => (
+              <div key={acc.bank} className="rounded-lg border bg-background px-3 py-2 flex items-center justify-between gap-2">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">{acc.bank}</p>
+                  <p className="font-mono text-sm font-semibold">{acc.no}</p>
+                  <p className="text-[10px] text-muted-foreground">{acc.atas_nama}</p>
+                </div>
+                <Button size="sm" variant="ghost" className="shrink-0" onClick={() => { navigator.clipboard.writeText(acc.no.replace(/ /g, "")); toast.success(`Nomor ${acc.bank} disalin`); }}>
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-[10px] text-muted-foreground">Transfer sesuai nominal, lalu unggah bukti transfer di menu Setor Simpanan. Atau bayar langsung via QRIS (pilihan dalam dialog Setor Simpanan).</p>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <SumCard label="Total Saldo" value={totals.total} highlight />
@@ -359,4 +549,20 @@ function SumCard({ label, value, highlight }: { label: string; value: number; hi
       </CardContent>
     </Card>
   );
+}
+
+function useCountdown(targetISO: string | undefined) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!targetISO) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [targetISO]);
+  return useMemo(() => {
+    if (!targetISO) return "—";
+    const diff = new Date(targetISO).getTime() - now;
+    if (diff <= 0) return "00:00";
+    const m = Math.floor(diff / 60000); const s = Math.floor((diff % 60000) / 1000);
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }, [targetISO, now]);
 }
