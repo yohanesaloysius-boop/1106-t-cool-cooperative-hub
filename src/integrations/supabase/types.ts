@@ -77,6 +77,13 @@ export type Database = {
             referencedRelation: "pinjaman"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "angsuran_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       approval_histories: {
@@ -2591,6 +2598,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "pinjaman_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pinjaman_verification_id_fkey"
             columns: ["verification_id"]
             isOneToOne: false
@@ -3494,7 +3508,15 @@ export type Database = {
           updated_by?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "shu_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shu_rewards: {
         Row: {
@@ -3635,7 +3657,15 @@ export type Database = {
           verified_at?: string | null
           verified_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "simpanan_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_messages: {
         Row: {
@@ -3950,7 +3980,15 @@ export type Database = {
           updated_by?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transaksi_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
