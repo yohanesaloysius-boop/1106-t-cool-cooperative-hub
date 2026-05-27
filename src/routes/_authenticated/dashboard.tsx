@@ -150,7 +150,7 @@ function DashboardPage() {
 
   return (
     <motion.div
-      className="space-y-8"
+      className="space-y-5 md:space-y-8"
       initial="hidden"
       animate="visible"
       variants={{
