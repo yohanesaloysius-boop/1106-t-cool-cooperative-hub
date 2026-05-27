@@ -141,7 +141,7 @@ function AdminAsetPage() {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="flex items-center gap-2 text-sm font-semibold">
+        <div className="flex items-center gap-2 text-sm font-semibold text-[#393232]">
           <Package className="h-4 w-4" /> Aset & Inventaris
         </div>
         <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#2c2626]">Manajemen Aset Koperasi</h1>
