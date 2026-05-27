@@ -94,20 +94,15 @@ function DashboardPage() {
   useEffect(() => {
     if (!user?.id) return;
     const uid = user.id;
+    const invalidate = () => { void qc.invalidateQueries({ queryKey: ["dashboard-my-fin", uid] }); };
     const ch = supabase
       .channel(`dash-myfin-${uid}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "simpanan", filter: `user_id=eq.${uid}` }, () => {
-        void (window as any).__qc?.invalidateQueries?.({ queryKey: ["dashboard-my-fin", uid] });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman", filter: `user_id=eq.${uid}` }, () => {
-        void (window as any).__qc?.invalidateQueries?.({ queryKey: ["dashboard-my-fin", uid] });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "angsuran", filter: `user_id=eq.${uid}` }, () => {
-        void (window as any).__qc?.invalidateQueries?.({ queryKey: ["dashboard-my-fin", uid] });
-      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "simpanan", filter: `user_id=eq.${uid}` }, invalidate)
+      .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman", filter: `user_id=eq.${uid}` }, invalidate)
+      .on("postgres_changes", { event: "*", schema: "public", table: "angsuran", filter: `user_id=eq.${uid}` }, invalidate)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user?.id]);
+  }, [user?.id, qc]);
 
   // Ringkasan keuangan pribadi anggota
   const { data: myFin } = useQuery({
