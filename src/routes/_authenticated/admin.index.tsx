@@ -90,7 +90,7 @@ function AdminDashboard() {
               <ShieldCheck className="h-3 w-3" /> {roleTitle[primaryRole]}
             </div>
             <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Dashboard Pengurus</h1>
-            <p className="mt-1 text-sm text-[#3e3232]">Halo, {profile?.nama_lengkap ?? "Pengurus"} · pantau koperasi secara realtime.</p>
+            <p className="mt-1 text-sm text-[#3e3232]">Halo {profile?.nama_lengkap ?? "Pengurus"} · pantau koperasi secara realtime.</p>
           </div>
           <div className="flex items-center gap-2">
             <PushToggle variant="secondary" />
