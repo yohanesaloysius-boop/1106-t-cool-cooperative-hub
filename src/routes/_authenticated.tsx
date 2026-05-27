@@ -87,7 +87,7 @@ export const navGroups: NavGroup[] = [
   },
   {
     id: "pengadaan",
-    label: "Pengadaan",
+    label: "Pengadaan/Belanja",
     icon: Church,
     items: [
       { to: "/gereja/pengadaan", label: "Pengadaan Gereja", icon: Church },
