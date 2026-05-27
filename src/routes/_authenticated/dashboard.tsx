@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +30,7 @@ const fmtNum = new Intl.NumberFormat("id-ID");
 function DashboardPage() {
   const { user, profile, isPengurus } = useAuth();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["dashboard-anggota-stats"],
@@ -88,6 +89,20 @@ function DashboardPage() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [refetch]);
+
+  // Realtime untuk ringkasan keuangan pribadi anggota
+  useEffect(() => {
+    if (!user?.id) return;
+    const uid = user.id;
+    const invalidate = () => { void qc.invalidateQueries({ queryKey: ["dashboard-my-fin", uid] }); };
+    const ch = supabase
+      .channel(`dash-myfin-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "simpanan", filter: `user_id=eq.${uid}` }, invalidate)
+      .on("postgres_changes", { event: "*", schema: "public", table: "pinjaman", filter: `user_id=eq.${uid}` }, invalidate)
+      .on("postgres_changes", { event: "*", schema: "public", table: "angsuran", filter: `user_id=eq.${uid}` }, invalidate)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user?.id, qc]);
 
   // Ringkasan keuangan pribadi anggota
   const { data: myFin } = useQuery({
