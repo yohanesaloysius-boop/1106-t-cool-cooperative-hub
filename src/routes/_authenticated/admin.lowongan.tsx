@@ -74,7 +74,7 @@ function AdminLowonganPage() {
     <div className="space-y-6">
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
         <div className="flex items-center gap-2 text-sm font-semibold"><Briefcase className="h-4 w-4" /> Manajemen Lowongan Kerja</div>
-        <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#2c2626]">Persetujuan Iklan Lowongan</h1>
+        <h1 className="mt-1 text-2xl md:text-3xl font-bold text-white drop-shadow-sm">Persetujuan Iklan Lowongan</h1>
         <p className="mt-1 text-sm opacity-90">Setujui atau tolak lowongan yang dipasang anggota.</p>
       </div>
 
