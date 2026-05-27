@@ -213,11 +213,11 @@ function AuthLayout() {
   const visibleGroups = navGroups
     .filter((g) => {
       if (g.adminOnly) return isPengurus;
-      if (g.id === "gereja") return isPengurus || !!isChurchRequester || !!isSchoolRequester;
+      if (g.id === "pengadaan") return isPengurus || !!isChurchRequester || !!isSchoolRequester;
       return true;
     })
     .map((g) => {
-      if (g.id === "gereja") {
+      if (g.id === "pengadaan") {
         return {
           ...g,
           items: g.items.filter((i) => {
@@ -229,6 +229,7 @@ function AuthLayout() {
       }
       return { ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) };
     });
+
   const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 5);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
