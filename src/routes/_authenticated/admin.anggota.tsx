@@ -301,9 +301,11 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
               })}
             </div>
 
-            <div className="space-y-2 pt-2 border-t">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wewenang Pengadaan</p>
+            <div className="space-y-3 pt-2 border-t">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wewenang Pengadaan / Belanja</p>
+              <p className="text-[11px] text-muted-foreground">Gereja dan sekolah adalah unit kerja terpisah — wewenang juga terpisah. Scroll ke bawah untuk mengatur wewenang sekolah.</p>
               <ChurchRequesterSection member={member} />
+              <SchoolRequesterSection member={member} />
             </div>
           </div>
         )}
