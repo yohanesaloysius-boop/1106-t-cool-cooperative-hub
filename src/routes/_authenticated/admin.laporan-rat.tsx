@@ -221,7 +221,7 @@ function AdminLaporanRAT() {
     <div className="space-y-6">
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
         <div className="flex items-center gap-2 text-sm text-white/80"><Gavel className="h-4 w-4" /> Laporan Pertanggungjawaban RAT</div>
-        <h1 className="mt-2 text-2xl md:text-3xl font-bold">Laporan RAT Tahunan</h1>
+        <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Laporan RAT Tahunan</h1>
         <p className="mt-1 text-sm text-[#3e3232]">Ringkasan keanggotaan, arus kas, laba rugi, dan kegiatan untuk Rapat Anggota Tahunan.</p>
       </div>
 

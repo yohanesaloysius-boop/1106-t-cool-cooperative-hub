@@ -146,7 +146,7 @@ function AdminMarketplacePage() {
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
               <ShieldCheck className="h-3 w-3" /> Admin Marketplace
             </div>
-            <h1 className="mt-2 text-2xl md:text-3xl font-bold">Manajemen Marketplace</h1>
+            <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Manajemen Marketplace</h1>
             <p className="mt-1 text-sm text-[#3e3232]">Approve toko & produk, moderasi konten, dan pantau performa marketplace komunitas.</p>
           </div>
           <Button variant="secondary" size="sm" className="rounded-full" onClick={() => refetch()} disabled={isFetching}>
