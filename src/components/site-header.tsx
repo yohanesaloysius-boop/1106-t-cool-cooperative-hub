@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard, Shield, User as UserIcon } from "lucide-react";
+import { useState } from "react";
+import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard, Shield, User as UserIcon, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+
 
 const links = [
   { to: "/", label: "Beranda" },
@@ -13,7 +16,9 @@ const links = [
 
 export function SiteHeader() {
   const { user, roles, viewAsMember, setViewAsMember } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+
   return (
     <header className="sticky top-4 z-40 px-3 md:px-6">
       <div
@@ -104,11 +109,56 @@ export function SiteHeader() {
               </Button>
             </Link>
           )}
+
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="ghost" className="md:hidden rounded-full" aria-label="Buka menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <nav className="mt-6 flex flex-col gap-1">
+                {links.map((l) => (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-primary/10"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                {user && realPengurus && (
+                  <div className="mt-4 border-t pt-4">
+                    <p className="px-3 text-xs text-muted-foreground mb-2">Mode Tampilan</p>
+                    <button
+                      type="button"
+                      onClick={() => { setViewAsMember(false); setMobileOpen(false); }}
+                      className={cn("flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm", !viewAsMember ? "bg-primary/10 text-primary font-medium" : "")}
+                    >
+                      <Shield className="h-4 w-4" /> Mode Admin
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setViewAsMember(true); setMobileOpen(false); }}
+                      className={cn("flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm", viewAsMember ? "bg-primary/10 text-primary font-medium" : "")}
+                    >
+                      <UserIcon className="h-4 w-4" /> Mode Anggota
+                    </button>
+                  </div>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
   );
 }
+
 
 export function SiteFooter() {
   return (
