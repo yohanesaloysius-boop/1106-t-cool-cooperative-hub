@@ -329,12 +329,28 @@ function AdartSignStep({ userId, fullName, nik }: { userId: string; fullName: st
     (async () => {
       const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
       const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
-      setAdart(map.adart_content as AdartContent);
-      setKoperasi(map.koperasi_info as KoperasiInfo);
+      const defaultAdart: AdartContent = {
+        version: "1.0",
+        title: "Anggaran Dasar & Anggaran Rumah Tangga Koperasi T-COOL",
+        sections: [
+          { heading: "Pasal 1 — Keanggotaan", body: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
+          { heading: "Pasal 2 — Hak & Kewajiban", body: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
+          { heading: "Pasal 3 — Persetujuan", body: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
+        ],
+      } as unknown as AdartContent;
+      const defaultKoperasi: KoperasiInfo = {
+        nama: "Koperasi T-COOL",
+        alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
+        telp: "0819 5917 1997",
+        email: "t-coolkoperasi@gmail.com",
+      } as unknown as KoperasiInfo;
+      setAdart((map.adart_content as AdartContent) ?? defaultAdart);
+      setKoperasi((map.koperasi_info as KoperasiInfo) ?? defaultKoperasi);
       const { data: prof } = await supabase.from("profiles").select("adart_signed_at").eq("id", userId).maybeSingle();
       if (prof?.adart_signed_at) setSigned(true);
     })();
   }, [userId]);
+
 
   const downloadPreview = () => {
     if (!adart || !koperasi) return;
