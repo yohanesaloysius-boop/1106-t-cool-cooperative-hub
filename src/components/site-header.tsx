@@ -16,7 +16,9 @@ const links = [
 
 export function SiteHeader() {
   const { user, roles, viewAsMember, setViewAsMember } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
+
   return (
     <header className="sticky top-4 z-40 px-3 md:px-6">
       <div
