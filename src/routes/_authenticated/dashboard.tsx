@@ -176,11 +176,11 @@ function DashboardPage() {
               <Sparkles className="h-3 w-3 animate-pulse" /> T-Cool Koperasi
             </motion.span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl">
-              Halo,{" "}
+              Halo{" "}
               <span className="shimmer-text">
-                {profile?.nama_lengkap?.split(" ")[0] ?? "Anggota"}
-              </span>{" "}
-              👋
+                {profile?.nama_lengkap ?? "Anggota"}
+              </span>
+              {" "}👋
             </h1>
             <p className="mt-3 max-w-md text-sm text-muted-foreground md:text-base">
               Pantau pertumbuhan anggota dan aktivitas koperasi dalam satu dashboard yang ringan dan modern.

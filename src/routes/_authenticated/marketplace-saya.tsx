@@ -79,7 +79,7 @@ function MarketplaceSayaPage() {
             </div>
             <h1 className="mt-5 text-2xl font-bold">Buka Toko di Marketplace</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Halo {profile?.nama_lengkap?.split(" ")[0] || "Anggota"}, jadilah seller di Marketplace Komunitas T-COOL.
+              Halo {profile?.nama_lengkap || "Anggota"}, jadilah seller di Marketplace Komunitas T-COOL.
               Gratis, tanpa potongan listing. Cukup sekali klik — toko langsung aktif.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
