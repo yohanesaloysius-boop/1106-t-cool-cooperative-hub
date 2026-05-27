@@ -91,7 +91,7 @@ export const navGroups: NavGroup[] = [
     icon: Church,
     items: [
       { to: "/gereja/pengadaan", label: "Belanja Gereja", icon: Church },
-      { to: "/sekolah/pengadaan", label: "Pengadaan Sekolah", icon: GraduationCap },
+      { to: "/sekolah/pengadaan", label: "Belanja Sekolah", icon: GraduationCap },
     ],
   },
   // ============ ADMIN GROUPS ============
