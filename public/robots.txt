@@ -9,4 +9,4 @@ Disallow: /auth
 Disallow: /forgot-password
 Disallow: /reset-password
 
-Sitemap: https://yeskoperasi.com/sitemap.xml
+# Sitemap: add after publishing / custom domain is connected
