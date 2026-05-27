@@ -15,7 +15,7 @@ import { Plus, Trash2, GraduationCap, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/sekolah/pengadaan")({
-  head: () => ({ meta: [{ title: "Pengadaan Sekolah — T-COOL" }] }),
+  head: () => ({ meta: [{ title: "Belanja Sekolah — T-COOL" }] }),
   component: PengadaanSekolahPage,
 });
 
