@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
-import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send, Church } from "lucide-react";
+import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send, Church, GraduationCap } from "lucide-react";
 import { MemberCardPrint } from "@/components/member-card-print";
 import { useServerFn } from "@tanstack/react-start";
 import { importMembersCsv, deleteDemoMembers } from "@/lib/admin-members.functions";
@@ -301,9 +301,11 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
               })}
             </div>
 
-            <div className="space-y-2 pt-2 border-t">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wewenang Pengadaan</p>
+            <div className="space-y-3 pt-2 border-t">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wewenang Pengadaan / Belanja</p>
+              <p className="text-[11px] text-muted-foreground">Gereja dan sekolah adalah unit kerja terpisah — wewenang juga terpisah. Scroll ke bawah untuk mengatur wewenang sekolah.</p>
               <ChurchRequesterSection member={member} />
+              <SchoolRequesterSection member={member} />
             </div>
           </div>
         )}
@@ -400,6 +402,96 @@ function ChurchRequesterSection({ member }: { member: { id: string; nama_lengkap
           <option value="">— Tanpa divisi default —</option>
           {divisions?.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
         </select>
+      </div>
+      {current?.appointed_at && (
+        <p className="text-[11px] text-muted-foreground">Sejak: {new Date(current.appointed_at).toLocaleDateString("id-ID")}</p>
+      )}
+      <div className="flex justify-end gap-2 pt-1">
+        {current?.is_active && (
+          <Button size="sm" variant="outline" disabled={busy} onClick={revoke} className="text-destructive">Cabut</Button>
+        )}
+        <Button size="sm" onClick={appoint} disabled={busy}>{current?.is_active ? "Perbarui" : "Berikan Wewenang"}</Button>
+      </div>
+    </div>
+  );
+}
+
+function SchoolRequesterSection({ member }: { member: { id: string; nama_lengkap: string } }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [jabatan, setJabatan] = useState("");
+  const [unitKerja, setUnitKerja] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const { data: current, refetch } = useQuery({
+    queryKey: ["school-requester", member.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("school_requesters" as any)
+        .select("*").eq("user_id", member.id).maybeSingle();
+      return data as any;
+    },
+  });
+
+  useEffect(() => {
+    if (current) {
+      setJabatan(current.jabatan ?? "");
+      setUnitKerja(current.unit_kerja ?? "");
+    } else {
+      setJabatan(""); setUnitKerja("");
+    }
+  }, [current]);
+
+  const appoint = async () => {
+    if (!jabatan.trim()) { toast.error("Isi jabatan terlebih dulu"); return; }
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("school_requesters" as any).upsert({
+        user_id: member.id,
+        jabatan: jabatan.trim(),
+        unit_kerja: unitKerja.trim() || null,
+        is_active: true,
+        appointed_by: user?.id,
+      }, { onConflict: "user_id" });
+      if (error) throw error;
+      await supabase.from("notifications").insert({
+        user_id: member.id,
+        judul: "🎓 Wewenang Pengadaan Sekolah diberikan",
+        pesan: `Anda diangkat sebagai ${jabatan.trim()} dan dapat mengajukan permintaan pembelian sekolah.`,
+        kategori: "sukses", url: "/sekolah/pengadaan",
+      });
+      toast.success("Wewenang sekolah diberikan");
+      refetch(); qc.invalidateQueries({ queryKey: ["is-school-requester"] });
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  const revoke = async () => {
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("school_requesters" as any)
+        .update({ is_active: false }).eq("user_id", member.id);
+      if (error) throw error;
+      toast.success("Wewenang sekolah dicabut");
+      refetch(); qc.invalidateQueries({ queryKey: ["is-school-requester"] });
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="rounded-lg border border-border p-3 space-y-3 bg-muted/20">
+      <div className="flex items-center gap-2">
+        <GraduationCap className="h-4 w-4 text-blue-600" />
+        <p className="text-sm font-semibold">Wewenang Pengadaan Sekolah</p>
+        {current?.is_active && <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] text-success">Aktif</span>}
+      </div>
+      <p className="text-xs text-muted-foreground">Berikan wewenang kepada <span className="font-semibold">{member.nama_lengkap}</span> untuk mengajukan PR sekolah. Unit kerja sekolah terpisah dari gereja.</p>
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium">Jabatan / Posisi</label>
+        <Input value={jabatan} onChange={(e) => setJabatan(e.target.value)} placeholder="Mis. Kepala Sekolah, Wakasek Sarpras, Bendahara Sekolah" />
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium">Unit Kerja (opsional)</label>
+        <Input value={unitKerja} onChange={(e) => setUnitKerja(e.target.value)} placeholder="Mis. SD, SMP, SMA, TU" />
       </div>
       {current?.appointed_at && (
         <p className="text-[11px] text-muted-foreground">Sejak: {new Date(current.appointed_at).toLocaleDateString("id-ID")}</p>
