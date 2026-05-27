@@ -2947,42 +2947,6 @@ export type Database = {
           },
         ]
       }
-      school_requesters: {
-        Row: {
-          appointed_at: string
-          appointed_by: string | null
-          created_at: string
-          id: string
-          is_active: boolean
-          jabatan: string
-          unit_kerja: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          appointed_at?: string
-          appointed_by?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          jabatan: string
-          unit_kerja?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          appointed_at?: string
-          appointed_by?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          jabatan?: string
-          unit_kerja?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       settings: {
         Row: {
           created_at: string
