@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /tentang
+Allow: /marketplace
+Allow: /daftar-anggota
+Disallow: /_authenticated/
+Disallow: /admin/
+Disallow: /auth
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://yeskoperasi.com/sitemap.xml
