@@ -74,7 +74,7 @@ function AnalitikPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <Badge variant="secondary" className="mb-2 bg-white/20 text-primary-foreground"><Sparkles className="h-3 w-3" /> AI Powered</Badge>
-            <h1 className="text-2xl md:text-3xl font-bold text-[#372f2f]">Analitik & Prediksi</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#2c2626]">Analitik & Prediksi</h1>
             <p className="text-sm text-[#3e3232] mt-1">Tren keuangan 12 bulan + forecast 3 bulan ke depan.</p>
           </div>
           <Button onClick={() => mut.mutate()} disabled={mut.isPending} size="lg" variant="secondary" className="bg-white/20 text-primary-foreground hover:bg-white/30">
