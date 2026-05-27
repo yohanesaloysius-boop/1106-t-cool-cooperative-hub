@@ -83,6 +83,9 @@ export const navGroups: NavGroup[] = [
     items: [
       { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
       { to: "/rapat", label: "Rapat", icon: CalendarDays },
+      { to: "/voting", label: "Voting RAT", icon: FileSignature },
+      { to: "/survei", label: "Survei", icon: ClipboardList },
+      { to: "/bantuan", label: "Bantuan", icon: Activity },
     ],
   },
   {
