@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, ArrowLeft, Phone, Mail, MessageCircle } from "lucide-react";
 import { isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({ meta: [{ title: "Lupa Password — T-COOL Koperasi" }] }),
@@ -85,7 +86,7 @@ function PhoneReset() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="fp-phone">Nomor HP terdaftar</Label>
+        <Label htmlFor="fp-phone">Nomor HP terdaftar<RequiredMark /></Label>
         <div className="relative">
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             <Phone className="h-4 w-4" />
@@ -144,7 +145,7 @@ function EmailReset() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="fp-email">Email</Label>
+        <Label htmlFor="fp-email">Email<RequiredMark /></Label>
         <div className="relative">
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             <Mail className="h-4 w-4" />

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({ meta: [{ title: "Reset Password — T-COOL Koperasi" }] }),
@@ -15,7 +16,13 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 const schema = z.object({
-  password: z.string().min(8, "Password minimal 8 karakter").max(72),
+  password: z
+    .string()
+    .min(6, "Password minimal 6 karakter")
+    .max(72)
+    .regex(/[a-z]/, "Password wajib mengandung huruf kecil")
+    .regex(/[A-Z]/, "Password wajib mengandung huruf besar")
+    .regex(/\d/, "Password wajib mengandung angka"),
   confirm: z.string(),
 }).refine((d) => d.password === d.confirm, { message: "Konfirmasi password tidak cocok", path: ["confirm"] });
 
@@ -60,11 +67,12 @@ function ResetPasswordPage() {
         ) : (
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="rp-pw">Password Baru</Label>
+              <Label htmlFor="rp-pw">Password Baru<RequiredMark /></Label>
               <PasswordInput id="rp-pw" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+              <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — minimal mengandung huruf besar, huruf kecil, dan angka (min. 6 karakter).</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="rp-cf">Konfirmasi Password</Label>
+              <Label htmlFor="rp-cf">Konfirmasi Password<RequiredMark /></Label>
               <PasswordInput id="rp-cf" autoComplete="new-password" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} required />
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
