@@ -28,7 +28,6 @@ export const Route = createFileRoute("/auth")({
 
 const passwordPolicy = z
   .string()
-  .min(6, "Password minimal 6 karakter")
   .max(72)
   .regex(/[a-z]/, "Password wajib mengandung huruf kecil")
   .regex(/[A-Z]/, "Password wajib mengandung huruf besar")
@@ -304,7 +303,7 @@ function RegisterForm() {
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="r-pw">Password<RequiredMark /></Label>
           <PasswordInput id="r-pw" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-          <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — minimal mengandung huruf besar, huruf kecil, dan angka (min. 6 karakter).</p>
+          <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — wajib mengandung huruf besar, huruf kecil, dan angka.</p>
         </div>
       </div>
 
