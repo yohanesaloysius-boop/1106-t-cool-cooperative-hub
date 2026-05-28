@@ -22,6 +22,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { verifyWithPrivy } from "@/lib/privy.functions";
 import { Badge } from "@/components/ui/badge";
 import { GuarantorPicker, type GuarantorSelection } from "@/components/guarantor-picker";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 type BungaJenis = "flat" | "efektif" | "menurun";
 
@@ -299,19 +300,19 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Nominal Pinjaman</Label>
-                  <Input type="number" inputMode="numeric" className="mt-2" placeholder="500.000" value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} />
+                  <Label>Nominal Pinjaman<RequiredMark /></Label>
+                  <Input type="number" inputMode="numeric" className="mt-2" placeholder="500.000" value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} required />
                 </div>
                 <div>
-                  <Label>Tenor (bulan)</Label>
-                  <Input type="number" min={3} max={60} className="mt-2" value={form.tenor_bulan} onChange={(e) => setForm({ ...form, tenor_bulan: e.target.value })} />
+                  <Label>Tenor (bulan)<RequiredMark /></Label>
+                  <Input type="number" min={3} max={60} className="mt-2" value={form.tenor_bulan} onChange={(e) => setForm({ ...form, tenor_bulan: e.target.value })} required />
                 </div>
                 <div>
-                  <Label>Bunga / bulan (%)</Label>
-                  <Input type="number" step="0.1" className="mt-2" value={form.bunga_persen} onChange={(e) => setForm({ ...form, bunga_persen: e.target.value })} />
+                  <Label>Bunga / bulan (%)<RequiredMark /></Label>
+                  <Input type="number" step="0.1" className="mt-2" value={form.bunga_persen} onChange={(e) => setForm({ ...form, bunga_persen: e.target.value })} required />
                 </div>
                 <div>
-                  <Label>Jenis Bunga</Label>
+                  <Label>Jenis Bunga<RequiredMark /></Label>
                   <Select value={form.bunga_jenis} onValueChange={(v) => setForm({ ...form, bunga_jenis: v as BungaJenis })}>
                     <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -329,8 +330,8 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
                 </div>
               )}
               <div>
-                <Label>Tujuan Pinjaman</Label>
-                <Textarea rows={3} maxLength={500} className="mt-2" placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} />
+                <Label>Tujuan Pinjaman<RequiredMark /></Label>
+                <Textarea rows={3} maxLength={500} className="mt-2" placeholder="Contoh: Modal usaha warung kelontong" value={form.tujuan} onChange={(e) => setForm({ ...form, tujuan: e.target.value })} required />
               </div>
               {sim && (
                 <div className="rounded-2xl p-4 text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>

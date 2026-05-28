@@ -16,6 +16,7 @@ import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/pho
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
 import { CheckCircle2, FileText, Download } from "lucide-react";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -25,10 +26,18 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+const passwordPolicy = z
+  .string()
+  .min(6, "Password minimal 6 karakter")
+  .max(72)
+  .regex(/[a-z]/, "Password wajib mengandung huruf kecil")
+  .regex(/[A-Z]/, "Password wajib mengandung huruf besar")
+  .regex(/\d/, "Password wajib mengandung angka");
+
 const loginSchema = z
   .object({
     identifier: z.string().trim().min(3, "Masukkan nomor HP atau email").max(255),
-    password: z.string().min(6, "Password minimal 6 karakter").max(72),
+    password: z.string().min(1, "Password wajib diisi").max(72),
   })
   .superRefine((val, ctx) => {
     const v = val.identifier;
@@ -47,7 +56,7 @@ const registerSchema = z.object({
   email: z.string().trim().email("Email tidak valid").max(255),
   no_hp: z.string().trim().refine(isValidIndonesianPhone, "Nomor HP Indonesia tidak valid (contoh: 0812xxxxxxxx)"),
   alamat: z.string().trim().min(5, "Alamat minimal 5 karakter").max(500),
-  password: z.string().min(8, "Password minimal 8 karakter").max(72),
+  password: passwordPolicy,
 });
 
 
@@ -164,7 +173,7 @@ function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="li-id">Nomor HP atau Email</Label>
+        <Label htmlFor="li-id">Nomor HP atau Email<RequiredMark /></Label>
         <div className="relative">
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             {looksPhone ? <Phone className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
@@ -189,7 +198,7 @@ function LoginForm() {
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="li-pw">Password</Label>
+          <Label htmlFor="li-pw">Password<RequiredMark /></Label>
           <Link to="/forgot-password" className="text-xs text-primary hover:underline">Lupa password?</Link>
         </div>
         <PasswordInput id="li-pw" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
@@ -263,15 +272,15 @@ function RegisterForm() {
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="r-nama">Nama Lengkap</Label>
+          <Label htmlFor="r-nama">Nama Lengkap<RequiredMark /></Label>
           <Input id="r-nama" value={form.nama_lengkap} onChange={(e) => setForm({ ...form, nama_lengkap: e.target.value })} required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="r-nik">NIK (16 digit)</Label>
+          <Label htmlFor="r-nik">NIK (16 digit)<RequiredMark /></Label>
           <Input id="r-nik" inputMode="numeric" maxLength={16} value={form.nik} onChange={(e) => setForm({ ...form, nik: e.target.value.replace(/\D/g, "") })} required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="r-hp">Nomor HP</Label>
+          <Label htmlFor="r-hp">Nomor HP<RequiredMark /></Label>
           <div className="relative">
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <Phone className="h-4 w-4" />
@@ -285,17 +294,17 @@ function RegisterForm() {
           )}
         </div>
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="r-email">Email</Label>
+          <Label htmlFor="r-email">Email<RequiredMark /></Label>
           <Input id="r-email" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
         </div>
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="r-alamat">Alamat</Label>
+          <Label htmlFor="r-alamat">Alamat<RequiredMark /></Label>
           <Textarea id="r-alamat" rows={2} value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} required />
         </div>
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="r-pw">Password</Label>
+          <Label htmlFor="r-pw">Password<RequiredMark /></Label>
           <PasswordInput id="r-pw" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-          <p className="text-[11px] text-muted-foreground">Minimal 8 karakter. Akan dicek terhadap database password bocor.</p>
+          <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — minimal mengandung huruf besar, huruf kecil, dan angka (min. 6 karakter).</p>
         </div>
       </div>
 
