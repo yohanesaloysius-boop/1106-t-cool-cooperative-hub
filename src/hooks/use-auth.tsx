@@ -87,6 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       void hydrateAuthState(s);
       if (event === "SIGNED_IN" && s?.user) {
         setTimeout(() => {
+          void (supabase.rpc as any)("ensure_super_admin").then((res: any) => {
+            if (res?.data === true) void loadProfile(s.user.id);
+          });
           void supabase.from("audit_logs").insert({
             actor_id: s.user.id,
             action: "auth.login",
