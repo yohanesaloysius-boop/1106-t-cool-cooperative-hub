@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, GraduationCap, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/_authenticated/sekolah/pengadaan")({
   head: () => ({ meta: [{ title: "Belanja Sekolah — T-COOL" }] }),

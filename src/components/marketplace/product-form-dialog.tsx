@@ -16,6 +16,7 @@ import {
   type DbProduct,
   type ProductStatus,
 } from "@/lib/marketplace-api";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 interface Props {
   open: boolean;
@@ -131,7 +132,7 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
         <div className="space-y-4">
           {/* Foto produk */}
           <div>
-            <Label>Foto Produk (maks 6)</Label>
+            <Label>Foto Produk (maks 6)<RequiredMark /></Label>
             <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
               {images.map((url, i) => (
                 <div key={url} className="relative aspect-square overflow-hidden rounded-xl border border-border">

@@ -12,6 +12,7 @@ import {
   uploadMarketplaceFile,
   type DbStore,
 } from "@/lib/marketplace-api";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 interface Props {
   open: boolean;

@@ -19,6 +19,7 @@ import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download, QrCode, 
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload } from "@/components/file-upload";
 import { downloadBuktiSimpanan } from "@/lib/bukti-pdf";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/_authenticated/simpanan")({
   head: () => ({ meta: [{ title: "Simpanan Saya — T-COOL Koperasi" }] }),
@@ -218,7 +219,7 @@ function SimpananPage() {
             
             <div className="space-y-4">
               <div>
-                <Label>Jenis Simpanan</Label>
+                <Label>Jenis Simpanan<RequiredMark /></Label>
                 <Select value={form.jenis} onValueChange={(v) => { setForm({ ...form, jenis: v as Jenis }); setActiveQr(null); }}>
                   <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -232,7 +233,7 @@ function SimpananPage() {
 
               {isTabjangka && (
                 <div>
-                  <Label>Tenor</Label>
+                  <Label>Tenor<RequiredMark /></Label>
                   <Select value={form.tenor_bulan} onValueChange={(v) => setForm({ ...form, tenor_bulan: v })}>
                     <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -246,7 +247,7 @@ function SimpananPage() {
               )}
 
               <div>
-                <Label>Nominal (IDR)</Label>
+                <Label>Nominal (IDR)<RequiredMark /></Label>
                 <Input type="number" min={isTabjangka ? 1_000_000 : 10_000} className="mt-2" placeholder={isTabjangka ? "5000000" : "100000"} value={form.nominal} onChange={(e) => setForm({ ...form, nominal: e.target.value })} />
               </div>
 
