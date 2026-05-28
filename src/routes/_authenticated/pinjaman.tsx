@@ -87,7 +87,7 @@ function PinjamanPage() {
             ) : (
               <Plus className="mr-2 h-4 w-4" />
             )}
-            Ajukan Pinjaman {isPengurus && !elig?.eligible ? "(Demo)" : ""}
+            Ajukan Pinjaman {isPengurus && !elig?.eligible ? " " : ""}
           </Button>
         </div>
       </div>

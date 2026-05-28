@@ -18,7 +18,6 @@ export const Route = createFileRoute("/reset-password")({
 const schema = z.object({
   password: z
     .string()
-    .min(6, "Password minimal 6 karakter")
     .max(72)
     .regex(/[a-z]/, "Password wajib mengandung huruf kecil")
     .regex(/[A-Z]/, "Password wajib mengandung huruf besar")
@@ -69,7 +68,7 @@ function ResetPasswordPage() {
             <div className="space-y-2">
               <Label htmlFor="rp-pw">Password Baru<RequiredMark /></Label>
               <PasswordInput id="rp-pw" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-              <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — minimal mengandung huruf besar, huruf kecil, dan angka (min. 6 karakter).</p>
+              <p className="text-[11px] text-muted-foreground">Bebas pilih password Anda — wajib mengandung huruf besar, huruf kecil, dan angka.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="rp-cf">Konfirmasi Password<RequiredMark /></Label>
