@@ -12,6 +12,7 @@ import {
   uploadMarketplaceFile,
   type DbStore,
 } from "@/lib/marketplace-api";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 interface Props {
   open: boolean;
@@ -164,22 +165,22 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
           </div>
 
           <div>
-            <Label>Nama Usaha</Label>
+            <Label>Nama Usaha<RequiredMark /></Label>
             <Input value={nama} onChange={(e) => setNama(e.target.value)} maxLength={80} placeholder="Mis. Dapur Bu Sari" />
           </div>
 
           <div>
-            <Label>Deskripsi Usaha</Label>
+            <Label>Deskripsi Usaha<RequiredMark /></Label>
             <Textarea value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} rows={3} maxLength={500} placeholder="Ceritakan tentang usaha kamu..." />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>WhatsApp</Label>
+              <Label>WhatsApp<RequiredMark /></Label>
               <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="628123456789" maxLength={20} />
             </div>
             <div>
-              <Label>Alamat</Label>
+              <Label>Alamat<RequiredMark /></Label>
               <Input value={alamat} onChange={(e) => setAlamat(e.target.value)} maxLength={200} placeholder="Kota / Kecamatan" />
             </div>
           </div>

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, GraduationCap, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 export const Route = createFileRoute("/_authenticated/sekolah/pengadaan")({
   head: () => ({ meta: [{ title: "Belanja Sekolah — T-COOL" }] }),
@@ -174,7 +175,7 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
       <div className="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <Label>Unit / Program Sekolah</Label>
+            <Label>Unit / Program Sekolah<RequiredMark /></Label>
             <Select value={divisionId} onValueChange={setDivisionId}>
               <SelectTrigger><SelectValue placeholder="Pilih unit" /></SelectTrigger>
               <SelectContent>
@@ -184,7 +185,7 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
             </Select>
           </div>
           <div>
-            <Label>Urgensi</Label>
+            <Label>Urgensi<RequiredMark /></Label>
             <Select value={urgensi} onValueChange={setUrgensi}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -197,27 +198,27 @@ function NewPRDialog({ onDone }: { onDone: () => void }) {
           </div>
         </div>
         <div>
-          <Label>Judul</Label>
+          <Label>Judul<RequiredMark /></Label>
           <Input value={judul} onChange={(e) => setJudul(e.target.value)} placeholder="Mis. Pengadaan buku perpustakaan" />
         </div>
         <div className="grid gap-3 sm:grid-cols-2 rounded-lg border p-3 bg-muted/30">
           <div className="sm:col-span-2 text-sm font-semibold">Data Vendor / Toko</div>
           <div>
-            <Label>Nama Vendor</Label>
+            <Label>Nama Vendor<RequiredMark /></Label>
             <Input value={vendorNama} onChange={(e) => setVendorNama(e.target.value)} placeholder="Mis. CV Cerdas Buku" />
           </div>
           <div>
-            <Label>No. Telepon Vendor</Label>
+            <Label>No. Telepon Vendor<RequiredMark /></Label>
             <Input value={vendorTelepon} onChange={(e) => setVendorTelepon(e.target.value)} placeholder="08xxxxxxxxxx" />
           </div>
         </div>
         <div>
-          <Label>Tujuan / Keterangan</Label>
+          <Label>Tujuan / Keterangan<RequiredMark /></Label>
           <Textarea value={tujuan} onChange={(e) => setTujuan(e.target.value)} placeholder="Untuk kegiatan apa & kapan dibutuhkan" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
-            <Label>Rincian Barang</Label>
+            <Label>Rincian Barang<RequiredMark /></Label>
             <Button type="button" size="sm" variant="outline" onClick={() => setItems((p) => [...p, { nama: "", qty: 1, harga: 0 }])}>
               <Plus className="h-3.5 w-3.5" /> Tambah
             </Button>
