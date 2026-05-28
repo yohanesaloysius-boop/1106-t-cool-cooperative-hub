@@ -4159,6 +4159,7 @@ export type Database = {
         Args: { _asset_id: string }
         Returns: number
       }
+      ensure_super_admin: { Args: never; Returns: boolean }
       gen_qris_invoice_no: { Args: never; Returns: string }
       get_email_by_phone: { Args: { _phone: string }; Returns: string }
       get_featured_products: {
@@ -4295,6 +4296,10 @@ export type Database = {
       is_church_requester: { Args: { _uid: string }; Returns: boolean }
       is_ketua: { Args: { _uid: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
+      is_sa_identity: {
+        Args: { _email: string; _phone: string }
+        Returns: boolean
+      }
       is_school_requester: { Args: { _uid: string }; Returns: boolean }
       mp_auto_release_escrow: {
         Args: { _days?: number }
