@@ -169,24 +169,24 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           </div>
 
           <div>
-            <Label>Nama Produk</Label>
+            <Label>Nama Produk<RequiredMark /></Label>
             <Input value={nama} onChange={(e) => setNama(e.target.value)} maxLength={120} placeholder="Mis. Nasi Box Ayam Bakar" />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>Harga (Rp)</Label>
+              <Label>Harga (Rp)<RequiredMark /></Label>
               <Input type="number" min={0} value={harga} onChange={(e) => setHarga(e.target.value)} />
             </div>
             <div>
-              <Label>Stok</Label>
+              <Label>Stok<RequiredMark /></Label>
               <Input type="number" min={0} value={stok} onChange={(e) => setStok(e.target.value)} />
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>Kategori</Label>
+              <Label>Kategori<RequiredMark /></Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
@@ -197,7 +197,7 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
               </Select>
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>Status<RequiredMark /></Label>
               <Select value={status} onValueChange={(v) => setStatus(v as ProductStatus)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -211,7 +211,7 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
           </div>
 
           <div>
-            <Label>Deskripsi</Label>
+            <Label>Deskripsi<RequiredMark /></Label>
             <Textarea
               value={deskripsi}
               onChange={(e) => setDeskripsi(e.target.value)}
