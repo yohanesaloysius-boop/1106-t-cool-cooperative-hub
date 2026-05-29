@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/empty-state";
 import { ShieldCheck, ShieldX, Loader2, MapPin, Clock, IdCard, ScanFace } from "lucide-react";
 
@@ -127,7 +127,10 @@ function AdminVerificationPage() {
 
       <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
         <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Review Verifikasi Identitas</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Review Verifikasi Identitas</DialogTitle>
+            <DialogDescription>Bandingkan foto KTP & selfie anggota lalu setujui atau tolak verifikasi ini.</DialogDescription>
+          </DialogHeader>
           {selected && (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">

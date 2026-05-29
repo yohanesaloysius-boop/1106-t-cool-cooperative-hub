@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileUpload } from "@/components/file-upload";
 import { StatusBadge } from "@/components/empty-state";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -150,11 +151,14 @@ function ProfilPage() {
               <Field label="Tempat Lahir"><Input value={form.tempat_lahir ?? ""} onChange={(e) => setForm((f) => ({ ...f, tempat_lahir: e.target.value }))} /></Field>
               <Field label="Tanggal Lahir"><Input type="date" value={form.tanggal_lahir ?? ""} onChange={(e) => setForm((f) => ({ ...f, tanggal_lahir: e.target.value }))} /></Field>
               <Field label="Jenis Kelamin">
-                <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm" value={form.jenis_kelamin ?? ""} onChange={(e) => setForm((f) => ({ ...f, jenis_kelamin: e.target.value }))}>
-                  <option value="">—</option>
-                  <option value="L">Laki-laki</option>
-                  <option value="P">Perempuan</option>
-                </select>
+                <Select value={form.jenis_kelamin || "_none"} onValueChange={(v) => setForm((f) => ({ ...f, jenis_kelamin: v === "_none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">—</SelectItem>
+                    <SelectItem value="L">Laki-laki</SelectItem>
+                    <SelectItem value="P">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
               </Field>
               <Field label="Email"><Input value={data.email ?? ""} disabled /></Field>
               <div className="sm:col-span-2"><Field label="Alamat"><Textarea rows={3} value={form.alamat ?? ""} onChange={(e) => setForm((f) => ({ ...f, alamat: e.target.value }))} /></Field></div>

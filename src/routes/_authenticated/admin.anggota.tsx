@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { Loader2, Search, CheckCircle2, XCircle, Pause, Eye, IdCard, FileText, Printer, Upload, Trash2, ShieldCheck, MessageCircle, Send, Church, GraduationCap, RefreshCw } from "lucide-react";
@@ -303,6 +304,7 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
       <DialogContent className="max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Jadikan Pengurus / Wewenang</DialogTitle>
+          <DialogDescription>Aktifkan atau cabut jabatan pengurus dan wewenang pengadaan untuk anggota ini.</DialogDescription>
         </DialogHeader>
         {member && (
           <div className="space-y-4 overflow-y-auto pr-1 -mr-1 flex-1">
@@ -423,10 +425,13 @@ function ChurchRequesterSection({ member }: { member: { id: string; nama_lengkap
       </div>
       <div className="space-y-1.5">
         <label className="text-xs font-medium">Divisi (opsional)</label>
-        <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={divisionId} onChange={(e) => setDivisionId(e.target.value)}>
-          <option value="">— Tanpa divisi default —</option>
-          {divisions?.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
-        </select>
+        <Select value={divisionId || "_none"} onValueChange={(v) => setDivisionId(v === "_none" ? "" : v)}>
+          <SelectTrigger><SelectValue placeholder="— Tanpa divisi default —" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="_none">— Tanpa divisi default —</SelectItem>
+            {divisions?.map((d) => <SelectItem key={d.id} value={d.id}>{d.nama}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       {current?.appointed_at && (
         <p className="text-[11px] text-muted-foreground">Sejak: {new Date(current.appointed_at).toLocaleDateString("id-ID")}</p>
@@ -557,7 +562,10 @@ function MemberDetailDialog({ id, onClose }: { id: string | null; onClose: () =>
   return (
     <Dialog open={!!id} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle className="flex items-center gap-2"><IdCard className="h-4 w-4" /> Detail Anggota</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><IdCard className="h-4 w-4" /> Detail Anggota</DialogTitle>
+          <DialogDescription>Profil lengkap, foto KTP, dan dokumen pendukung anggota.</DialogDescription>
+        </DialogHeader>
         {isLoading || !data?.profile ? (
           <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
         ) : (
@@ -646,7 +654,10 @@ function ImportCsvButton() {
     <Dialog open={open} onOpenChange={setOpen}>
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}><Upload className="mr-2 h-3.5 w-3.5" />Import CSV</Button>
       <DialogContent>
-        <DialogHeader><DialogTitle>Import Anggota dari CSV</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Import Anggota dari CSV</DialogTitle>
+          <DialogDescription>Tempelkan data CSV, satu anggota per baris. Setiap anggota akan menerima email undangan.</DialogDescription>
+        </DialogHeader>
         <p className="text-xs text-muted-foreground">Format per baris: <code className="rounded bg-muted px-1">email,nama,no_hp,nik,alamat</code>. Anggota akan menerima email undangan.</p>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={8} className="w-full rounded-md border border-input bg-background p-2 font-mono text-xs" placeholder="budi@email.com,Budi Santoso,08123,3201...,Jl. Mawar 1" />
         <DialogFooter>
@@ -771,6 +782,7 @@ function BroadcastWaDialog({ open, onClose, members }: { open: boolean; onClose:
       <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Send className="h-4 w-4 text-success" /> Broadcast WhatsApp</DialogTitle>
+          <DialogDescription>Pilih segmen penerima, pilih template atau tulis pesan sendiri, lalu buka tab WhatsApp untuk setiap anggota.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -815,15 +827,14 @@ function BroadcastWaDialog({ open, onClose, members }: { open: boolean; onClose:
                 maxLength={1000}
               />
             ) : (
-              <select
-                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                value={templateId}
-                onChange={(e) => setTemplateId(e.target.value)}
-              >
-                {WA_TEMPLATES.map((t) => (
-                  <option key={t.id} value={t.id}>{t.label}</option>
-                ))}
-              </select>
+              <Select value={templateId} onValueChange={setTemplateId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {WA_TEMPLATES.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
 

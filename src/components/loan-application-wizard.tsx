@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -273,6 +273,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
             <ShieldCheck className="h-5 w-5 text-primary" />
             Pengajuan Pinjaman Aman
           </DialogTitle>
+          <DialogDescription>Lengkapi 4 langkah: data pinjaman, penjamin (jika diperlukan), verifikasi identitas, lalu review & submit.</DialogDescription>
           {/* Stepper */}
           <div className="mt-4 flex items-center gap-2">
             {steps.map((s, i) => {
