@@ -562,7 +562,10 @@ function MemberDetailDialog({ id, onClose }: { id: string | null; onClose: () =>
   return (
     <Dialog open={!!id} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle className="flex items-center gap-2"><IdCard className="h-4 w-4" /> Detail Anggota</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><IdCard className="h-4 w-4" /> Detail Anggota</DialogTitle>
+          <DialogDescription>Profil lengkap, foto KTP, dan dokumen pendukung anggota.</DialogDescription>
+        </DialogHeader>
         {isLoading || !data?.profile ? (
           <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
         ) : (
