@@ -240,6 +240,7 @@ function AdminBackup() {
           <p>• <strong>ZIP (CSV)</strong>: arsip terkompres berisi 1 file CSV per tabel + <code>manifest.json</code>. Direkomendasikan untuk arsip rutin.</p>
           <p>• <strong>Excel</strong>: 1 file <code>.xlsx</code>, 1 sheet per tabel — mudah dibuka oleh pengurus.</p>
           <p>• <strong>JSON</strong>: 1 file mentah untuk migrasi/restore teknis.</p>
+          <p>• <strong>Files (Framework)</strong>: snapshot kode sumber & alur kerja aplikasi (src, supabase, scripts, konfigurasi) dalam 1 ZIP — backup framework / migrasi proyek. Tidak bergantung pemilihan tabel.</p>
           <p>• Maksimal 50.000 baris per tabel per ekspor. Lakukan backup berkala (mingguan/bulanan) untuk arsip eksternal.</p>
         </CardContent>
       </Card>
