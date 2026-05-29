@@ -203,6 +203,10 @@ function AdminBackup() {
             {busy === "json" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileJson className="mr-2 h-4 w-4" />}
             JSON
           </Button>
+          <Button onClick={handleFiles} variant="outline" disabled={!!busy}>
+            {busy === "files" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileCode2 className="mr-2 h-4 w-4" />}
+            Files (Framework)
+          </Button>
         </CardContent>
       </Card>
 
