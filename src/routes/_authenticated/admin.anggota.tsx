@@ -819,15 +819,14 @@ function BroadcastWaDialog({ open, onClose, members }: { open: boolean; onClose:
                 maxLength={1000}
               />
             ) : (
-              <select
-                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                value={templateId}
-                onChange={(e) => setTemplateId(e.target.value)}
-              >
-                {WA_TEMPLATES.map((t) => (
-                  <option key={t.id} value={t.id}>{t.label}</option>
-                ))}
-              </select>
+              <Select value={templateId} onValueChange={setTemplateId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {WA_TEMPLATES.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
 
