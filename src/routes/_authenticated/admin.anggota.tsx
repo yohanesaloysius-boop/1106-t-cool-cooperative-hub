@@ -44,7 +44,7 @@ function AnggotaPage() {
   const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["admin-members"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -58,11 +58,22 @@ function AnggotaPage() {
   });
 
   useEffect(() => {
-    const ch = supabase.channel("admin-members-rt")
-      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => qc.invalidateQueries({ queryKey: ["admin-members"] }))
+    const refreshMembers = () => {
+      qc.invalidateQueries({ queryKey: ["admin-members"] });
+      void refetch();
+    };
+    const ch = supabase.channel(`admin-members-rt-${user?.id ?? "all"}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, refreshMembers)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: user?.id ? `user_id=eq.${user.id}` : undefined },
+        (payload) => {
+          if ((payload.new as { kategori?: string; ref_table?: string })?.kategori === "approval") refreshMembers();
+        }
+      )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [qc]);
+  }, [qc, refetch, user?.id]);
 
   const update = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "active" | "suspended" | "rejected" }) => {
