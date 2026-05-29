@@ -654,7 +654,10 @@ function ImportCsvButton() {
     <Dialog open={open} onOpenChange={setOpen}>
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}><Upload className="mr-2 h-3.5 w-3.5" />Import CSV</Button>
       <DialogContent>
-        <DialogHeader><DialogTitle>Import Anggota dari CSV</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Import Anggota dari CSV</DialogTitle>
+          <DialogDescription>Tempelkan data CSV, satu anggota per baris. Setiap anggota akan menerima email undangan.</DialogDescription>
+        </DialogHeader>
         <p className="text-xs text-muted-foreground">Format per baris: <code className="rounded bg-muted px-1">email,nama,no_hp,nik,alamat</code>. Anggota akan menerima email undangan.</p>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={8} className="w-full rounded-md border border-input bg-background p-2 font-mono text-xs" placeholder="budi@email.com,Budi Santoso,08123,3201...,Jl. Mawar 1" />
         <DialogFooter>
