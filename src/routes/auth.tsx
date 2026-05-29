@@ -209,23 +209,64 @@ function LoginForm() {
   );
 }
 
+const DEFAULT_ADART: AdartContent = {
+  version: "1.0",
+  title: "Anggaran Dasar & Anggaran Rumah Tangga Koperasi T-COOL",
+  sections: [
+    { heading: "Pasal 1 — Keanggotaan", body: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
+    { heading: "Pasal 2 — Hak & Kewajiban", body: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
+    { heading: "Pasal 3 — Persetujuan", body: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
+  ],
+} as unknown as AdartContent;
+
+const DEFAULT_KOPERASI: KoperasiInfo = {
+  nama: "Koperasi T-COOL",
+  alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
+  telp: "0819 5917 1997",
+  email: "t-coolkoperasi@gmail.com",
+} as unknown as KoperasiInfo;
+
+interface PendingSig {
+  dataUrl: string;
+  hash: string;
+  fullName: string;
+  version: string;
+}
+
 function RegisterForm() {
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ nama_lengkap: "", nik: "", email: "", no_hp: "", alamat: "", password: "" });
-  const ktpRef = useRef<{ path: string } | null>(null);
-  const avatarRef = useRef<{ path: string; publicUrl?: string } | null>(null);
-  const [tempUserId, setTempUserId] = useState<string | null>(null);
+  const [ktpFile, setKtpFile] = useState<File | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [signature, setSignature] = useState<PendingSig | null>(null);
+  const [adart, setAdart] = useState<AdartContent>(DEFAULT_ADART);
+  const [koperasi, setKoperasi] = useState<KoperasiInfo>(DEFAULT_KOPERASI);
 
-  // To enable file upload before final profile write, we sign up first (session created),
-  // then upload files using the new uid, then patch profile with file URLs.
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
+        const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
+        if (map.adart_content) setAdart(map.adart_content as AdartContent);
+        if (map.koperasi_info) setKoperasi(map.koperasi_info as KoperasiInfo);
+      } catch {
+        // settings tidak bisa dibaca anon — pakai default
+      }
+    })();
+  }, []);
+
+  const downloadAdart = () => buildAdartPdf(koperasi, adart).save(`AD-ART-${koperasi.nama}.pdf`);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = registerSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.errors[0].message);
+    if (!ktpFile) return toast.error("Upload foto KTP wajib");
+    if (!signature) return toast.error("Tanda tangani AD/ART terlebih dahulu");
+
     const normalizedPhone = normalizePhoneId(parsed.data.no_hp)!;
     setBusy(true);
     try {
-      // Cek nomor HP unik sebelum signup
       const { data: existing, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: normalizedPhone });
       if (lookupErr) throw lookupErr;
       if (existing) {
@@ -249,15 +290,51 @@ function RegisterForm() {
       });
       if (error) throw error;
       const uid = data.user?.id;
-      if (uid) {
-        setTempUserId(uid);
-        const updates: { ktp_url?: string; foto_url?: string } = {};
-        if (ktpRef.current) updates.ktp_url = supabase.storage.from("ktp").getPublicUrl(ktpRef.current.path).data.publicUrl;
-        if (avatarRef.current?.publicUrl) updates.foto_url = avatarRef.current.publicUrl;
-        if (Object.keys(updates).length > 0) {
-          await supabase.from("profiles").update(updates).eq("id", uid);
-        }
+      if (!uid) {
+        toast.success("Pendaftaran terkirim. Cek email untuk verifikasi.");
+        return;
       }
+
+      // Pastikan session aktif untuk upload (jika auto-confirm off, signIn manual)
+      if (!data.session) {
+        await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password });
+      }
+
+      const updates: Record<string, string> = {};
+
+      try {
+        const ext = ktpFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
+        const path = `${uid}/${Date.now()}.${ext}`;
+        const up = await supabase.storage.from("ktp").upload(path, ktpFile, { upsert: true, contentType: ktpFile.type });
+        if (!up.error) updates.ktp_url = supabase.storage.from("ktp").getPublicUrl(path).data.publicUrl;
+      } catch { /* lewati */ }
+
+      if (avatarFile) {
+        try {
+          const ext = avatarFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
+          const path = `${uid}/${Date.now()}.${ext}`;
+          const up = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true, contentType: avatarFile.type });
+          if (!up.error) updates.foto_url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+        } catch { /* lewati */ }
+      }
+
+      try {
+        const blob = await (await fetch(signature.dataUrl)).blob();
+        const path = `${uid}/adart-${Date.now()}.png`;
+        const up = await supabase.storage.from("signatures").upload(path, blob, { upsert: true, contentType: "image/png" });
+        if (!up.error) {
+          const { data: signed } = await supabase.storage.from("signatures").createSignedUrl(path, 60 * 60 * 24 * 365);
+          updates.adart_signed_at = new Date().toISOString();
+          updates.adart_signature_url = signed?.signedUrl ?? path;
+          updates.adart_signature_hash = signature.hash;
+          updates.adart_version = signature.version;
+        }
+      } catch { /* lewati */ }
+
+      if (Object.keys(updates).length > 0) {
+        await supabase.from("profiles").update(updates).eq("id", uid);
+      }
+
       toast.success("Pendaftaran berhasil. Menunggu verifikasi pengurus.");
     } catch (err) {
       const msg = (err as Error).message || "Gagal mendaftar";
@@ -307,18 +384,51 @@ function RegisterForm() {
         </div>
       </div>
 
-      {tempUserId && (
-        <div className="grid gap-3 sm:grid-cols-2 rounded-lg border border-success/30 bg-success/5 p-3">
-          <FileUpload bucket="ktp" userId={tempUserId} label="Upload KTP" hint="JPG/PNG/PDF, max 4MB" accept="image/*,.pdf" onUploaded={(r) => { ktpRef.current = { path: r.path }; }} />
-          <FileUpload bucket="avatars" userId={tempUserId} publicBucket label="Foto Profil" hint="JPG/PNG, max 2MB" maxMB={2} onUploaded={(r) => { avatarRef.current = r; }} />
-          <div className="sm:col-span-2">
-            <AdartSignStep userId={tempUserId} fullName={form.nama_lengkap} nik={form.nik} />
+      <div className="grid gap-3 sm:grid-cols-2 rounded-lg border border-border bg-muted/30 p-3">
+        <LocalFilePicker label={<>Upload KTP<RequiredMark /></>} hint="JPG/PNG/PDF, max 4MB" accept="image/*,.pdf" maxMB={4} value={ktpFile} onChange={setKtpFile} />
+        <LocalFilePicker label="Foto Profil" hint="JPG/PNG, max 2MB (opsional)" accept="image/*" maxMB={2} value={avatarFile} onChange={setAvatarFile} />
+      </div>
+
+      <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+        <div className="flex items-start gap-2">
+          <FileText className="h-4 w-4 mt-0.5 text-primary" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">Tanda Tangani AD/ART Koperasi<RequiredMark /></p>
+            <p className="text-[11px] text-muted-foreground">
+              Wajib dibaca & ditandatangani sebagai bukti persetujuan menjadi anggota.
+            </p>
           </div>
         </div>
-      )}
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={downloadAdart}>
+            <Download className="h-3 w-3 mr-1" /> Pratinjau AD/ART
+          </Button>
+          {signature ? (
+            <div className="inline-flex items-center gap-2 rounded-md border border-success/40 bg-success/10 px-2 py-1 text-xs">
+              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+              <span>Tanda tangan tersimpan</span>
+              <button type="button" className="ml-1 underline text-muted-foreground hover:text-foreground" onClick={() => setSignature(null)}>ulangi</button>
+            </div>
+          ) : (
+            <SignaturePadDialog
+              title="Tanda Tangan Persetujuan AD/ART"
+              onSign={async (sig) => {
+                setSignature({ dataUrl: sig.dataUrl, hash: sig.hash, fullName: sig.fullName, version: adart.version });
+                toast.success("Tanda tangan tersimpan");
+              }}
+              trigger={
+                <Button type="button" size="sm">Tanda Tangan Sekarang</Button>
+              }
+            />
+          )}
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          Penandatangan: <span className="font-medium">{form.nama_lengkap || "—"}</span> (NIK: {form.nik || "—"})
+        </p>
+      </div>
 
       <Button type="submit" className="w-full" disabled={busy}>
-        {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {tempUserId ? "Selesai" : "Daftar Anggota"}
+        {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Ajukan Pendaftaran
       </Button>
       <p className="text-xs text-muted-foreground text-center">
         Pendaftaran akan diverifikasi pengurus sebelum akun aktif penuh.
@@ -327,110 +437,50 @@ function RegisterForm() {
   );
 }
 
-function AdartSignStep({ userId, fullName, nik }: { userId: string; fullName: string; nik: string }) {
-  const [signed, setSigned] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [adart, setAdart] = useState<AdartContent | null>(null);
-  const [koperasi, setKoperasi] = useState<KoperasiInfo | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
-      const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
-      const defaultAdart: AdartContent = {
-        version: "1.0",
-        title: "Anggaran Dasar & Anggaran Rumah Tangga Koperasi T-COOL",
-        sections: [
-          { heading: "Pasal 1 — Keanggotaan", body: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
-          { heading: "Pasal 2 — Hak & Kewajiban", body: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
-          { heading: "Pasal 3 — Persetujuan", body: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
-        ],
-      } as unknown as AdartContent;
-      const defaultKoperasi: KoperasiInfo = {
-        nama: "Koperasi T-COOL",
-        alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
-        telp: "0819 5917 1997",
-        email: "t-coolkoperasi@gmail.com",
-      } as unknown as KoperasiInfo;
-      setAdart((map.adart_content as AdartContent) ?? defaultAdart);
-      setKoperasi((map.koperasi_info as KoperasiInfo) ?? defaultKoperasi);
-      const { data: prof } = await supabase.from("profiles").select("adart_signed_at").eq("id", userId).maybeSingle();
-      if (prof?.adart_signed_at) setSigned(true);
-    })();
-  }, [userId]);
-
-
-  const downloadPreview = () => {
-    if (!adart || !koperasi) return;
-    buildAdartPdf(koperasi, adart).save(`AD-ART-${koperasi.nama}.pdf`);
-  };
-
-  const handleSign = async (sig: { dataUrl: string; hash: string; fullName: string }) => {
-    if (!adart) return;
-    setLoading(true);
-    try {
-      // upload signature image (data URL -> blob)
-      const blob = await (await fetch(sig.dataUrl)).blob();
-      const path = `${userId}/adart-${Date.now()}.png`;
-      const up = await supabase.storage.from("signatures").upload(path, blob, { contentType: "image/png", upsert: true });
-      if (up.error) throw up.error;
-      const { data: signed } = await supabase.storage.from("signatures").createSignedUrl(path, 60 * 60 * 24 * 365);
-      await supabase.from("profiles").update({
-        adart_signed_at: new Date().toISOString(),
-        adart_signature_url: signed?.signedUrl ?? path,
-        adart_signature_hash: sig.hash,
-        adart_version: adart.version,
-      }).eq("id", userId);
-      toast.success("AD/ART berhasil ditandatangani");
-      setSigned(true);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (signed) {
-    return (
-      <div className="rounded-lg border border-success/40 bg-success/10 p-3 flex items-center gap-2 text-sm">
-        <CheckCircle2 className="h-4 w-4 text-success" />
-        <span>AD/ART sudah Anda tandatangani. Terima kasih!</span>
-        <Button type="button" size="sm" variant="ghost" onClick={downloadPreview} className="ml-auto">
-          <Download className="h-3 w-3 mr-1" /> Unduh
-        </Button>
-      </div>
-    );
-  }
-
+function LocalFilePicker({
+  label, hint, accept, maxMB, value, onChange,
+}: {
+  label: React.ReactNode;
+  hint?: string;
+  accept: string;
+  maxMB: number;
+  value: File | null;
+  onChange: (f: File | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
-      <div className="flex items-start gap-2">
-        <FileText className="h-4 w-4 mt-0.5 text-primary" />
-        <div className="flex-1">
-          <p className="text-sm font-medium">Tanda Tangani AD/ART Koperasi</p>
-          <p className="text-[11px] text-muted-foreground">
-            Wajib dibaca & ditandatangani sebagai bukti persetujuan menjadi anggota.
-          </p>
-        </div>
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{label}</span>
+        {value && (
+          <button type="button" onClick={() => { onChange(null); if (inputRef.current) inputRef.current.value = ""; }} className="text-xs text-muted-foreground hover:text-foreground">
+            Hapus
+          </button>
+        )}
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={downloadPreview} disabled={!adart}>
-          <Download className="h-3 w-3 mr-1" /> Pratinjau AD/ART
-        </Button>
-        <SignaturePadDialog
-          title="Tanda Tangan Persetujuan AD/ART"
-          onSign={handleSign}
-          trigger={
-            <Button type="button" size="sm" disabled={loading || !adart}>
-              {loading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : null}
-              Tanda Tangan Sekarang
-            </Button>
-          }
+      <div className="flex items-center gap-2">
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (!f) return;
+            if (f.size > maxMB * 1024 * 1024) {
+              toast.error(`Ukuran maksimal ${maxMB}MB`);
+              return;
+            }
+            onChange(f);
+          }}
         />
+        <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()} className="gap-2">
+          {value ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <FileText className="h-3.5 w-3.5" />}
+          {value ? "Ganti file" : "Pilih file"}
+        </Button>
+        {value && <span className="truncate text-xs text-muted-foreground max-w-[160px]">{value.name}</span>}
       </div>
-      <p className="text-[10px] text-muted-foreground">
-        Penandatangan: <span className="font-medium">{fullName || "—"}</span> (NIK: {nik || "—"})
-      </p>
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
