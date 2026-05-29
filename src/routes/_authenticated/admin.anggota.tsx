@@ -782,6 +782,7 @@ function BroadcastWaDialog({ open, onClose, members }: { open: boolean; onClose:
       <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Send className="h-4 w-4 text-success" /> Broadcast WhatsApp</DialogTitle>
+          <DialogDescription>Pilih segmen penerima, pilih template atau tulis pesan sendiri, lalu buka tab WhatsApp untuk setiap anggota.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
