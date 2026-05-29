@@ -99,6 +99,11 @@ function ComplaintRow({ c, onChanged }: { c: any; onChanged: () => void }) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{open === "refund" ? "Setujui refund?" : "Tolak komplain?"}</DialogTitle>
+              <DialogDescription>
+                {open === "refund"
+                  ? "Dana akan dikembalikan ke pembeli dan transaksi ditandai refund."
+                  : "Komplain akan ditolak. Berikan alasan yang jelas untuk pembeli & penjual."}
+              </DialogDescription>
             </DialogHeader>
             <Textarea placeholder="Catatan untuk pembeli & penjual…" value={catatan} onChange={(e) => setCatatan(e.target.value)} />
             <DialogFooter>
