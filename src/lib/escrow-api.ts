@@ -50,9 +50,9 @@ export async function getMarketplaceRekening(): Promise<{
     .maybeSingle();
   const v = (data?.value ?? {}) as any;
   return {
-    bank: v.bank ?? "BCA",
-    no_rek: v.no_rek ?? "-",
-    atas_nama: v.atas_nama ?? "Koperasi T-COOL",
+    bank: v.bank ?? "CIMB Niaga",
+    no_rek: v.no_rek ?? "7059 7764 0990",
+    atas_nama: v.atas_nama ?? "Koperasi T-COOL Sejahtera",
   };
 }
 
