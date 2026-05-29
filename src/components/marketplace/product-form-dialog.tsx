@@ -127,6 +127,9 @@ export function ProductFormDialog({ open, onOpenChange, storeId, userId, categor
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editing ? "Edit Produk" : "Tambah Produk Baru"}</DialogTitle>
+          <DialogDescription>
+            Lengkapi foto, harga, stok, dan kategori produk. Status "Aktif" akan menampilkan produk di etalase toko.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
