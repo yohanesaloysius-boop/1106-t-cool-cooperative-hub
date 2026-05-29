@@ -102,7 +102,10 @@ function StoreRow({ store, onChanged }: { store: any; onChanged: () => void }) {
                 <X className="mr-1.5 h-3.5 w-3.5" /> Suspend
               </Button>
               <DialogContent>
-                <DialogHeader><DialogTitle>Tangguhkan toko {store.nama_toko}?</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Tangguhkan toko {store.nama_toko}?</DialogTitle>
+                  <DialogDescription>Toko tidak akan tampil di marketplace sampai diaktifkan kembali. Berikan alasan untuk pemilik toko.</DialogDescription>
+                </DialogHeader>
                 <Textarea placeholder="Alasan penangguhan…" value={alasan} onChange={(e) => setAlasan(e.target.value)} />
                 <DialogFooter>
                   <Button variant="ghost" onClick={() => setOpenReject(false)}>Batal</Button>
