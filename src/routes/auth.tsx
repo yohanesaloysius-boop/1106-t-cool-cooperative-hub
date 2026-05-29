@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Phone, Mail } from "lucide-react";
-import { FileUpload } from "@/components/file-upload";
+
 import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
