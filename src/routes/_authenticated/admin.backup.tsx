@@ -6,11 +6,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldAlert, Download, DatabaseBackup, FileJson, FileSpreadsheet } from "lucide-react";
+import { Loader2, ShieldAlert, Download, DatabaseBackup, FileJson, FileSpreadsheet, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import JSZip from "jszip";
 import * as XLSX from "xlsx";
 import { exportBackup, BACKUP_TABLES } from "@/lib/backup.functions";
+
+// Snapshot source code at build time — only loaded on this admin page (route-level chunk).
+const SOURCE_FILES = import.meta.glob(
+  [
+    "/src/**/*.{ts,tsx,js,jsx,css,json,md,html}",
+    "/supabase/**/*.{sql,toml,md}",
+    "/scripts/**/*.{ts,js,md}",
+    "/public/**/*.{json,xml,txt,md,html}",
+    "/package.json",
+    "/tsconfig.json",
+    "/vite.config.ts",
+    "/components.json",
+    "/wrangler.jsonc",
+    "/README.md",
+  ],
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>;
 
 export const Route = createFileRoute("/_authenticated/admin/backup")({
   head: () => ({ meta: [{ title: "Backup Data — Super Admin" }] }),
@@ -46,7 +63,7 @@ function AdminBackup() {
   const isSA = roles.includes("super_admin");
   const runExport = useServerFn(exportBackup);
   const [selected, setSelected] = useState<Set<string>>(new Set(BACKUP_TABLES));
-  const [busy, setBusy] = useState<"csv" | "json" | "xlsx" | null>(null);
+  const [busy, setBusy] = useState<"csv" | "json" | "xlsx" | "files" | null>(null);
 
   const toggle = (t: string) => setSelected((s) => { const n = new Set(s); n.has(t) ? n.delete(t) : n.add(t); return n; });
   const toggleGroup = (tables: string[]) => setSelected((s) => {
@@ -112,6 +129,45 @@ function AdminBackup() {
     } catch (e: any) { toast.error(e?.message ?? "Gagal."); } finally { setBusy(null); }
   };
 
+  const handleFiles = async () => {
+    setBusy("files");
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`koperasi-source-${stamp()}`)!;
+      const entries = Object.entries(SOURCE_FILES);
+      const manifest = {
+        generated_at: new Date().toISOString(),
+        description: "Snapshot kode sumber & alur kerja aplikasi koperasi (src, supabase, scripts, konfigurasi).",
+        total_files: entries.length,
+        files: entries.map(([p]) => p.replace(/^\//, "")),
+      };
+      folder.file("MANIFEST.json", JSON.stringify(manifest, null, 2));
+      folder.file(
+        "README.txt",
+        [
+          "Snapshot Source / Framework Koperasi Tcool",
+          `Dibuat: ${manifest.generated_at}`,
+          `Total file: ${entries.length}`,
+          "",
+          "Isi: source code React (src/), migrasi & konfigurasi database (supabase/),",
+          "script utilitas (scripts/), aset publik (public/), dan file konfigurasi build.",
+          "",
+          "Gunakan arsip ini sebagai backup framework atau untuk migrasi proyek.",
+        ].join("\n"),
+      );
+      for (const [path, content] of entries) {
+        folder.file(path.replace(/^\//, ""), content);
+      }
+      const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+      downloadBlob(blob, `koperasi-source-${stamp()}.zip`);
+      toast.success(`Snapshot ${entries.length} file berhasil diunduh.`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Gagal mengunduh file framework.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   if (!isSA) return (
     <Card className="p-8 text-center">
@@ -126,7 +182,7 @@ function AdminBackup() {
       <div className="rounded-2xl p-6 text-primary-foreground" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
         <div className="flex items-center gap-2 text-sm text-[#312b2b]"><DatabaseBackup className="h-4 w-4" /> Super Admin · Backup</div>
         <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#2c2626]">Backup & Export Data</h1>
-        <p className="mt-1 text-sm text-[#3e3232]">Unduh snapshot lengkap data koperasi (anggota, simpanan, pinjaman, marketplace, dll) sebagai ZIP/CSV, JSON, atau Excel.</p>
+        <p className="mt-1 text-sm text-[#3e3232]">Unduh snapshot data koperasi (ZIP/CSV, Excel, JSON) atau seluruh kode sumber & alur kerja aplikasi (Files / Framework).</p>
       </div>
 
       <Card>
@@ -146,6 +202,10 @@ function AdminBackup() {
           <Button onClick={handleJson} variant="outline" disabled={!!busy || !selected.size}>
             {busy === "json" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileJson className="mr-2 h-4 w-4" />}
             JSON
+          </Button>
+          <Button onClick={handleFiles} variant="outline" disabled={!!busy}>
+            {busy === "files" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileCode2 className="mr-2 h-4 w-4" />}
+            Files (Framework)
           </Button>
         </CardContent>
       </Card>
@@ -180,6 +240,7 @@ function AdminBackup() {
           <p>• <strong>ZIP (CSV)</strong>: arsip terkompres berisi 1 file CSV per tabel + <code>manifest.json</code>. Direkomendasikan untuk arsip rutin.</p>
           <p>• <strong>Excel</strong>: 1 file <code>.xlsx</code>, 1 sheet per tabel — mudah dibuka oleh pengurus.</p>
           <p>• <strong>JSON</strong>: 1 file mentah untuk migrasi/restore teknis.</p>
+          <p>• <strong>Files (Framework)</strong>: snapshot kode sumber & alur kerja aplikasi (src, supabase, scripts, konfigurasi) dalam 1 ZIP — backup framework / migrasi proyek. Tidak bergantung pemilihan tabel.</p>
           <p>• Maksimal 50.000 baris per tabel per ekspor. Lakukan backup berkala (mingguan/bulanan) untuk arsip eksternal.</p>
         </CardContent>
       </Card>
