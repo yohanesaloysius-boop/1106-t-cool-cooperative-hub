@@ -46,9 +46,7 @@ const tabjangkaSchema = z.object({
 });
 
 const DUMMY_ACCOUNTS = [
-  { bank: "BRI", no: "1123 4567 8901 2345", atas_nama: "Koperasi T-COOL Sejahtera" },
-  { bank: "BCA", no: "8721 0543 2109 8765", atas_nama: "Koperasi T-COOL Sejahtera" },
-  { bank: "Mandiri", no: "1450 0023 4567 8901", atas_nama: "Koperasi T-COOL Sejahtera" },
+  { bank: "CIMB Niaga", no: "7059 7764 0990", atas_nama: "Koperasi T-COOL Sejahtera" },
 ];
 
 function SimpananPage() {
