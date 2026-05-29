@@ -273,6 +273,7 @@ export function LoanApplicationWizard({ open, onOpenChange, initial, plafonMax }
             <ShieldCheck className="h-5 w-5 text-primary" />
             Pengajuan Pinjaman Aman
           </DialogTitle>
+          <DialogDescription>Lengkapi 4 langkah: data pinjaman, penjamin (jika diperlukan), verifikasi identitas, lalu review & submit.</DialogDescription>
           {/* Stepper */}
           <div className="mt-4 flex items-center gap-2">
             {steps.map((s, i) => {
