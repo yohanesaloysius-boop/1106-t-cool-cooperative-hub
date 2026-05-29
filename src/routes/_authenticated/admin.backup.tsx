@@ -129,6 +129,45 @@ function AdminBackup() {
     } catch (e: any) { toast.error(e?.message ?? "Gagal."); } finally { setBusy(null); }
   };
 
+  const handleFiles = async () => {
+    setBusy("files");
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`koperasi-source-${stamp()}`)!;
+      const entries = Object.entries(SOURCE_FILES);
+      const manifest = {
+        generated_at: new Date().toISOString(),
+        description: "Snapshot kode sumber & alur kerja aplikasi koperasi (src, supabase, scripts, konfigurasi).",
+        total_files: entries.length,
+        files: entries.map(([p]) => p.replace(/^\//, "")),
+      };
+      folder.file("MANIFEST.json", JSON.stringify(manifest, null, 2));
+      folder.file(
+        "README.txt",
+        [
+          "Snapshot Source / Framework Koperasi Tcool",
+          `Dibuat: ${manifest.generated_at}`,
+          `Total file: ${entries.length}`,
+          "",
+          "Isi: source code React (src/), migrasi & konfigurasi database (supabase/),",
+          "script utilitas (scripts/), aset publik (public/), dan file konfigurasi build.",
+          "",
+          "Gunakan arsip ini sebagai backup framework atau untuk migrasi proyek.",
+        ].join("\n"),
+      );
+      for (const [path, content] of entries) {
+        folder.file(path.replace(/^\//, ""), content);
+      }
+      const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+      downloadBlob(blob, `koperasi-source-${stamp()}.zip`);
+      toast.success(`Snapshot ${entries.length} file berhasil diunduh.`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Gagal mengunduh file framework.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   if (!isSA) return (
     <Card className="p-8 text-center">
