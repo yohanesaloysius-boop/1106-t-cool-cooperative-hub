@@ -258,7 +258,10 @@ function AngsuranPage() {
 
       <Dialog open={!!payRow} onOpenChange={(o) => { if (!o) { setPayRow(null); setBukti(null); } }}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Konfirmasi Pembayaran</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Pembayaran</DialogTitle>
+            <DialogDescription>Unggah bukti transfer untuk cicilan ini. Pembayaran akan diverifikasi bendahara.</DialogDescription>
+          </DialogHeader>
           {payRow && user && (
             <div className="space-y-4">
               <div className="rounded-xl bg-muted p-4 space-y-1">
