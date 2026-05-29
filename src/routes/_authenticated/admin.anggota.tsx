@@ -424,10 +424,13 @@ function ChurchRequesterSection({ member }: { member: { id: string; nama_lengkap
       </div>
       <div className="space-y-1.5">
         <label className="text-xs font-medium">Divisi (opsional)</label>
-        <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={divisionId} onChange={(e) => setDivisionId(e.target.value)}>
-          <option value="">— Tanpa divisi default —</option>
-          {divisions?.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
-        </select>
+        <Select value={divisionId || "_none"} onValueChange={(v) => setDivisionId(v === "_none" ? "" : v)}>
+          <SelectTrigger><SelectValue placeholder="— Tanpa divisi default —" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="_none">— Tanpa divisi default —</SelectItem>
+            {divisions?.map((d) => <SelectItem key={d.id} value={d.id}>{d.nama}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       {current?.appointed_at && (
         <p className="text-[11px] text-muted-foreground">Sejak: {new Date(current.appointed_at).toLocaleDateString("id-ID")}</p>
