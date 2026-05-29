@@ -148,6 +148,8 @@ function AdminBackup() {
       toast.info(`Menyiapkan ${entries.length} file…`);
       const zip = new JSZip();
       const folder = zip.folder(`koperasi-source-${stamp()}`)!;
+      const manifest = {
+        generated_at: new Date().toISOString(),
         description: "Snapshot kode sumber & alur kerja aplikasi koperasi (src, supabase, scripts, konfigurasi).",
         total_files: entries.length,
         files: entries.map(([p]) => p.replace(/^\//, "")),
