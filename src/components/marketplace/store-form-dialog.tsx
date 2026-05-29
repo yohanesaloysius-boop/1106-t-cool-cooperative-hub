@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -119,6 +119,9 @@ export function StoreFormDialog({ open, onOpenChange, userId, store, onSaved }: 
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editing ? "Edit Profil Toko" : "Buka Toko Baru"}</DialogTitle>
+          <DialogDescription>
+            Lengkapi identitas usaha kamu. Logo, banner, dan deskripsi akan tampil di halaman publik toko.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

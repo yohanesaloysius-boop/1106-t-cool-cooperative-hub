@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { listStoresByStatus, setStoreStatus } from "@/lib/escrow-api";
 import { Check, X, Store as StoreIcon, ExternalLink, Loader2 } from "lucide-react";
@@ -102,7 +102,10 @@ function StoreRow({ store, onChanged }: { store: any; onChanged: () => void }) {
                 <X className="mr-1.5 h-3.5 w-3.5" /> Suspend
               </Button>
               <DialogContent>
-                <DialogHeader><DialogTitle>Tangguhkan toko {store.nama_toko}?</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Tangguhkan toko {store.nama_toko}?</DialogTitle>
+                  <DialogDescription>Toko tidak akan tampil di marketplace sampai diaktifkan kembali. Berikan alasan untuk pemilik toko.</DialogDescription>
+                </DialogHeader>
                 <Textarea placeholder="Alasan penangguhan…" value={alasan} onChange={(e) => setAlasan(e.target.value)} />
                 <DialogFooter>
                   <Button variant="ghost" onClick={() => setOpenReject(false)}>Batal</Button>

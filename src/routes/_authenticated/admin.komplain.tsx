@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { listAllComplaints, listOpenComplaints, resolveComplaint } from "@/lib/escrow-api";
 import { AlertTriangle, Check, X, Loader2 } from "lucide-react";
@@ -99,6 +99,11 @@ function ComplaintRow({ c, onChanged }: { c: any; onChanged: () => void }) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{open === "refund" ? "Setujui refund?" : "Tolak komplain?"}</DialogTitle>
+              <DialogDescription>
+                {open === "refund"
+                  ? "Dana akan dikembalikan ke pembeli dan transaksi ditandai refund."
+                  : "Komplain akan ditolak. Berikan alasan yang jelas untuk pembeli & penjual."}
+              </DialogDescription>
             </DialogHeader>
             <Textarea placeholder="Catatan untuk pembeli & penjual…" value={catatan} onChange={(e) => setCatatan(e.target.value)} />
             <DialogFooter>
