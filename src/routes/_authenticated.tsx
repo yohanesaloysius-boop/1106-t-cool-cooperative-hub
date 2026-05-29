@@ -6,7 +6,7 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap, Menu as MenuIcon, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap, Menu as MenuIcon, MoreHorizontal, DatabaseBackup } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -178,6 +178,7 @@ export const navGroups: NavGroup[] = [
       { to: "/admin/voting", label: "Kelola Voting RAT", icon: FileSignature, adminOnly: true },
       { to: "/admin/gereja/pengadaan", label: "Belanja Gereja (Admin)", icon: Church, adminOnly: true },
       { to: "/admin/sekolah/pengadaan", label: "Belanja Sekolah (Admin)", icon: GraduationCap, adminOnly: true },
+      { to: "/admin/backup", label: "Backup & Export Data", icon: DatabaseBackup, adminOnly: true },
     ],
   },
 ];
