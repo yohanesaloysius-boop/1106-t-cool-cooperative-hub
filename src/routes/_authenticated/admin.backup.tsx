@@ -6,11 +6,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldAlert, Download, DatabaseBackup, FileJson, FileSpreadsheet } from "lucide-react";
+import { Loader2, ShieldAlert, Download, DatabaseBackup, FileJson, FileSpreadsheet, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import JSZip from "jszip";
 import * as XLSX from "xlsx";
 import { exportBackup, BACKUP_TABLES } from "@/lib/backup.functions";
+
+// Snapshot source code at build time — only loaded on this admin page (route-level chunk).
+const SOURCE_FILES = import.meta.glob(
+  [
+    "/src/**/*.{ts,tsx,js,jsx,css,json,md,html}",
+    "/supabase/**/*.{sql,toml,md}",
+    "/scripts/**/*.{ts,js,md}",
+    "/public/**/*.{json,xml,txt,md,html}",
+    "/package.json",
+    "/tsconfig.json",
+    "/vite.config.ts",
+    "/components.json",
+    "/wrangler.jsonc",
+    "/README.md",
+  ],
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>;
 
 export const Route = createFileRoute("/_authenticated/admin/backup")({
   head: () => ({ meta: [{ title: "Backup Data — Super Admin" }] }),
