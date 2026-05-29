@@ -304,6 +304,7 @@ function AssignRoleDialog({ member, onClose }: { member: { id: string; nama_leng
       <DialogContent className="max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Jadikan Pengurus / Wewenang</DialogTitle>
+          <DialogDescription>Aktifkan atau cabut jabatan pengurus dan wewenang pengadaan untuk anggota ini.</DialogDescription>
         </DialogHeader>
         {member && (
           <div className="space-y-4 overflow-y-auto pr-1 -mr-1 flex-1">
