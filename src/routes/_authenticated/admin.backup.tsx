@@ -89,8 +89,14 @@ function AdminBackup() {
 
   const downloadBlob = (blob: Blob, name: string) => {
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = name; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.rel = "noopener";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
   };
 
   const handleCsvZip = async () => {
@@ -134,9 +140,14 @@ function AdminBackup() {
   const handleFiles = async () => {
     setBusy("files");
     try {
+      const entries = Object.entries(SOURCE_FILES);
+      if (!entries.length) {
+        toast.error("Tidak ada file sumber yang termuat. Coba reload halaman.");
+        return;
+      }
+      toast.info(`Menyiapkan ${entries.length} file…`);
       const zip = new JSZip();
       const folder = zip.folder(`koperasi-source-${stamp()}`)!;
-      const entries = Object.entries(SOURCE_FILES);
       const manifest = {
         generated_at: new Date().toISOString(),
         description: "Snapshot kode sumber & alur kerja aplikasi koperasi (src, supabase, scripts, konfigurasi).",
