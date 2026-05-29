@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plus, PiggyBank, Loader2, CalendarClock, TrendingUp, Download, QrCode, Clock, Copy, Landmark, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
@@ -171,14 +171,29 @@ function SimpananPage() {
     const kett = `Setor simpanan ${form.jenis}`;
     const qrPayload = `00020101021126620014ID.TCOOL.QRIS01189360000${user.id.slice(0, 12)}0303UMI51440014ID.CO.QRIS.WWW0215ID20232556012345303UMI5204549953033605802ID5912TCOOL KOPERAS6007JAKARTA61051234062${String(finalNominal).length + 9}07${finalNominal}6304`;
 
+    // 1) Buat baris simpanan pending agar tercatat di Riwayat Transaksi
+    const { data: simp, error: simpErr } = await supabase.from("simpanan").insert({
+      user_id: user.id,
+      jenis: form.jenis,
+      nominal: finalNominal,
+      catatan: form.catatan || `Pembayaran via QRIS`,
+      bukti_url: null,
+    }).select().single();
+
+    if (simpErr) {
+      setCreatingQr(false);
+      return toast.error(simpErr.message);
+    }
+
+    // 2) Buat QRIS payment yang ditautkan ke simpanan tadi
     const { data, error } = await supabase.from("qris_payments").insert({
       user_id: user.id,
       jenis: "simpanan",
       nominal: finalNominal,
       qr_string: qrPayload,
       keterangan: kett,
-      ref_id: null,
-      ref_table: null,
+      ref_id: simp?.id ?? null,
+      ref_table: "simpanan",
       metadata: { jenis_simpanan: form.jenis },
     }).select().single();
 
@@ -188,6 +203,7 @@ function SimpananPage() {
     const row = data as any;
     setActiveQr(row);
     qc.invalidateQueries({ queryKey: ["qris", user.id] });
+    qc.invalidateQueries({ queryKey: ["simpanan"] });
     toast.success(`QRIS ${row.invoice_no} dibuat — berlaku 15 menit`);
   };
 
@@ -208,25 +224,33 @@ function SimpananPage() {
           <h1 className="text-2xl font-bold tracking-tight">Simpanan Saya</h1>
           <p className="text-sm text-muted-foreground">Pokok, wajib, sukarela, dan tabungan berjangka.</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setPayingId(null); setActiveQr(null); setQrDataUrl(""); } }}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setPayingId(null); setPayMethod("transfer"); setActiveQr(null); setQrDataUrl(""); } }}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setPayingId(null); setPayMethod("transfer"); setActiveQr(null); }}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
+            <Button onClick={() => { setPayingId(null); setPayMethod("transfer"); setActiveQr(null); setForm({ jenis: "wajib", nominal: "", tenor_bulan: "12", catatan: "", bukti_url: "" }); }}><Plus className="mr-2 h-4 w-4" />Setor Simpanan</Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>{payingId ? "Bayar Tagihan Simpanan" : "Setor Simpanan"}</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>{payingId ? "Bayar Tagihan Simpanan" : "Setor Simpanan"}</DialogTitle>
+              <DialogDescription>
+                {payingId
+                  ? "Unggah bukti transfer untuk tagihan simpanan ini."
+                  : "Pilih jenis simpanan, isi nominal, lalu bayar via transfer bank atau QRIS."}
+              </DialogDescription>
+            </DialogHeader>
             
             <div className="space-y-4">
               <div>
                 <Label>Jenis Simpanan<RequiredMark /></Label>
-                <Select value={form.jenis} onValueChange={(v) => { setForm({ ...form, jenis: v as Jenis }); setActiveQr(null); }}>
+                <Select value={form.jenis} onValueChange={(v) => { setForm({ ...form, jenis: v as Jenis }); setActiveQr(null); }} disabled={!!payingId}>
                   <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pokok">Pokok</SelectItem>
                     <SelectItem value="wajib">Wajib</SelectItem>
                     <SelectItem value="sukarela">Sukarela</SelectItem>
-                    <SelectItem value="tabungan_berjangka">Tabungan Berjangka</SelectItem>
+                    {!payingId && <SelectItem value="tabungan_berjangka">Tabungan Berjangka</SelectItem>}
                   </SelectContent>
                 </Select>
+                {payingId && <p className="mt-1 text-[11px] text-muted-foreground">Jenis tidak bisa diubah untuk tagihan ini.</p>}
               </div>
 
               {isTabjangka && (
