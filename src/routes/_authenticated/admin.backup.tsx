@@ -140,11 +140,14 @@ function AdminBackup() {
   const handleFiles = async () => {
     setBusy("files");
     try {
+      const entries = Object.entries(SOURCE_FILES);
+      if (!entries.length) {
+        toast.error("Tidak ada file sumber yang termuat. Coba reload halaman.");
+        return;
+      }
+      toast.info(`Menyiapkan ${entries.length} file…`);
       const zip = new JSZip();
       const folder = zip.folder(`koperasi-source-${stamp()}`)!;
-      const entries = Object.entries(SOURCE_FILES);
-      const manifest = {
-        generated_at: new Date().toISOString(),
         description: "Snapshot kode sumber & alur kerja aplikasi koperasi (src, supabase, scripts, konfigurasi).",
         total_files: entries.length,
         files: entries.map(([p]) => p.replace(/^\//, "")),
