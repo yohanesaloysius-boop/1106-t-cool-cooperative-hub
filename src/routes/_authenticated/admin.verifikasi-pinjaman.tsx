@@ -127,7 +127,10 @@ function AdminVerificationPage() {
 
       <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
         <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Review Verifikasi Identitas</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Review Verifikasi Identitas</DialogTitle>
+            <DialogDescription>Bandingkan foto KTP & selfie anggota lalu setujui atau tolak verifikasi ini.</DialogDescription>
+          </DialogHeader>
           {selected && (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
