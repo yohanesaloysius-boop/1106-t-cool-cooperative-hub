@@ -80,6 +80,7 @@ import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminDanaCadanganRouteImport } from './routes/_authenticated/admin.dana-cadangan'
 import { Route as AuthenticatedAdminBukuKasRouteImport } from './routes/_authenticated/admin.buku-kas'
 import { Route as AuthenticatedAdminBukuBesarRouteImport } from './routes/_authenticated/admin.buku-besar'
+import { Route as AuthenticatedAdminBackupRouteImport } from './routes/_authenticated/admin.backup'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminAsetRouteImport } from './routes/_authenticated/admin.aset'
 import { Route as AuthenticatedAdminArsipTransaksiRouteImport } from './routes/_authenticated/admin.arsip-transaksi'
@@ -480,6 +481,12 @@ const AuthenticatedAdminBukuBesarRoute =
     path: '/buku-besar',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminBackupRoute =
+  AuthenticatedAdminBackupRouteImport.update({
+    id: '/backup',
+    path: '/backup',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -611,6 +618,7 @@ export interface FileRoutesByFullPath {
   '/admin/arsip-transaksi': typeof AuthenticatedAdminArsipTransaksiRoute
   '/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/backup': typeof AuthenticatedAdminBackupRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -697,6 +705,7 @@ export interface FileRoutesByTo {
   '/admin/arsip-transaksi': typeof AuthenticatedAdminArsipTransaksiRoute
   '/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/backup': typeof AuthenticatedAdminBackupRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -786,6 +795,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/arsip-transaksi': typeof AuthenticatedAdminArsipTransaksiRoute
   '/_authenticated/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/backup': typeof AuthenticatedAdminBackupRoute
   '/_authenticated/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/_authenticated/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/_authenticated/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -875,6 +885,7 @@ export interface FileRouteTypes {
     | '/admin/arsip-transaksi'
     | '/admin/aset'
     | '/admin/audit'
+    | '/admin/backup'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
     | '/admin/dana-cadangan'
@@ -961,6 +972,7 @@ export interface FileRouteTypes {
     | '/admin/arsip-transaksi'
     | '/admin/aset'
     | '/admin/audit'
+    | '/admin/backup'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
     | '/admin/dana-cadangan'
@@ -1049,6 +1061,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/arsip-transaksi'
     | '/_authenticated/admin/aset'
     | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/backup'
     | '/_authenticated/admin/buku-besar'
     | '/_authenticated/admin/buku-kas'
     | '/_authenticated/admin/dana-cadangan'
@@ -1610,6 +1623,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBukuBesarRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/backup': {
+      id: '/_authenticated/admin/backup'
+      path: '/backup'
+      fullPath: '/admin/backup'
+      preLoaderRoute: typeof AuthenticatedAdminBackupRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/audit': {
       id: '/_authenticated/admin/audit'
       path: '/audit'
@@ -1726,6 +1746,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminArsipTransaksiRoute: typeof AuthenticatedAdminArsipTransaksiRoute
   AuthenticatedAdminAsetRoute: typeof AuthenticatedAdminAsetRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminBackupRoute: typeof AuthenticatedAdminBackupRoute
   AuthenticatedAdminBukuBesarRoute: typeof AuthenticatedAdminBukuBesarRoute
   AuthenticatedAdminBukuKasRoute: typeof AuthenticatedAdminBukuKasRoute
   AuthenticatedAdminDanaCadanganRoute: typeof AuthenticatedAdminDanaCadanganRoute
@@ -1770,6 +1791,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminArsipTransaksiRoute: AuthenticatedAdminArsipTransaksiRoute,
   AuthenticatedAdminAsetRoute: AuthenticatedAdminAsetRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminBackupRoute: AuthenticatedAdminBackupRoute,
   AuthenticatedAdminBukuBesarRoute: AuthenticatedAdminBukuBesarRoute,
   AuthenticatedAdminBukuKasRoute: AuthenticatedAdminBukuKasRoute,
   AuthenticatedAdminDanaCadanganRoute: AuthenticatedAdminDanaCadanganRoute,
