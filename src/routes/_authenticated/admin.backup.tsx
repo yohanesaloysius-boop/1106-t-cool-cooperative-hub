@@ -63,7 +63,7 @@ function AdminBackup() {
   const isSA = roles.includes("super_admin");
   const runExport = useServerFn(exportBackup);
   const [selected, setSelected] = useState<Set<string>>(new Set(BACKUP_TABLES));
-  const [busy, setBusy] = useState<"csv" | "json" | "xlsx" | null>(null);
+  const [busy, setBusy] = useState<"csv" | "json" | "xlsx" | "files" | null>(null);
 
   const toggle = (t: string) => setSelected((s) => { const n = new Set(s); n.has(t) ? n.delete(t) : n.add(t); return n; });
   const toggleGroup = (tables: string[]) => setSelected((s) => {
