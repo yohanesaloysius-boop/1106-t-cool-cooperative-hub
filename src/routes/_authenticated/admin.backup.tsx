@@ -25,6 +25,8 @@ const SOURCE_FILES = import.meta.glob(
     "/components.json",
     "/wrangler.jsonc",
     "/README.md",
+    "!/src/routeTree.gen.ts",
+    "!/src/integrations/supabase/types.ts",
   ],
   { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
