@@ -55,7 +55,7 @@ export const navGroups: NavGroup[] = [
     icon: Landmark,
     items: [
       { to: "/simpanan", label: "Simpanan", icon: PiggyBank },
-      { to: "/tabungan-berjangka", label: "Tabungan Berjangka", icon: PiggyBank },
+      
       { to: "/pinjaman", label: "Pinjaman", icon: HandCoins },
       { to: "/penjamin", label: "Penjamin Saya", icon: Shield },
       { to: "/angsuran", label: "Angsuran", icon: Receipt },
