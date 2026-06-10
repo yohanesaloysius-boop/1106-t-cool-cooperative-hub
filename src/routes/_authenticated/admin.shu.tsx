@@ -100,8 +100,8 @@ function AdminShu() {
         supabase.from("pinjaman").select("user_id,total_bayar,nominal,disbursed_at").in("status", ["disbursed", "completed", "approved"]).gte("disbursed_at", start).lte("disbursed_at", end),
         // Belanja marketplace (sebagai buyer) yang completed/paid/shipped di tahun ybs
         supabase.from("marketplace_transactions").select("buyer_id,total,created_at,status").in("status", ["paid", "shipped", "completed"]).gte("created_at", start).lte("created_at", end),
-        // Tabungan berjangka aktif di tahun ybs
-        supabase.from("tabungan_berjangka").select("user_id,nominal,created_at").lte("created_at", end),
+        // Tabungan berjangka aktif/matured di tahun ybs (exclude pending/rejected/withdrawn)
+        supabase.from("tabungan_berjangka").select("user_id,nominal,created_at,status").in("status", ["active", "matured"]).lte("created_at", end),
         // Tunggakan angsuran (overdue belum lunas)
         supabase.from("angsuran").select("user_id,status,jatuh_tempo").neq("status", "paid").lte("jatuh_tempo", end),
       ]);
@@ -214,9 +214,39 @@ function AdminShu() {
         pesan: `Anda menerima SHU sebesar ${fmt(Number(r.nominal))} untuk tahun buku ${tahun}.`,
         kategori: "sukses" as const, url: "/shu", ref_table: "shu",
       })));
-      await supabase.from("audit_logs").insert({ actor_id: user?.id, action: "shu.approved", entity: "shu", new_data: { tahun, signature_id: sigRow?.id, signer: sig.fullName } });
+
+      // Auto-fund Dana Cadangan dari pot cadangan SHU
+      const poolCadangan = Math.round(pool * (cadangan / 100));
+      let cadanganNote = "";
+      if (poolCadangan > 0) {
+        const { data: funds } = await supabase.from("reserve_funds").select("id,nama,persen_dari_shu");
+        const totalPersen = (funds ?? []).reduce((a, f) => a + Number(f.persen_dari_shu ?? 0), 0);
+        if (funds && funds.length > 0 && totalPersen > 0) {
+          const movements = funds
+            .map((f) => ({
+              fund_id: f.id,
+              tipe: "setor" as const,
+              nominal: Math.round(poolCadangan * (Number(f.persen_dari_shu) / totalPersen)),
+              sumber: "shu_auto",
+              ref_table: "shu",
+              catatan: `Auto-funding SHU ${tahun} → ${f.nama}`,
+              created_by: user?.id ?? null,
+            }))
+            .filter((m) => m.nominal > 0);
+          if (movements.length > 0) {
+            const { error: rfErr } = await supabase.from("reserve_fund_movements").insert(movements);
+            if (rfErr) cadanganNote = ` (peringatan dana cadangan: ${rfErr.message})`;
+            else cadanganNote = ` + ${fmt(poolCadangan)} ke dana cadangan`;
+          }
+        } else {
+          cadanganNote = " (dana cadangan belum dikonfigurasi)";
+        }
+      }
+
+      await supabase.from("audit_logs").insert({ actor_id: user?.id, action: "shu.approved", entity: "shu", new_data: { tahun, signature_id: sigRow?.id, signer: sig.fullName, pool, poolCadangan } });
+      return cadanganNote;
     },
-    onSuccess: () => { toast.success(`SHU ${tahun} disetujui & dibagikan`); qc.invalidateQueries({ queryKey: ["shu-year", tahun] }); },
+    onSuccess: (note) => { toast.success(`SHU ${tahun} disetujui & dibagikan${note ?? ""}`); qc.invalidateQueries({ queryKey: ["shu-year", tahun] }); qc.invalidateQueries({ queryKey: ["reserve-funds"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
 
