@@ -100,7 +100,7 @@ function AngsuranPage() {
   });
 
   const viewBukti = async (path: string) => {
-    const { data, error } = await supabase.storage.from("ktp").createSignedUrl(path, 300);
+    const { data, error } = await supabase.storage.from("bukti-transfer").createSignedUrl(path, 300);
     if (error || !data?.signedUrl) { toast.error("Tidak bisa membuka bukti"); return; }
     window.open(data.signedUrl, "_blank");
   };
