@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +40,44 @@ function AdminShu() {
   const [cadangan, setCadangan] = useState<number>(20);
   const [catatan, setCatatan] = useState<string>("");
 
+  // Load bobot & alokasi default dari settings koperasi
+  const { data: settings } = useQuery({
+    queryKey: ["shu-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("settings").select("key,value").like("key", "shu.%");
+      const m: Record<string, number> = {};
+      (data ?? []).forEach((r) => {
+        const raw = typeof r.value === "string" ? r.value : JSON.stringify(r.value);
+        const n = Number(String(raw).replace(/^"|"$/g, ""));
+        if (!isNaN(n)) m[r.key] = n;
+      });
+      return m;
+    },
+  });
+
+  const W = {
+    pokok: settings?.["shu.bobot_simpanan_pokok"] ?? 1.0,
+    wajib: settings?.["shu.bobot_simpanan_wajib"] ?? 1.5,
+    sukarela: settings?.["shu.bobot_simpanan_sukarela"] ?? 0.5,
+    bunga: settings?.["shu.bobot_jasa_pinjaman"] ?? 1.0,
+    belanja: settings?.["shu.bobot_jasa_belanja"] ?? 0.5,
+    deposito: settings?.["shu.bobot_jasa_deposito"] ?? 0.3,
+    minKeaktifan: settings?.["shu.min_keaktifan_persen"] ?? 0,
+    penaltiTunggakan: settings?.["shu.penalti_tunggakan_persen"] ?? 0,
+  };
+
+  // Pre-fill alokasi pot dari settings (sekali)
+  useEffect(() => {
+    if (!settings) return;
+    const m = settings["shu.persen_jasa_modal"];
+    const u = settings["shu.persen_jasa_usaha"];
+    const c = settings["shu.persen_dana_cadangan"];
+    if (m != null) setJasaModal(m);
+    if (u != null) setJasaUsaha(u);
+    if (c != null) setCadangan(c);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
+
   const { data: existing = [] } = useQuery({
     queryKey: ["shu-year", tahun],
     queryFn: async () => {
@@ -53,41 +91,90 @@ function AdminShu() {
     queryKey: ["shu-base", tahun],
     queryFn: async () => {
       const start = `${tahun}-01-01`;
-      const end = `${tahun}-12-31`;
-      const [{ data: profs }, { data: simp }, { data: pj }] = await Promise.all([
+      const end = `${tahun}-12-31T23:59:59`;
+      const [profsRes, simpRes, pjRes, mpRes, tbRes, angTunggakRes] = await Promise.all([
         supabase.from("profiles").select("id,nomor_anggota,nama_lengkap").eq("status", "active"),
-        supabase.from("simpanan").select("user_id,nominal,created_at").eq("status", "verified").lte("created_at", `${end}T23:59:59`),
-        supabase.from("pinjaman").select("user_id,total_bayar,nominal,disbursed_at").in("status", ["disbursed", "completed", "approved"]).gte("disbursed_at", start).lte("disbursed_at", `${end}T23:59:59`),
+        // Simpanan per jenis (kumulatif sampai akhir tahun)
+        supabase.from("simpanan").select("user_id,jenis,nominal").eq("status", "verified").lte("created_at", end),
+        // Bunga dari pinjaman yang berjalan di tahun ybs
+        supabase.from("pinjaman").select("user_id,total_bayar,nominal,disbursed_at").in("status", ["disbursed", "completed", "approved"]).gte("disbursed_at", start).lte("disbursed_at", end),
+        // Belanja marketplace (sebagai buyer) yang completed/paid/shipped di tahun ybs
+        supabase.from("marketplace_transactions").select("buyer_id,total,created_at,status").in("status", ["paid", "shipped", "completed"]).gte("created_at", start).lte("created_at", end),
+        // Tabungan berjangka aktif di tahun ybs
+        supabase.from("tabungan_berjangka").select("user_id,nominal,created_at").lte("created_at", end),
+        // Tunggakan angsuran (overdue belum lunas)
+        supabase.from("angsuran").select("user_id,status,jatuh_tempo").neq("status", "paid").lte("jatuh_tempo", end),
       ]);
-      const simpMap = new Map<string, number>();
-      (simp ?? []).forEach((s) => simpMap.set(s.user_id, (simpMap.get(s.user_id) ?? 0) + Number(s.nominal)));
+
+      const pokokMap = new Map<string, number>();
+      const wajibMap = new Map<string, number>();
+      const sukarelaMap = new Map<string, number>();
+      (simpRes.data ?? []).forEach((s) => {
+        const v = Number(s.nominal);
+        if (s.jenis === "pokok") pokokMap.set(s.user_id, (pokokMap.get(s.user_id) ?? 0) + v);
+        else if (s.jenis === "wajib") wajibMap.set(s.user_id, (wajibMap.get(s.user_id) ?? 0) + v);
+        else sukarelaMap.set(s.user_id, (sukarelaMap.get(s.user_id) ?? 0) + v);
+      });
+
       const bungaMap = new Map<string, number>();
-      (pj ?? []).forEach((p) => bungaMap.set(p.user_id, (bungaMap.get(p.user_id) ?? 0) + Math.max(0, Number(p.total_bayar ?? 0) - Number(p.nominal ?? 0))));
-      return (profs ?? []).map((p) => ({
-        id: p.id, nomor: p.nomor_anggota ?? "—", nama: p.nama_lengkap,
-        simpanan: simpMap.get(p.id) ?? 0, bunga: bungaMap.get(p.id) ?? 0,
+      (pjRes.data ?? []).forEach((p) => bungaMap.set(p.user_id, (bungaMap.get(p.user_id) ?? 0) + Math.max(0, Number(p.total_bayar ?? 0) - Number(p.nominal ?? 0))));
+
+      const belanjaMap = new Map<string, number>();
+      (mpRes.data ?? []).forEach((t) => belanjaMap.set(t.buyer_id, (belanjaMap.get(t.buyer_id) ?? 0) + Number(t.total)));
+
+      const depoMap = new Map<string, number>();
+      (tbRes.data ?? []).forEach((t) => depoMap.set(t.user_id, (depoMap.get(t.user_id) ?? 0) + Number(t.nominal ?? 0)));
+
+      const tunggakMap = new Map<string, number>();
+      (angTunggakRes.data ?? []).forEach((a) => tunggakMap.set(a.user_id, (tunggakMap.get(a.user_id) ?? 0) + 1));
+
+      return (profsRes.data ?? []).map((p) => ({
+        id: p.id,
+        nomor: p.nomor_anggota ?? "—",
+        nama: p.nama_lengkap,
+        pokok: pokokMap.get(p.id) ?? 0,
+        wajib: wajibMap.get(p.id) ?? 0,
+        sukarela: sukarelaMap.get(p.id) ?? 0,
+        bunga: bungaMap.get(p.id) ?? 0,
+        belanja: belanjaMap.get(p.id) ?? 0,
+        deposito: depoMap.get(p.id) ?? 0,
+        tunggak: tunggakMap.get(p.id) ?? 0,
       }));
     },
   });
 
+  const enriched = useMemo(() => {
+    return (members ?? []).map((m) => ({
+      ...m,
+      simpanan: m.pokok + m.wajib + m.sukarela,
+      skorModal: m.pokok * W.pokok + m.wajib * W.wajib + m.sukarela * W.sukarela,
+      skorUsaha: m.bunga * W.bunga + m.belanja * W.belanja + m.deposito * W.deposito,
+    }));
+  }, [members, W.pokok, W.wajib, W.sukarela, W.bunga, W.belanja, W.deposito]);
+
   const totals = useMemo(() => {
-    const sumSimp = (members ?? []).reduce((a, b) => a + b.simpanan, 0);
-    const sumBunga = (members ?? []).reduce((a, b) => a + b.bunga, 0);
-    return { sumSimp, sumBunga };
-  }, [members]);
+    const sumSimp = enriched.reduce((a, b) => a + b.simpanan, 0);
+    const sumBunga = enriched.reduce((a, b) => a + b.bunga, 0);
+    const sumSkorModal = enriched.reduce((a, b) => a + b.skorModal, 0);
+    const sumSkorUsaha = enriched.reduce((a, b) => a + b.skorUsaha, 0);
+    return { sumSimp, sumBunga, sumSkorModal, sumSkorUsaha };
+  }, [enriched]);
 
   const totalPersen = jasaModal + jasaUsaha + cadangan;
   const poolModal = pool * (jasaModal / 100);
   const poolUsaha = pool * (jasaUsaha / 100);
 
   const distribusi = useMemo(() => {
-    if (!members?.length || pool <= 0) return [] as { id: string; nomor: string; nama: string; share: number }[];
-    return members.map((m) => {
-      const m1 = totals.sumSimp > 0 ? (m.simpanan / totals.sumSimp) * poolModal : 0;
-      const m2 = totals.sumBunga > 0 ? (m.bunga / totals.sumBunga) * poolUsaha : 0;
-      return { id: m.id, nomor: m.nomor, nama: m.nama, share: Math.round(m1 + m2) };
+    if (!enriched.length || pool <= 0) return [] as { id: string; nomor: string; nama: string; share: number }[];
+    return enriched.map((m) => {
+      const m1 = totals.sumSkorModal > 0 ? (m.skorModal / totals.sumSkorModal) * poolModal : 0;
+      const m2 = totals.sumSkorUsaha > 0 ? (m.skorUsaha / totals.sumSkorUsaha) * poolUsaha : 0;
+      let share = m1 + m2;
+      // Penalti tunggakan
+      if (m.tunggak > 0 && W.penaltiTunggakan > 0) share = share * (1 - W.penaltiTunggakan / 100);
+      return { id: m.id, nomor: m.nomor, nama: m.nama, share: Math.round(share) };
     });
-  }, [members, totals, poolModal, poolUsaha, pool]);
+  }, [enriched, totals, poolModal, poolUsaha, pool, W.penaltiTunggakan]);
 
   // Workflow status: draft = bendahara proposed (dibagikan_at IS NULL), approved = ketua approved (dibagikan_at set)
   const draft = existing.filter((r) => !r.dibagikan_at);
@@ -291,11 +378,15 @@ function AdminShu() {
                     <Table>
                       <TableHeader><TableRow>
                         <TableHead>No. Anggota</TableHead><TableHead>Nama</TableHead>
-                        <TableHead className="text-right">Simpanan</TableHead><TableHead className="text-right">Bunga</TableHead>
+                        <TableHead className="text-right">Simpanan</TableHead>
+                        <TableHead className="text-right">Bunga</TableHead>
+                        <TableHead className="text-right">Belanja</TableHead>
+                        <TableHead className="text-right">Deposito</TableHead>
+                        <TableHead className="text-center">Tunggak</TableHead>
                         <TableHead className="text-right">SHU</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
-                        {(members ?? []).map((m) => {
+                        {enriched.map((m) => {
                           const d = distribusi.find((x) => x.id === m.id);
                           return (
                             <TableRow key={m.id}>
@@ -303,6 +394,9 @@ function AdminShu() {
                               <TableCell>{m.nama}</TableCell>
                               <TableCell className="text-right text-xs">{fmt(m.simpanan)}</TableCell>
                               <TableCell className="text-right text-xs">{fmt(m.bunga)}</TableCell>
+                              <TableCell className="text-right text-xs">{fmt(m.belanja)}</TableCell>
+                              <TableCell className="text-right text-xs">{fmt(m.deposito)}</TableCell>
+                              <TableCell className="text-center text-xs">{m.tunggak > 0 ? <Badge variant="destructive" className="text-[10px]">{m.tunggak}</Badge> : "—"}</TableCell>
                               <TableCell className="text-right font-semibold text-success">{fmt(d?.share ?? 0)}</TableCell>
                             </TableRow>
                           );
