@@ -40,15 +40,52 @@ function AdminVerificationPage() {
         .from("loan_verifications")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(200);
       if (error) throw error;
-      const ids = Array.from(new Set((rows ?? []).map((r) => r.user_id)));
-      let map = new Map<string, any>();
-      if (ids.length) {
-        const { data: profs } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", ids);
-        map = new Map((profs ?? []).map((p) => [p.id, p]));
+      const userIds = Array.from(new Set((rows ?? []).map((r) => r.user_id)));
+      const verifIds = (rows ?? []).map((r) => r.id);
+      let profMap = new Map<string, any>();
+      let pinMap = new Map<string, any>();
+      if (userIds.length) {
+        const { data: profs } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", userIds);
+        profMap = new Map((profs ?? []).map((p) => [p.id, p]));
       }
-      return (rows ?? []).map((r: any) => ({ ...r, profile: map.get(r.user_id) }));
+      if (verifIds.length) {
+        const { data: pins } = await supabase
+          .from("pinjaman")
+          .select("id,verification_id,nominal,tenor_bulan,tujuan,status,created_at")
+          .in("verification_id", verifIds);
+        pinMap = new Map(((pins ?? []) as any[]).map((p) => [p.verification_id, p]));
+      }
+      // Also surface "orphan" pinjaman submissions (verification_id null) so admin masih melihat pengajuan
+      const { data: orphans } = await supabase
+        .from("pinjaman")
+        .select("id,user_id,nominal,tenor_bulan,tujuan,status,created_at")
+        .is("verification_id", null)
+        .in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"])
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (orphans && orphans.length) {
+        const oUserIds = Array.from(new Set(orphans.map((o: any) => o.user_id)));
+        const missing = oUserIds.filter((id) => !profMap.has(id));
+        if (missing.length) {
+          const { data: profs2 } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", missing);
+          (profs2 ?? []).forEach((p: any) => profMap.set(p.id, p));
+        }
+      }
+      const main = (rows ?? []).map((r: any) => ({ ...r, profile: profMap.get(r.user_id), pinjaman: pinMap.get(r.id) }));
+      const orphanRows = (orphans ?? []).map((o: any) => ({
+        id: `orphan-${o.id}`,
+        user_id: o.user_id,
+        status: "no_verification",
+        created_at: o.created_at,
+        ktp_image_path: null,
+        selfie_image_path: null,
+        profile: profMap.get(o.user_id),
+        pinjaman: o,
+        _orphan: true,
+      }));
+      return [...main, ...orphanRows];
     },
   });
 
@@ -68,8 +105,10 @@ function AdminVerificationPage() {
   const ktpUrl = useSignedUrl(selected?.ktp_image_path);
   const selfieUrl = useSignedUrl(selected?.selfie_image_path);
 
-  const pending = (data ?? []).filter((r: any) => r.status === "pending");
-  const reviewed = (data ?? []).filter((r: any) => r.status !== "pending");
+  const pending = (data ?? []).filter((r: any) => r.status === "pending" || r.status === "no_verification");
+  const reviewed = (data ?? []).filter((r: any) => r.status !== "pending" && r.status !== "no_verification");
+
+  const fmtIDR = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 
   const renderCard = (r: any) => (
     <button
@@ -86,9 +125,16 @@ function AdminVerificationPage() {
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
           r.status === "pending" ? "bg-amber-500/15 text-amber-700 dark:text-amber-300" :
           r.status === "verified" ? "bg-success/15 text-success" :
+          r.status === "no_verification" ? "bg-muted text-muted-foreground" :
           "bg-destructive/15 text-destructive"
-        }`}>{r.status}</span>
+        }`}>{r.status === "no_verification" ? "tanpa verifikasi" : r.status}</span>
       </div>
+      {r.pinjaman && (
+        <div className="mt-2 rounded-md bg-muted/50 px-2 py-1 text-[11px]">
+          <span className="font-semibold text-foreground">{fmtIDR(Number(r.pinjaman.nominal))}</span>
+          <span className="text-muted-foreground"> · {r.pinjaman.tenor_bulan} bln · {r.pinjaman.status}</span>
+        </div>
+      )}
       <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
         <Clock className="h-3 w-3" /> {new Date(r.created_at).toLocaleString("id-ID")}
         {r.location?.lat && <><MapPin className="ml-2 h-3 w-3" /> Lokasi tercatat</>}
@@ -109,7 +155,8 @@ function AdminVerificationPage() {
           {isLoading ? (
             <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
           ) : pending.length === 0 ? (
-            <EmptyState title="Tidak ada verifikasi pending" />
+            <EmptyState title="Belum ada pengajuan menunggu verifikasi" desc="Pengajuan pinjaman baru akan otomatis muncul di sini setelah anggota submit form di /pinjaman." />
+
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{pending.map(renderCard)}</div>
           )}
