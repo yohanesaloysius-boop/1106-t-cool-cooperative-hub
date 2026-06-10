@@ -155,7 +155,7 @@ function AdminVerificationPage() {
           {isLoading ? (
             <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
           ) : pending.length === 0 ? (
-            <EmptyState title="Belum ada pengajuan menunggu verifikasi" description="Pengajuan pinjaman baru akan otomatis muncul di sini setelah anggota submit form di /pinjaman." />
+            <EmptyState title="Belum ada pengajuan menunggu verifikasi" desc="Pengajuan pinjaman baru akan otomatis muncul di sini setelah anggota submit form di /pinjaman." />
 
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{pending.map(renderCard)}</div>
