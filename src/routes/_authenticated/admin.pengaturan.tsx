@@ -31,13 +31,26 @@ const GROUPS: { title: string; keys: { key: string; label: string; suffix?: stri
     ],
   },
   {
-    title: "Pembagian SHU",
+    title: "Alokasi Pot SHU",
     keys: [
       { key: "shu.persen_jasa_modal", label: "Jasa modal", suffix: "%" },
       { key: "shu.persen_jasa_usaha", label: "Jasa usaha", suffix: "%" },
       { key: "shu.persen_dana_cadangan", label: "Dana cadangan", suffix: "%" },
       { key: "shu.persen_dana_sosial", label: "Dana sosial", suffix: "%" },
       { key: "shu.persen_pengurus", label: "Jasa pengurus", suffix: "%" },
+    ],
+  },
+  {
+    title: "Bobot SHU per Anggota",
+    keys: [
+      { key: "shu.bobot_simpanan_pokok", label: "Bobot simpanan pokok", suffix: "× nominal" },
+      { key: "shu.bobot_simpanan_wajib", label: "Bobot simpanan wajib", suffix: "× nominal" },
+      { key: "shu.bobot_simpanan_sukarela", label: "Bobot simpanan sukarela", suffix: "× nominal" },
+      { key: "shu.bobot_jasa_pinjaman", label: "Bobot bunga pinjaman dibayar", suffix: "×" },
+      { key: "shu.bobot_jasa_belanja", label: "Bobot belanja marketplace", suffix: "×" },
+      { key: "shu.bobot_jasa_deposito", label: "Bobot tabungan berjangka", suffix: "×" },
+      { key: "shu.min_keaktifan_persen", label: "Min. keaktifan", suffix: "% (di bawah → SHU 0)" },
+      { key: "shu.penalti_tunggakan_persen", label: "Potongan jika ada tunggakan", suffix: "%" },
     ],
   },
   {
