@@ -101,7 +101,7 @@ function AdminShu() {
         // Belanja marketplace (sebagai buyer) yang completed/paid/shipped di tahun ybs
         supabase.from("marketplace_transactions").select("buyer_id,total,created_at,status").in("status", ["paid", "shipped", "completed"]).gte("created_at", start).lte("created_at", end),
         // Tabungan berjangka aktif di tahun ybs
-        supabase.from("tabungan_berjangka").select("user_id,nominal_pokok,created_at").lte("created_at", end),
+        supabase.from("tabungan_berjangka").select("user_id,nominal,created_at").lte("created_at", end),
         // Tunggakan angsuran (overdue belum lunas)
         supabase.from("angsuran").select("user_id,status,jatuh_tempo").neq("status", "paid").lte("jatuh_tempo", end),
       ]);
@@ -123,7 +123,7 @@ function AdminShu() {
       (mpRes.data ?? []).forEach((t) => belanjaMap.set(t.buyer_id, (belanjaMap.get(t.buyer_id) ?? 0) + Number(t.total)));
 
       const depoMap = new Map<string, number>();
-      (tbRes.data ?? []).forEach((t) => depoMap.set(t.user_id, (depoMap.get(t.user_id) ?? 0) + Number(t.nominal_pokok ?? 0)));
+      (tbRes.data ?? []).forEach((t) => depoMap.set(t.user_id, (depoMap.get(t.user_id) ?? 0) + Number(t.nominal ?? 0)));
 
       const tunggakMap = new Map<string, number>();
       (angTunggakRes.data ?? []).forEach((a) => tunggakMap.set(a.user_id, (tunggakMap.get(a.user_id) ?? 0) + 1));
@@ -378,11 +378,15 @@ function AdminShu() {
                     <Table>
                       <TableHeader><TableRow>
                         <TableHead>No. Anggota</TableHead><TableHead>Nama</TableHead>
-                        <TableHead className="text-right">Simpanan</TableHead><TableHead className="text-right">Bunga</TableHead>
+                        <TableHead className="text-right">Simpanan</TableHead>
+                        <TableHead className="text-right">Bunga</TableHead>
+                        <TableHead className="text-right">Belanja</TableHead>
+                        <TableHead className="text-right">Deposito</TableHead>
+                        <TableHead className="text-center">Tunggak</TableHead>
                         <TableHead className="text-right">SHU</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
-                        {(members ?? []).map((m) => {
+                        {enriched.map((m) => {
                           const d = distribusi.find((x) => x.id === m.id);
                           return (
                             <TableRow key={m.id}>
@@ -390,6 +394,9 @@ function AdminShu() {
                               <TableCell>{m.nama}</TableCell>
                               <TableCell className="text-right text-xs">{fmt(m.simpanan)}</TableCell>
                               <TableCell className="text-right text-xs">{fmt(m.bunga)}</TableCell>
+                              <TableCell className="text-right text-xs">{fmt(m.belanja)}</TableCell>
+                              <TableCell className="text-right text-xs">{fmt(m.deposito)}</TableCell>
+                              <TableCell className="text-center text-xs">{m.tunggak > 0 ? <Badge variant="destructive" className="text-[10px]">{m.tunggak}</Badge> : "—"}</TableCell>
                               <TableCell className="text-right font-semibold text-success">{fmt(d?.share ?? 0)}</TableCell>
                             </TableRow>
                           );
