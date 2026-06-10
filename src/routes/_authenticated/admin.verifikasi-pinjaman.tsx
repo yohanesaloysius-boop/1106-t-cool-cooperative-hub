@@ -40,15 +40,52 @@ function AdminVerificationPage() {
         .from("loan_verifications")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(200);
       if (error) throw error;
-      const ids = Array.from(new Set((rows ?? []).map((r) => r.user_id)));
-      let map = new Map<string, any>();
-      if (ids.length) {
-        const { data: profs } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", ids);
-        map = new Map((profs ?? []).map((p) => [p.id, p]));
+      const userIds = Array.from(new Set((rows ?? []).map((r) => r.user_id)));
+      const verifIds = (rows ?? []).map((r) => r.id);
+      let profMap = new Map<string, any>();
+      let pinMap = new Map<string, any>();
+      if (userIds.length) {
+        const { data: profs } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", userIds);
+        profMap = new Map((profs ?? []).map((p) => [p.id, p]));
       }
-      return (rows ?? []).map((r: any) => ({ ...r, profile: map.get(r.user_id) }));
+      if (verifIds.length) {
+        const { data: pins } = await supabase
+          .from("pinjaman")
+          .select("id,verification_id,nominal,tenor_bulan,tujuan,status,created_at")
+          .in("verification_id", verifIds);
+        pinMap = new Map(((pins ?? []) as any[]).map((p) => [p.verification_id, p]));
+      }
+      // Also surface "orphan" pinjaman submissions (verification_id null) so admin masih melihat pengajuan
+      const { data: orphans } = await supabase
+        .from("pinjaman")
+        .select("id,user_id,nominal,tenor_bulan,tujuan,status,created_at")
+        .is("verification_id", null)
+        .in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"])
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (orphans && orphans.length) {
+        const oUserIds = Array.from(new Set(orphans.map((o: any) => o.user_id)));
+        const missing = oUserIds.filter((id) => !profMap.has(id));
+        if (missing.length) {
+          const { data: profs2 } = await supabase.from("profiles").select("id,nama_lengkap,nomor_anggota,no_hp").in("id", missing);
+          (profs2 ?? []).forEach((p: any) => profMap.set(p.id, p));
+        }
+      }
+      const main = (rows ?? []).map((r: any) => ({ ...r, profile: profMap.get(r.user_id), pinjaman: pinMap.get(r.id) }));
+      const orphanRows = (orphans ?? []).map((o: any) => ({
+        id: `orphan-${o.id}`,
+        user_id: o.user_id,
+        status: "no_verification",
+        created_at: o.created_at,
+        ktp_image_path: null,
+        selfie_image_path: null,
+        profile: profMap.get(o.user_id),
+        pinjaman: o,
+        _orphan: true,
+      }));
+      return [...main, ...orphanRows];
     },
   });
 
