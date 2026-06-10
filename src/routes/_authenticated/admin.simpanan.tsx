@@ -8,6 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { Loader2, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { getSignedUrl } from "@/lib/upload";
+
+async function openBukti(url: string) {
+  if (!url) return;
+  if (/^https?:\/\//i.test(url)) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+  // stored as storage path -> sign it
+  const signed = await getSignedUrl("bukti-transfer", url, 60 * 60);
+  if (signed) window.open(signed, "_blank", "noopener,noreferrer");
+  else toast.error("Bukti tidak dapat dibuka");
+}
 
 export const Route = createFileRoute("/_authenticated/admin/simpanan")({
   head: () => ({ meta: [{ title: "Verifikasi Simpanan — T-COOL Koperasi" }] }),
