@@ -8,6 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { Loader2, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { getSignedUrl } from "@/lib/upload";
+
+async function openBukti(url: string) {
+  if (!url) return;
+  if (/^https?:\/\//i.test(url)) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+  // stored as storage path -> sign it
+  const signed = await getSignedUrl("bukti-transfer", url, 60 * 60);
+  if (signed) window.open(signed, "_blank", "noopener,noreferrer");
+  else toast.error("Bukti tidak dapat dibuka");
+}
 
 export const Route = createFileRoute("/_authenticated/admin/simpanan")({
   head: () => ({ meta: [{ title: "Verifikasi Simpanan — T-COOL Koperasi" }] }),
@@ -111,9 +124,9 @@ export function SimpananVerifyPage() {
                       <TableCell className="text-right font-medium">{fmt.format(Number(r.nominal))}</TableCell>
                       <TableCell>
                         {r.bukti_url ? (
-                          <a href={r.bukti_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                          <button type="button" onClick={() => openBukti(r.bukti_url as string)} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                             Lihat <ExternalLink className="h-3 w-3" />
-                          </a>
+                          </button>
                         ) : <span className="text-xs text-muted-foreground">—</span>}
                       </TableCell>
                       <TableCell><StatusBadge status={r.status} /></TableCell>
