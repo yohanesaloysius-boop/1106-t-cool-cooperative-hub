@@ -100,7 +100,7 @@ function AngsuranPage() {
   });
 
   const viewBukti = async (path: string) => {
-    const { data, error } = await supabase.storage.from("ktp").createSignedUrl(path, 300);
+    const { data, error } = await supabase.storage.from("bukti-transfer").createSignedUrl(path, 300);
     if (error || !data?.signedUrl) { toast.error("Tidak bisa membuka bukti"); return; }
     window.open(data.signedUrl, "_blank");
   };
@@ -273,7 +273,7 @@ function AngsuranPage() {
                 <div className="mt-2 flex justify-between border-t border-border pt-2"><span className="font-semibold">Total Bayar</span><span className="text-xl font-bold tabular-nums">{fmt.format(Number(payRow.nominal) + Number(payRow.denda ?? 0))}</span></div>
               </div>
               <FileUpload
-                bucket="ktp"
+                bucket="bukti-transfer"
                 userId={user.id}
                 accept="image/*,application/pdf"
                 label="Upload Bukti Transfer"
