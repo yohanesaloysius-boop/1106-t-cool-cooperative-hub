@@ -105,8 +105,10 @@ function AdminVerificationPage() {
   const ktpUrl = useSignedUrl(selected?.ktp_image_path);
   const selfieUrl = useSignedUrl(selected?.selfie_image_path);
 
-  const pending = (data ?? []).filter((r: any) => r.status === "pending");
-  const reviewed = (data ?? []).filter((r: any) => r.status !== "pending");
+  const pending = (data ?? []).filter((r: any) => r.status === "pending" || r.status === "no_verification");
+  const reviewed = (data ?? []).filter((r: any) => r.status !== "pending" && r.status !== "no_verification");
+
+  const fmtIDR = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 
   const renderCard = (r: any) => (
     <button
@@ -123,9 +125,16 @@ function AdminVerificationPage() {
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
           r.status === "pending" ? "bg-amber-500/15 text-amber-700 dark:text-amber-300" :
           r.status === "verified" ? "bg-success/15 text-success" :
+          r.status === "no_verification" ? "bg-muted text-muted-foreground" :
           "bg-destructive/15 text-destructive"
-        }`}>{r.status}</span>
+        }`}>{r.status === "no_verification" ? "tanpa verifikasi" : r.status}</span>
       </div>
+      {r.pinjaman && (
+        <div className="mt-2 rounded-md bg-muted/50 px-2 py-1 text-[11px]">
+          <span className="font-semibold text-foreground">{fmtIDR(Number(r.pinjaman.nominal))}</span>
+          <span className="text-muted-foreground"> · {r.pinjaman.tenor_bulan} bln · {r.pinjaman.status}</span>
+        </div>
+      )}
       <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
         <Clock className="h-3 w-3" /> {new Date(r.created_at).toLocaleString("id-ID")}
         {r.location?.lat && <><MapPin className="ml-2 h-3 w-3" /> Lokasi tercatat</>}
