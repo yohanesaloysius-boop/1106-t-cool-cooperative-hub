@@ -4301,6 +4301,7 @@ export type Database = {
         Returns: boolean
       }
       is_school_requester: { Args: { _uid: string }; Returns: boolean }
+      mature_tabungan_berjangka: { Args: never; Returns: number }
       mp_auto_release_escrow: {
         Args: { _days?: number }
         Returns: {
