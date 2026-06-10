@@ -124,9 +124,9 @@ export function SimpananVerifyPage() {
                       <TableCell className="text-right font-medium">{fmt.format(Number(r.nominal))}</TableCell>
                       <TableCell>
                         {r.bukti_url ? (
-                          <a href={r.bukti_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                          <button type="button" onClick={() => openBukti(r.bukti_url as string)} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                             Lihat <ExternalLink className="h-3 w-3" />
-                          </a>
+                          </button>
                         ) : <span className="text-xs text-muted-foreground">—</span>}
                       </TableCell>
                       <TableCell><StatusBadge status={r.status} /></TableCell>
