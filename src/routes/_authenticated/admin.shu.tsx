@@ -376,7 +376,7 @@ function AdminShu() {
                   <div className="space-y-2">
                     <SignaturePadDialog
                       title="Tanda Tangani Approval SHU"
-                      onSign={(s) => approve.mutateAsync(s)}
+                      onSign={async (s) => { await approve.mutateAsync(s); }}
                       trigger={<Button className="w-full" disabled={approve.isPending}><ShieldCheck className="mr-2 h-4 w-4" /> Setujui & Bagikan (TTD)</Button>}
                     />
                     <Button variant="outline" className="w-full" onClick={() => reject.mutate()} disabled={reject.isPending}>Tolak Usulan</Button>
