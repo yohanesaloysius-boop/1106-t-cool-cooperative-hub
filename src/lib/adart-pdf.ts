@@ -12,14 +12,48 @@ export interface AdartSignature {
   nomorAnggota?: string | null; nik?: string | null;
 }
 
+const FALLBACK_PASAL: AdartPasal[] = [
+  { bab: "Pasal 1 — Keanggotaan", isi: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
+  { bab: "Pasal 2 — Hak & Kewajiban", isi: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
+  { bab: "Pasal 3 — Persetujuan", isi: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
+];
+
+function readText(source: unknown, keys: string[], fallback = ""): string {
+  if (!source || typeof source !== "object") return fallback;
+  const record = source as Record<string, unknown>;
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number") return String(value);
+  }
+  return fallback;
+}
+
+function normalizePasal(content: AdartContent): AdartPasal[] {
+  const fromPasal = Array.isArray(content.pasal)
+    ? content.pasal.map((item) => ({
+      bab: readText(item, ["bab", "judul", "title", "heading"], "Pasal"),
+      isi: readText(item, ["isi", "konten", "body", "content", "text", "description"]),
+    }))
+    : [];
+
+  const fromSections = Array.isArray(content.sections)
+    ? content.sections.map((item) => ({
+      bab: readText(item, ["heading", "title", "bab", "judul"], "Pasal"),
+      isi: readText(item, ["body", "content", "isi", "konten", "text", "description"]),
+    }))
+    : [];
+
+  const valid = [...fromPasal, ...fromSections].filter((item) => item.bab || item.isi);
+  return valid.length > 0 ? valid : FALLBACK_PASAL;
+}
+
 export function buildAdartPdf(
   koperasi: KoperasiInfo,
   content: AdartContent,
   signature?: AdartSignature,
 ): jsPDF {
-  const pasal = Array.isArray(content.pasal) && content.pasal.length > 0
-    ? content.pasal
-    : (content.sections ?? []).map((section) => ({ bab: section.heading, isi: section.body }));
+  const pasal = normalizePasal(content);
 
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
@@ -47,10 +81,10 @@ export function buildAdartPdf(
   for (const p of pasal) {
     if (y > pageH - 30) { doc.addPage(); y = 20; }
     doc.setFont("helvetica", "bold"); doc.setFontSize(10);
-    const babLines = doc.splitTextToSize(p.bab, pageW - 28);
+    const babLines = doc.splitTextToSize(p.bab || "Pasal", pageW - 28);
     doc.text(babLines, 14, y); y += babLines.length * 5 + 1;
     doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-    const isiLines = doc.splitTextToSize(p.isi, pageW - 28);
+    const isiLines = doc.splitTextToSize(p.isi || "-", pageW - 28);
     if (y + isiLines.length * 5 > pageH - 25) { doc.addPage(); y = 20; }
     doc.text(isiLines, 14, y); y += isiLines.length * 5 + 5;
   }

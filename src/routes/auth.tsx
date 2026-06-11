@@ -259,17 +259,7 @@ function RegisterForm() {
     try {
       const doc = buildAdartPdf(koperasi, adart);
       const fileName = `AD-ART-${(koperasi.nama || "Koperasi").replace(/\s+/g, "-")}.pdf`;
-      // Unduh langsung sebagai file — hindari window.open(blob) yang sering
-      // diblokir Chrome/ad-blocker (ERR_BLOCKED_BY_CLIENT).
-      const blob = doc.output("blob");
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      doc.save(fileName);
     } catch (err) {
       console.error("[adart-preview]", err);
       toast.error("Gagal mengunduh AD/ART");
