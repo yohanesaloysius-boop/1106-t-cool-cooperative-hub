@@ -256,7 +256,16 @@ function RegisterForm() {
     })();
   }, []);
 
-  const downloadAdart = () => buildAdartPdf(koperasi, adart).save(`AD-ART-${koperasi.nama}.pdf`);
+  const downloadAdart = () => {
+    try {
+      const doc = buildAdartPdf(koperasi, adart);
+      const blobUrl = doc.output("bloburl");
+      window.open(blobUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      console.error("[adart-preview]", err);
+      toast.error("Gagal membuka pratinjau AD/ART");
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
