@@ -1,0 +1,1 @@
+UPDATE auth.users SET email_confirmed_at = now() WHERE email_confirmed_at IS NULL AND (email = 'yohanesaloysius@gmail.com' OR phone IN ('+6281372776788','6281372776788','81372776788'));
