@@ -258,11 +258,21 @@ function RegisterForm() {
   const downloadAdart = () => {
     try {
       const doc = buildAdartPdf(koperasi, adart);
-      const blobUrl = doc.output("bloburl");
-      window.open(blobUrl, "_blank", "noopener,noreferrer");
+      const fileName = `AD-ART-${(koperasi.nama || "Koperasi").replace(/\s+/g, "-")}.pdf`;
+      // Unduh langsung sebagai file — hindari window.open(blob) yang sering
+      // diblokir Chrome/ad-blocker (ERR_BLOCKED_BY_CLIENT).
+      const blob = doc.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       console.error("[adart-preview]", err);
-      toast.error("Gagal membuka pratinjau AD/ART");
+      toast.error("Gagal mengunduh AD/ART");
     }
   };
 
@@ -410,7 +420,7 @@ function RegisterForm() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={downloadAdart}>
-            <Download className="h-3 w-3 mr-1" /> Pratinjau AD/ART
+            <Download className="h-3 w-3 mr-1" /> Unduh AD/ART
           </Button>
           {signature ? (
             <div className="inline-flex items-center gap-2 rounded-md border border-success/40 bg-success/10 px-2 py-1 text-xs">
