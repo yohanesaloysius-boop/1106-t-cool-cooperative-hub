@@ -144,13 +144,13 @@ function LoginForm() {
       const { data: lookup, error: lookupErr } = await supabase.rpc("get_email_by_phone", { _phone: phone });
       if (lookupErr) {
         setBusy(false);
-        return toast.error("Gagal memverifikasi nomor HP");
+        return toast.error("Email/Nomor HP atau password salah");
       }
       if (!lookup) {
         setBusy(false);
         attemptsRef.current.count += 1;
         if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
-        return toast.error("Nomor HP belum terdaftar");
+        return toast.error("Email/Nomor HP atau password salah");
       }
       email = lookup as string;
     }
@@ -160,8 +160,9 @@ function LoginForm() {
     if (error) {
       attemptsRef.current.count += 1;
       if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
-      return toast.error(error.message === "Invalid login credentials" ? "Email/Nomor HP atau password salah" : error.message);
+      return toast.error("Email/Nomor HP atau password salah");
     }
+
     attemptsRef.current = { count: 0, until: 0 };
     if (data.user) {
       await supabase.from("profiles").update({ last_login: new Date().toISOString() }).eq("id", data.user.id);
