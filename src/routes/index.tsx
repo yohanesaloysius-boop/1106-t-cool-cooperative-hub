@@ -120,17 +120,13 @@ function Landing() {
   const { data: lowongan, refetch: refetchLowongan } = useQuery({
     queryKey: ["public-lowongan"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lowongan_kerja")
-        .select("id,judul,perusahaan,posisi,gender,lokasi,kontak_nama,kontak_telepon,deskripsi,created_at")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(6);
+      const { data, error } = await supabase.rpc("get_public_lowongan" as never, { _limit: 6 } as never);
       if (error) throw error;
-      return data ?? [];
+      return (data as Array<{ id: string; judul: string; perusahaan: string; posisi: string; lokasi: string | null; gender: string | null; deskripsi: string | null; created_at: string }>) ?? [];
     },
     staleTime: 30_000,
   });
+
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
@@ -364,11 +360,12 @@ function Landing() {
                         </span>
                       )}
                       <a
-                        href={`tel:${l.kontak_telepon}`}
+                        href="/auth"
                         className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
                       >
-                        <Phone className="h-3 w-3" /> {l.kontak_telepon}
+                        <Phone className="h-3 w-3" /> Login untuk lihat kontak
                       </a>
+
                     </div>
                   </li>
                 ))

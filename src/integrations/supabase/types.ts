@@ -4231,6 +4231,19 @@ export type Database = {
       }
       get_or_create_wallet: { Args: { _user_id: string }; Returns: string }
       get_public_koperasi_stats: { Args: never; Returns: Json }
+      get_public_lowongan: {
+        Args: { _limit?: number }
+        Returns: {
+          created_at: string
+          deskripsi: string
+          gender: string
+          id: string
+          judul: string
+          lokasi: string
+          perusahaan: string
+          posisi: string
+        }[]
+      }
       get_public_recent_activity: {
         Args: { limit_count?: number }
         Returns: {
