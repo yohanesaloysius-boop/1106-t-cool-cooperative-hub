@@ -420,7 +420,7 @@ function RegisterForm() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={downloadAdart}>
-            <Download className="h-3 w-3 mr-1" /> Pratinjau AD/ART
+            <Download className="h-3 w-3 mr-1" /> Unduh AD/ART
           </Button>
           {signature ? (
             <div className="inline-flex items-center gap-2 rounded-md border border-success/40 bg-success/10 px-2 py-1 text-xs">
