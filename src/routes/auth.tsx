@@ -212,20 +212,19 @@ function LoginForm() {
 
 const DEFAULT_ADART: AdartContent = {
   version: "1.0",
-  title: "Anggaran Dasar & Anggaran Rumah Tangga Koperasi T-COOL",
-  sections: [
-    { heading: "Pasal 1 — Keanggotaan", body: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
-    { heading: "Pasal 2 — Hak & Kewajiban", body: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
-    { heading: "Pasal 3 — Persetujuan", body: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
+  pasal: [
+    { bab: "Pasal 1 — Keanggotaan", isi: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
+    { bab: "Pasal 2 — Hak & Kewajiban", isi: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
+    { bab: "Pasal 3 — Persetujuan", isi: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
   ],
-} as unknown as AdartContent;
+};
 
 const DEFAULT_KOPERASI: KoperasiInfo = {
   nama: "Koperasi T-COOL",
   alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
-  telp: "0819 5917 1997",
+  telepon: "0819 5917 1997",
   email: "t-coolkoperasi@gmail.com",
-} as unknown as KoperasiInfo;
+};
 
 interface PendingSig {
   dataUrl: string;

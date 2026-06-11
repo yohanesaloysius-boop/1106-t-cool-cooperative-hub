@@ -1,7 +1,8 @@
 import jsPDF from "jspdf";
 
 export interface AdartPasal { bab: string; isi: string }
-export interface AdartContent { version: string; updated_at?: string; pasal: AdartPasal[] }
+export interface AdartSection { heading: string; body: string }
+export interface AdartContent { version: string; updated_at?: string; pasal?: AdartPasal[]; sections?: AdartSection[]; title?: string }
 export interface KoperasiInfo {
   nama: string; alamat?: string; nomor_badan_hukum?: string;
   telepon?: string; email?: string; ketua?: string; sekretaris?: string;
@@ -16,6 +17,10 @@ export function buildAdartPdf(
   content: AdartContent,
   signature?: AdartSignature,
 ): jsPDF {
+  const pasal = Array.isArray(content.pasal) && content.pasal.length > 0
+    ? content.pasal
+    : (content.sections ?? []).map((section) => ({ bab: section.heading, isi: section.body }));
+
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -39,7 +44,7 @@ export function buildAdartPdf(
   doc.text(`Versi ${content.version}`, pageW / 2, 47, { align: "center" });
 
   let y = 56;
-  for (const p of content.pasal) {
+  for (const p of pasal) {
     if (y > pageH - 30) { doc.addPage(); y = 20; }
     doc.setFont("helvetica", "bold"); doc.setFontSize(10);
     const babLines = doc.splitTextToSize(p.bab, pageW - 28);
