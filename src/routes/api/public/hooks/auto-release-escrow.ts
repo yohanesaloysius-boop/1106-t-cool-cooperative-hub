@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 // Auto-release escrow: dipanggil pg_cron harian.
 // Membaca setting `marketplace_auto_release_days` (default 7), lalu melepas
@@ -9,7 +10,9 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const Route = createFileRoute("/api/public/hooks/auto-release-escrow")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauth = verifyCronAuth(request);
+        if (unauth) return unauth;
         // Ambil hari dari settings
         const { data: setting } = await supabaseAdmin
           .from("settings")

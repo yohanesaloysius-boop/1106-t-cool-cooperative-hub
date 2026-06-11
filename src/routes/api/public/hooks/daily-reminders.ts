@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 // Daily follow-up reminders.
 // - In-app notifications (table: notifications) — always
@@ -119,7 +120,9 @@ async function enqueueWa(items: WaInsert[]) {
 export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauth = verifyCronAuth(request);
+        if (unauth) return unauth;
         const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0, wa_queued: 0 };
 
         // ===== Iuran wajib bulanan =====
