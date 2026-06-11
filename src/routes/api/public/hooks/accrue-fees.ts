@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 // Hitung denda harian untuk angsuran yang lewat jatuh tempo.
 // Idempotent: dipanggil setiap hari oleh pg_cron, selalu menghasilkan nilai
@@ -11,7 +12,9 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const Route = createFileRoute("/api/public/hooks/accrue-fees")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauth = verifyCronAuth(request);
+        if (unauth) return unauth;
         const out = { angsuran_updated: 0, total_denda: 0, notif: 0 };
 
         // Ambil setting

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 // Auto-debet simpanan wajib bulanan.
 // Dijalankan via pg_cron tanggal 1 setiap bulan jam 03:00 WIB.
@@ -9,6 +10,8 @@ export const Route = createFileRoute("/api/public/hooks/auto-debet-wajib")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const unauth = verifyCronAuth(request);
+        if (unauth) return unauth;
         let periode: string | null = null;
         try {
           const body = (await request.json()) as { periode?: string };
