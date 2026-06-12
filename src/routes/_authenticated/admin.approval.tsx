@@ -60,13 +60,14 @@ function AdminApprovalPage() {
   const isPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
   const myRole: ApprovalRole | null = roles.includes("ketua") ? "ketua" : roles.includes("bendahara") ? "bendahara" : roles.includes("sekretaris") ? "sekretaris" : roles.includes("super_admin") ? "ketua" : null;
 
-  const { data: approvals = [], isLoading } = useQuery({
+  const { data: rawApprovals = [], isLoading } = useQuery({
     queryKey: ["approvals-all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("approvals")
         .select("*")
         .is("deleted_at", null)
+        .neq("target_type", "pinjaman")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -82,6 +83,7 @@ function AdminApprovalPage() {
     return () => { supabase.removeChannel(ch); };
   }, [qc]);
 
+  const approvals = useMemo(() => rawApprovals, [rawApprovals]);
   const queue = useMemo(() => approvals.filter((a) => a.status === "pending" && (myRole ? a.required_role === myRole : true)), [approvals, myRole]);
   const history = useMemo(() => approvals.filter((a) => a.status !== "pending"), [approvals]);
 
