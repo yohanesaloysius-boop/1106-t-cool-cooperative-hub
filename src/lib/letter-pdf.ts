@@ -53,6 +53,7 @@ function defaultBody(d: LetterData): string {
 export function buildLetterPdf(d: LetterData): jsPDF {
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
 
   // KOP
   doc.setFont("helvetica", "bold"); doc.setFontSize(15);
@@ -76,6 +77,12 @@ export function buildLetterPdf(d: LetterData): jsPDF {
   doc.text(`Nomor: ${d.nomorSurat}`, pageW / 2, 50, { align: "center" });
 
   let y = 62;
+  const ensureSpace = (needed = 12) => {
+    if (y + needed > pageH - 18) {
+      doc.addPage();
+      y = 18;
+    }
+  };
   const tgl = new Date(d.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 
   doc.setFontSize(10);
@@ -94,20 +101,41 @@ export function buildLetterPdf(d: LetterData): jsPDF {
   for (const [k, v] of rows) {
     const line = `${k.padEnd(13, " ")} : ${v}`;
     const lines = doc.splitTextToSize(line, pageW - 32);
+    ensureSpace(lines.length * 5 + 2);
     doc.text(lines, 18, y); y += lines.length * 5;
   }
   y += 4;
 
   const body = d.isi?.trim() || defaultBody(d);
-  const bodyLines = doc.splitTextToSize(body, pageW - 28);
-  doc.text(bodyLines, 14, y); y += bodyLines.length * 5 + 10;
+  const paragraphs = body.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  for (const paragraph of paragraphs) {
+    const bodyLines = doc.splitTextToSize(paragraph, pageW - 28);
+    for (const line of bodyLines) {
+      ensureSpace(6);
+      doc.text(line, 14, y);
+      y += 5;
+    }
+    y += 3;
+  }
+  y += 7;
 
   // TTD
+  ensureSpace(42);
   const sigX = pageW - 75;
   doc.text(`${d.koperasi.alamat?.split(",")[0] ?? "-"}, ${tgl}`, sigX, y); y += 6;
   doc.text(d.ttd?.jabatan ?? "Pengurus", sigX, y); y += 22;
   doc.setFont("helvetica", "bold");
   doc.text(`( ${d.ttd?.nama ?? d.koperasi.ketua ?? "-"} )`, sigX, y);
+
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text(`Halaman ${i}/${pages} — ${d.koperasi.nama}`, pageW / 2, pageH - 8, { align: "center" });
+    doc.setTextColor(0);
+  }
 
   return doc;
 }
