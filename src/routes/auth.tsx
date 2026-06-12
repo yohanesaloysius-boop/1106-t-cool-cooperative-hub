@@ -15,6 +15,7 @@ import { Loader2, Phone, Mail } from "lucide-react";
 import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
+import { buildDefaultAdart, rulesFromSettings } from "@/lib/adart-default";
 import { CheckCircle2, FileText, Download } from "lucide-react";
 import { RequiredMark } from "@/components/ui/required-mark";
 
@@ -210,21 +211,14 @@ function LoginForm() {
   );
 }
 
-const DEFAULT_ADART: AdartContent = {
-  version: "1.0",
-  pasal: [
-    { bab: "Pasal 1 — Keanggotaan", isi: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
-    { bab: "Pasal 2 — Hak & Kewajiban", isi: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
-    { bab: "Pasal 3 — Persetujuan", isi: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
-  ],
-};
-
 const DEFAULT_KOPERASI: KoperasiInfo = {
   nama: "Koperasi T-COOL",
   alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
   telepon: "0819 5917 1997",
   email: "t-coolkoperasi@gmail.com",
 };
+
+const DEFAULT_ADART: AdartContent = buildDefaultAdart(DEFAULT_KOPERASI);
 
 interface PendingSig {
   dataUrl: string;
@@ -245,10 +239,18 @@ function RegisterForm() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
-        const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
-        if (map.adart_content) setAdart(map.adart_content as AdartContent);
-        if (map.koperasi_info) setKoperasi(map.koperasi_info as KoperasiInfo);
+        const { data } = await supabase.from("settings").select("key,value");
+        const rows = (data ?? []) as { key: string; value: unknown }[];
+        const map = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, unknown>;
+        const info = (map.koperasi_info as KoperasiInfo) ?? DEFAULT_KOPERASI;
+        if (map.koperasi_info) setKoperasi(info);
+        // Jika pengurus sudah menyusun AD/ART manual, pakai itu; jika belum,
+        // bangun AD/ART lengkap otomatis dari aturan koperasi yang berlaku di sistem.
+        if (map.adart_content) {
+          setAdart(map.adart_content as AdartContent);
+        } else {
+          setAdart(buildDefaultAdart(info, rulesFromSettings(rows)));
+        }
       } catch {
         // settings tidak bisa dibaca anon — pakai default
       }
