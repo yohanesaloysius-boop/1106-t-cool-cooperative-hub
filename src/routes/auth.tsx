@@ -239,10 +239,18 @@ function RegisterForm() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await supabase.from("settings").select("key,value").in("key", ["adart_content", "koperasi_info"]);
-        const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, unknown>;
-        if (map.adart_content) setAdart(map.adart_content as AdartContent);
-        if (map.koperasi_info) setKoperasi(map.koperasi_info as KoperasiInfo);
+        const { data } = await supabase.from("settings").select("key,value");
+        const rows = (data ?? []) as { key: string; value: unknown }[];
+        const map = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, unknown>;
+        const info = (map.koperasi_info as KoperasiInfo) ?? DEFAULT_KOPERASI;
+        if (map.koperasi_info) setKoperasi(info);
+        // Jika pengurus sudah menyusun AD/ART manual, pakai itu; jika belum,
+        // bangun AD/ART lengkap otomatis dari aturan koperasi yang berlaku di sistem.
+        if (map.adart_content) {
+          setAdart(map.adart_content as AdartContent);
+        } else {
+          setAdart(buildDefaultAdart(info, rulesFromSettings(rows)));
+        }
       } catch {
         // settings tidak bisa dibaca anon — pakai default
       }
