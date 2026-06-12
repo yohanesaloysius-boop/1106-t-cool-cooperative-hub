@@ -211,21 +211,14 @@ function LoginForm() {
   );
 }
 
-const DEFAULT_ADART: AdartContent = {
-  version: "1.0",
-  pasal: [
-    { bab: "Pasal 1 — Keanggotaan", isi: "Anggota wajib mematuhi seluruh ketentuan koperasi, membayar simpanan pokok, simpanan wajib, dan ikut serta dalam kegiatan koperasi." },
-    { bab: "Pasal 2 — Hak & Kewajiban", isi: "Setiap anggota berhak menerima SHU, mengikuti RAT, dan menggunakan layanan koperasi sesuai ketentuan yang berlaku." },
-    { bab: "Pasal 3 — Persetujuan", isi: "Dengan menandatangani dokumen ini, anggota menyatakan telah membaca, memahami, dan menyetujui seluruh isi AD/ART Koperasi T-COOL." },
-  ],
-};
-
 const DEFAULT_KOPERASI: KoperasiInfo = {
   nama: "Koperasi T-COOL",
   alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
   telepon: "0819 5917 1997",
   email: "t-coolkoperasi@gmail.com",
 };
+
+const DEFAULT_ADART: AdartContent = buildDefaultAdart(DEFAULT_KOPERASI);
 
 interface PendingSig {
   dataUrl: string;
