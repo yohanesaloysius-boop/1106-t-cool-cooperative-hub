@@ -55,13 +55,6 @@ export function buildLetterPdf(d: LetterData): jsPDF {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
 
-  const ensureSpace = (needed = 12) => {
-    if (y + needed > pageH - 18) {
-      doc.addPage();
-      y = 18;
-    }
-  };
-
   // KOP
   doc.setFont("helvetica", "bold"); doc.setFontSize(15);
   doc.text(d.koperasi.nama.toUpperCase(), pageW / 2, 18, { align: "center" });
@@ -84,6 +77,12 @@ export function buildLetterPdf(d: LetterData): jsPDF {
   doc.text(`Nomor: ${d.nomorSurat}`, pageW / 2, 50, { align: "center" });
 
   let y = 62;
+  const ensureSpace = (needed = 12) => {
+    if (y + needed > pageH - 18) {
+      doc.addPage();
+      y = 18;
+    }
+  };
   const tgl = new Date(d.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 
   doc.setFontSize(10);
