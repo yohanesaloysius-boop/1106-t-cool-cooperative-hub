@@ -15,6 +15,7 @@ import { Loader2, Phone, Mail } from "lucide-react";
 import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/phone";
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
+import { buildDefaultAdart, rulesFromSettings } from "@/lib/adart-default";
 import { CheckCircle2, FileText, Download } from "lucide-react";
 import { RequiredMark } from "@/components/ui/required-mark";
 
