@@ -27,6 +27,14 @@ const LETTER_TYPES: { value: LetterType; label: string; perihal: string }[] = [
   { value: "lainnya", label: "Surat Lainnya (custom)", perihal: "Surat Resmi" },
 ];
 
+const DEFAULT_KOPERASI: KoperasiInfo = {
+  nama: "T-COOL Koperasi",
+  alamat: "Center Park Blok 3 No. 3, Simpang Kara, Batam",
+  telepon: "0819 5917 1997",
+  email: "t-coolkoperasi@gmail.com",
+  ketua: "Pengurus",
+};
+
 function genNomor(type: LetterType) {
   const prefix: Record<LetterType, string> = {
     keterangan_anggota: "SKA",
@@ -75,8 +83,9 @@ function AdminSuratPage() {
   const { data: settings } = useQuery({
     queryKey: ["letter-settings"],
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("key,value").eq("key", "koperasi_info");
-      return (data?.[0]?.value ?? null) as KoperasiInfo | null;
+      const { data, error } = await supabase.from("settings").select("key,value").eq("key", "koperasi_info").maybeSingle();
+      if (error) return DEFAULT_KOPERASI;
+      return ((data?.value as KoperasiInfo | null) ?? DEFAULT_KOPERASI);
     },
   });
 
@@ -96,7 +105,7 @@ function AdminSuratPage() {
 
   const generate = async () => {
     if (!selectedMember) return toast.error("Pilih anggota dulu");
-    if (!settings) return toast.error("Info koperasi belum diatur");
+    const koperasiInfo = settings ?? DEFAULT_KOPERASI;
     setBusy(true);
     try {
       const anggota: LetterAnggota = {
@@ -119,12 +128,12 @@ function AdminSuratPage() {
       }
       const doc = buildLetterPdf({
         type, nomorSurat: nomor, tanggal: new Date().toISOString(),
-        perihal, isi: isi || undefined, koperasi: settings, anggota, extra,
-        ttd: { jabatan: "Ketua", nama: settings.ketua ?? "Pengurus" },
+        perihal, isi: isi || undefined, koperasi: koperasiInfo, anggota, extra,
+        ttd: { jabatan: "Ketua", nama: koperasiInfo.ketua ?? "Pengurus" },
       });
       doc.save(`${nomor.replace(/\//g, "-")}.pdf`);
 
-      await supabase.from("official_letters").insert({
+      const { error } = await supabase.from("official_letters").insert({
         member_id: selectedMember.id,
         letter_type: type,
         nomor_surat: nomor,
@@ -132,8 +141,12 @@ function AdminSuratPage() {
         payload: { isi, extra },
         generated_by: user?.id,
       });
-      toast.success("Surat dibuat & dicatat");
-      refetch();
+      if (error) {
+        toast.warning("PDF berhasil diunduh, tetapi riwayat surat belum tersimpan.");
+      } else {
+        toast.success("Surat dibuat & dicatat");
+        refetch();
+      }
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
