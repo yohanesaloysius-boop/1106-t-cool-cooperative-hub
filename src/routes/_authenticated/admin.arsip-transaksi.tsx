@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { getSignedUrl } from "@/lib/upload";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ type Row = {
   status: string;
   keterangan: string;
   bukti_url: string | null;
+  bukti_bucket: string | null;
 };
 
 function AdminArsipTransaksi() {
@@ -66,11 +68,11 @@ function AdminArsipTransaksi() {
       (profs ?? []).forEach((p: any) => pmap.set(p.id, `${p.nama_lengkap}${p.nomor_anggota ? ` (${p.nomor_anggota})` : ""}`));
       const name = (uid: string) => pmap.get(uid) ?? "-";
       const rows: Row[] = [];
-      (simp ?? []).forEach((s: any) => rows.push({ id: s.id, tipe: "simpanan", tanggal: s.created_at, anggota: name(s.user_id), nominal: Number(s.nominal), status: s.status, keterangan: `Simpanan ${s.jenis}`, bukti_url: s.bukti_url }));
-      (ang ?? []).forEach((a: any) => rows.push({ id: a.id, tipe: "angsuran", tanggal: a.paid_at ?? a.created_at, anggota: name(a.user_id), nominal: Number(a.nominal), status: a.status, keterangan: `Angsuran ke-${a.cicilan_ke}`, bukti_url: a.bukti_url }));
-      (pj ?? []).forEach((p: any) => rows.push({ id: p.id, tipe: "pinjaman", tanggal: p.disbursed_at ?? p.created_at, anggota: name(p.user_id), nominal: Number(p.nominal), status: p.status, keterangan: p.tujuan ?? "Pinjaman", bukti_url: p.bukti_pencairan_url }));
-      (shu ?? []).forEach((s: any) => rows.push({ id: s.id, tipe: "shu", tanggal: s.dibagikan_at ?? s.created_at, anggota: name(s.user_id), nominal: Number(s.nominal), status: s.dibagikan_at ? "dibagikan" : "draft", keterangan: `SHU ${s.tahun}${s.catatan ? " — " + s.catatan : ""}`, bukti_url: null }));
-      (mp ?? []).forEach((m: any) => rows.push({ id: m.id, tipe: "marketplace", tanggal: m.created_at, anggota: name(m.buyer_id), nominal: Number(m.total), status: m.status, keterangan: `Marketplace${m.resi ? ` · resi ${m.resi}` : ""}`, bukti_url: m.bukti_transfer_url }));
+      (simp ?? []).forEach((s: any) => rows.push({ id: s.id, tipe: "simpanan", tanggal: s.created_at, anggota: name(s.user_id), nominal: Number(s.nominal), status: s.status, keterangan: `Simpanan ${s.jenis}`, bukti_url: s.bukti_url, bukti_bucket: "bukti-transfer" }));
+      (ang ?? []).forEach((a: any) => rows.push({ id: a.id, tipe: "angsuran", tanggal: a.paid_at ?? a.created_at, anggota: name(a.user_id), nominal: Number(a.nominal), status: a.status, keterangan: `Angsuran ke-${a.cicilan_ke}`, bukti_url: a.bukti_url, bukti_bucket: "bukti-transfer" }));
+      (pj ?? []).forEach((p: any) => rows.push({ id: p.id, tipe: "pinjaman", tanggal: p.disbursed_at ?? p.created_at, anggota: name(p.user_id), nominal: Number(p.nominal), status: p.status, keterangan: p.tujuan ?? "Pinjaman", bukti_url: p.bukti_pencairan_url, bukti_bucket: "bukti-transfer" }));
+      (shu ?? []).forEach((s: any) => rows.push({ id: s.id, tipe: "shu", tanggal: s.dibagikan_at ?? s.created_at, anggota: name(s.user_id), nominal: Number(s.nominal), status: s.dibagikan_at ? "dibagikan" : "draft", keterangan: `SHU ${s.tahun}${s.catatan ? " — " + s.catatan : ""}`, bukti_url: null, bukti_bucket: null }));
+      (mp ?? []).forEach((m: any) => rows.push({ id: m.id, tipe: "marketplace", tanggal: m.created_at, anggota: name(m.buyer_id), nominal: Number(m.total), status: m.status, keterangan: `Marketplace${m.resi ? ` · resi ${m.resi}` : ""}`, bukti_url: m.bukti_transfer_url, bukti_bucket: "bukti-transfer" }));
       rows.sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
       return rows;
     },
@@ -98,6 +100,22 @@ function AdminArsipTransaksi() {
     XLSX.utils.book_append_sheet(wb, sheet, "Arsip Transaksi");
     XLSX.writeFile(wb, `Arsip-Transaksi-${from}_${to}.xlsx`);
     toast.success("Arsip transaksi diunduh");
+  };
+
+  const openBukti = async (r: Row) => {
+    if (!r.bukti_url) return;
+    // Already a full URL (public bucket / external) — open directly.
+    if (/^https?:\/\//i.test(r.bukti_url)) {
+      window.open(r.bukti_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    const bucket = r.bukti_bucket ?? "bukti-transfer";
+    const url = await getSignedUrl(bucket, r.bukti_url, 3600);
+    if (!url) {
+      toast.error("Gagal membuka bukti. File mungkin tidak ditemukan.");
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
@@ -171,9 +189,9 @@ function AdminArsipTransaksi() {
                     <TableCell><Badge variant="secondary" className="text-[10px] capitalize">{r.status}</Badge></TableCell>
                     <TableCell>
                       {r.bukti_url ? (
-                        <a href={r.bukti_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                        <button type="button" onClick={() => openBukti(r)} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                           <Paperclip className="h-3 w-3" /> Lihat <ExternalLink className="h-3 w-3" />
-                        </a>
+                        </button>
                       ) : <span className="text-[10px] text-muted-foreground">—</span>}
                     </TableCell>
                   </TableRow>
