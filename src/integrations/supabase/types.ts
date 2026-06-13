@@ -4468,7 +4468,7 @@ export type Database = {
         | "rejected"
         | "paid"
         | "cancelled"
-      payment_status: "pending" | "verified" | "rejected"
+      payment_status: "pending" | "verified" | "rejected" | "approved"
       pending_iuran_status: "unpaid" | "paid" | "waived"
       pinjaman_status:
         | "draft"
@@ -4782,7 +4782,7 @@ export const Constants = {
         "paid",
         "cancelled",
       ],
-      payment_status: ["pending", "verified", "rejected"],
+      payment_status: ["pending", "verified", "rejected", "approved"],
       pending_iuran_status: ["unpaid", "paid", "waived"],
       pinjaman_status: [
         "draft",
