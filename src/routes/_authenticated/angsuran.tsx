@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Receipt, Loader2, AlertTriangle, FileDown, ExternalLink } from "lucide-react";
+import { Copy } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload, type UploadResult } from "@/components/file-upload";
 import jsPDF from "jspdf";
@@ -33,6 +34,26 @@ function AngsuranPage() {
   const qc = useQueryClient();
   const [payRow, setPayRow] = useState<Row | null>(null);
   const [bukti, setBukti] = useState<UploadResult | null>(null);
+
+  const { data: bank } = useQuery({
+    queryKey: ["koperasi-bank"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("settings")
+        .select("key,value")
+        .in("key", ["koperasi.bank_nama", "koperasi.bank_rekening", "koperasi.bank_atas_nama"]);
+      if (error) throw error;
+      const m: Record<string, string> = {};
+      (data ?? []).forEach((r) => {
+        m[r.key] = typeof r.value === "string" ? r.value : JSON.stringify(r.value).replace(/^"|"$/g, "");
+      });
+      return {
+        nama: m["koperasi.bank_nama"] ?? "",
+        rekening: m["koperasi.bank_rekening"] ?? "",
+        atasNama: m["koperasi.bank_atas_nama"] ?? "",
+      };
+    },
+  });
 
   const { data: rows = [], isLoading } = useQuery<Row[]>({
     queryKey: ["angsuran", user?.id],
@@ -272,6 +293,28 @@ function AngsuranPage() {
                 )}
                 <div className="mt-2 flex justify-between border-t border-border pt-2"><span className="font-semibold">Total Bayar</span><span className="text-xl font-bold tabular-nums">{fmt.format(Number(payRow.nominal) + Number(payRow.denda ?? 0))}</span></div>
               </div>
+              {bank?.rekening && (
+                <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground">Transfer ke rekening koperasi</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{bank.nama} · a.n {bank.atasNama}</p>
+                      <p className="text-lg font-bold tabular-nums tracking-wide">{bank.rekening}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1 shrink-0"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(bank.rekening);
+                        toast.success("Nomor rekening disalin");
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Salin
+                    </Button>
+                  </div>
+                </div>
+              )}
               <FileUpload
                 bucket="bukti-transfer"
                 userId={user.id}
