@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { SignaturePadDialog, type SignatureResult } from "@/components/signature-pad";
 import { calcLoan } from "@/components/dashboard/loan-calculator";
-import { Loader2, PenLine, XCircle, Banknote, FileSignature } from "lucide-react";
+import { Loader2, PenLine, XCircle, FileSignature } from "lucide-react";
 import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
 import { DisburseDialog, type DisburseInfo } from "@/components/disburse-dialog";
 
