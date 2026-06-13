@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "coupons auth read active" ON public.marketplace_coupons;
