@@ -4316,13 +4316,16 @@ export type Database = {
       }
       is_active_seller: { Args: { _user_id: string }; Returns: boolean }
       is_church_requester: { Args: { _uid: string }; Returns: boolean }
+      is_finance: { Args: { _uid: string }; Returns: boolean }
       is_ketua: { Args: { _uid: string }; Returns: boolean }
+      is_leader: { Args: { _uid: string }; Returns: boolean }
       is_pengurus: { Args: { _user_id: string }; Returns: boolean }
       is_sa_identity: {
         Args: { _email: string; _phone: string }
         Returns: boolean
       }
       is_school_requester: { Args: { _uid: string }; Returns: boolean }
+      is_secretary: { Args: { _uid: string }; Returns: boolean }
       mature_tabungan_berjangka: { Args: never; Returns: number }
       mp_auto_release_escrow: {
         Args: { _days?: number }
