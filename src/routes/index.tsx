@@ -127,6 +127,16 @@ function Landing() {
     staleTime: 30_000,
   });
 
+  const { data: pengurus } = useQuery({
+    queryKey: ["public-pengurus"],
+    queryFn: async () => {
+      const { data, error } = await (supabase.rpc as any)("get_public_pengurus");
+      if (error) throw error;
+      return (data ?? []) as { jabatan: string; nama: string; foto_url: string }[];
+    },
+    staleTime: 60_000,
+  });
+  const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
@@ -414,6 +424,38 @@ function Landing() {
           </div>
         </section>
       </main>
+
+        {pengurusList.length > 0 && (
+          <section className="container mx-auto mt-12 px-4 pb-16">
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#372f2f]">Struktur Pengurus</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Pengurus & dewan pengawas Koperasi T-COOL.</p>
+            </div>
+            <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+              {pengurusList.map((p, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col items-center rounded-3xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1"
+                  style={{ boxShadow: "var(--shadow-card)" }}
+                >
+                  <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-primary/15 bg-muted">
+                    {p.foto_url ? (
+                      <img src={p.foto_url} alt={p.nama || p.jabatan} className="h-full w-full object-cover" loading="lazy" />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-primary/40">
+                        {(p.nama || p.jabatan).charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-4 text-sm font-semibold leading-tight">{p.nama || "—"}</p>
+                  <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
+                    {p.jabatan}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
       <SiteFooter />
     </div>

@@ -8,7 +8,109 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Save, ShieldAlert } from "lucide-react";
+import { Loader2, Save, ShieldAlert, Upload, ImageOff } from "lucide-react";
+
+type Pengurus = { jabatan: string; nama: string; foto_url: string };
+
+function PengurusEditor() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [list, setList] = useState<Pengurus[]>([]);
+  const [busyIdx, setBusyIdx] = useState<number | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings-pengurus"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("settings").select("value").eq("key", "koperasi.pengurus").maybeSingle();
+      if (error) throw error;
+      return (data?.value as unknown as Pengurus[]) ?? [];
+    },
+  });
+
+  useEffect(() => {
+    if (data) setList(data);
+  }, [data]);
+
+  const save = useMutation({
+    mutationFn: async (next: Pengurus[]) => {
+      const { error } = await supabase.from("settings").update({ value: next as never }).eq("key", "koperasi.pengurus");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Struktur pengurus tersimpan");
+      qc.invalidateQueries({ queryKey: ["settings-pengurus"] });
+      qc.invalidateQueries({ queryKey: ["public-pengurus"] });
+    },
+    onError: (e: Error) => toast.error("Gagal", { description: e.message }),
+  });
+
+  const uploadFoto = async (idx: number, file: File) => {
+    if (!user) return;
+    if (file.size > 4 * 1024 * 1024) return toast.error("Ukuran foto maksimal 4MB");
+    setBusyIdx(idx);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${user.id}/pengurus-${idx}-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (error) throw error;
+      const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+      const next = list.map((p, i) => (i === idx ? { ...p, foto_url: url } : p));
+      setList(next);
+      toast.success("Foto diunggah");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusyIdx(null);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Struktur Pengurus</CardTitle>
+        <p className="text-xs text-muted-foreground">Nama & foto pengurus yang tampil di halaman utama.</p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <div className="flex justify-center p-4"><Loader2 className="h-5 w-5 animate-spin" /></div>
+        ) : (
+          <>
+            {list.map((p, idx) => (
+              <div key={idx} className="flex items-center gap-3 rounded-xl border border-border p-3">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border bg-muted">
+                  {p.foto_url ? (
+                    <img src={p.foto_url} alt={p.jabatan} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-muted-foreground"><ImageOff className="h-5 w-5" /></span>
+                  )}
+                </div>
+                <div className="grid flex-1 gap-2">
+                  <div>
+                    <Label className="text-xs">Jabatan</Label>
+                    <Input className="mt-1 h-8" value={p.jabatan} onChange={(e) => setList(list.map((x, i) => (i === idx ? { ...x, jabatan: e.target.value } : x)))} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Nama</Label>
+                    <Input className="mt-1 h-8" value={p.nama} placeholder="Nama lengkap" onChange={(e) => setList(list.map((x, i) => (i === idx ? { ...x, nama: e.target.value } : x)))} />
+                  </div>
+                  <label className="inline-flex w-fit cursor-pointer items-center gap-1.5 text-xs font-medium text-primary">
+                    {busyIdx === idx ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                    {p.foto_url ? "Ganti foto" : "Unggah foto"}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void uploadFoto(idx, f); }} />
+                  </label>
+                </div>
+              </div>
+            ))}
+            <Button onClick={() => save.mutate(list)} disabled={save.isPending} className="w-full">
+              {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Simpan Struktur Pengurus
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin/pengaturan")({
   head: () => ({ meta: [{ title: "Pengaturan Koperasi" }] }),
@@ -143,6 +245,7 @@ function Page() {
         <div className="flex justify-center p-8"><Loader2 className="h-5 w-5 animate-spin" /></div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
+          <PengurusEditor />
           {GROUPS.map((g) => (
             <Card key={g.title}>
               <CardHeader><CardTitle className="text-base">{g.title}</CardTitle></CardHeader>
