@@ -13,6 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { CommandPalette } from "@/components/command-palette";
+import { canAccessAdminPath } from "@/lib/access";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -186,6 +187,8 @@ export const navGroups: NavGroup[] = [
 
 function AuthLayout() {
   const { user, profile, loading, signOut, roles, isPengurus, viewAsMember, setViewAsMember } = useAuth();
+  // Saat "lihat sebagai anggota", perlakukan tanpa role admin
+  const effRoles = viewAsMember ? [] : roles;
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
   const { data: isChurchRequester } = useQuery({
     queryKey: ["is-church-requester", user?.id],
@@ -214,11 +217,6 @@ function AuthLayout() {
     },
   });
   const visibleGroups = navGroups
-    .filter((g) => {
-      if (g.adminOnly) return isPengurus;
-      if (g.id === "pengadaan") return isPengurus || !!isChurchRequester || !!isSchoolRequester;
-      return true;
-    })
     .map((g) => {
       if (g.id === "pengadaan") {
         return {
@@ -230,7 +228,16 @@ function AuthLayout() {
           }),
         };
       }
-      return { ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) };
+      if (g.adminOnly) {
+        // Tampilkan hanya item yang boleh diakses sesuai job-desc role
+        return { ...g, items: g.items.filter((i) => canAccessAdminPath(effRoles, i.to)) };
+      }
+      return g;
+    })
+    .filter((g) => {
+      if (g.adminOnly) return g.items.length > 0;
+      if (g.id === "pengadaan") return isPengurus || !!isChurchRequester || !!isSchoolRequester;
+      return true;
     });
 
   const mobileNav = visibleGroups.flatMap((g) => g.items).slice(0, 4);
