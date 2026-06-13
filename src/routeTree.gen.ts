@@ -88,6 +88,7 @@ import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as AuthenticatedAdminAnalitikRouteImport } from './routes/_authenticated/admin.analitik'
+import { Route as AuthenticatedAdminAkadRouteImport } from './routes/_authenticated/admin.akad'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
 import { Route as ApiPublicHooksAutoDebetWajibRouteImport } from './routes/api/public/hooks/auto-debet-wajib'
@@ -527,6 +528,11 @@ const AuthenticatedAdminAnalitikRoute =
     path: '/analitik',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAkadRoute = AuthenticatedAdminAkadRouteImport.update({
+  id: '/akad',
+  path: '/akad',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const ApiPublicHooksDailyRemindersRoute =
   ApiPublicHooksDailyRemindersRouteImport.update({
     id: '/api/public/hooks/daily-reminders',
@@ -611,6 +617,7 @@ export interface FileRoutesByFullPath {
   '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -698,6 +705,7 @@ export interface FileRoutesByTo {
   '/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -788,6 +796,7 @@ export interface FileRoutesById {
   '/_authenticated/voting': typeof AuthenticatedVotingRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/_authenticated/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/_authenticated/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -878,6 +887,7 @@ export interface FileRouteTypes {
     | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
@@ -965,6 +975,7 @@ export interface FileRouteTypes {
     | '/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
@@ -1054,6 +1065,7 @@ export interface FileRouteTypes {
     | '/_authenticated/voting'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/_authenticated/admin/akad'
     | '/_authenticated/admin/analitik'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
@@ -1679,6 +1691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalitikRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/akad': {
+      id: '/_authenticated/admin/akad'
+      path: '/akad'
+      fullPath: '/admin/akad'
+      preLoaderRoute: typeof AuthenticatedAdminAkadRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/api/public/hooks/daily-reminders': {
       id: '/api/public/hooks/daily-reminders'
       path: '/api/public/hooks/daily-reminders'
@@ -1739,6 +1758,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAkadRoute: typeof AuthenticatedAdminAkadRoute
   AuthenticatedAdminAnalitikRoute: typeof AuthenticatedAdminAnalitikRoute
   AuthenticatedAdminAnggotaRoute: typeof AuthenticatedAdminAnggotaRoute
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
@@ -1784,6 +1804,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAkadRoute: AuthenticatedAdminAkadRoute,
   AuthenticatedAdminAnalitikRoute: AuthenticatedAdminAnalitikRoute,
   AuthenticatedAdminAnggotaRoute: AuthenticatedAdminAnggotaRoute,
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
