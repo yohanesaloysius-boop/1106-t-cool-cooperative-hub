@@ -35,6 +35,26 @@ function AngsuranPage() {
   const [payRow, setPayRow] = useState<Row | null>(null);
   const [bukti, setBukti] = useState<UploadResult | null>(null);
 
+  const { data: bank } = useQuery({
+    queryKey: ["koperasi-bank"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("settings")
+        .select("key,value")
+        .in("key", ["koperasi.bank_nama", "koperasi.bank_rekening", "koperasi.bank_atas_nama"]);
+      if (error) throw error;
+      const m: Record<string, string> = {};
+      (data ?? []).forEach((r) => {
+        m[r.key] = typeof r.value === "string" ? r.value : JSON.stringify(r.value).replace(/^"|"$/g, "");
+      });
+      return {
+        nama: m["koperasi.bank_nama"] ?? "",
+        rekening: m["koperasi.bank_rekening"] ?? "",
+        atasNama: m["koperasi.bank_atas_nama"] ?? "",
+      };
+    },
+  });
+
   const { data: rows = [], isLoading } = useQuery<Row[]>({
     queryKey: ["angsuran", user?.id],
     enabled: !!user,
