@@ -426,7 +426,7 @@ function Landing() {
       </main>
 
         {pengurusList.length > 0 && (
-          <section className="mt-12">
+          <section className="container mx-auto mt-12 px-4 pb-16">
             <div className="text-center">
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#372f2f]">Struktur Pengurus</h2>
               <p className="mt-2 text-sm text-muted-foreground">Pengurus & dewan pengawas Koperasi T-COOL.</p>
