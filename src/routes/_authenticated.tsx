@@ -119,6 +119,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { to: "/admin/simpanan", label: "Kelola Simpanan", icon: PiggyBank, adminOnly: true },
       { to: "/admin/pinjaman", label: "Kelola Pinjaman", icon: HandCoins, adminOnly: true },
+      { to: "/admin/akad", label: "Status Akad", icon: FileSignature, adminOnly: true },
       { to: "/admin/verifikasi-pinjaman", label: "Verifikasi Pinjaman", icon: ShieldCheck, adminOnly: true },
       { to: "/admin/angsuran", label: "Kelola Angsuran", icon: Receipt, adminOnly: true },
       { to: "/admin/buku-besar", label: "Buku Besar Anggota", icon: BookOpen, adminOnly: true },
