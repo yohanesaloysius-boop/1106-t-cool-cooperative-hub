@@ -127,6 +127,16 @@ function Landing() {
     staleTime: 30_000,
   });
 
+  const { data: pengurus } = useQuery({
+    queryKey: ["public-pengurus"],
+    queryFn: async () => {
+      const { data, error } = await (supabase.rpc as any)("get_public_pengurus");
+      if (error) throw error;
+      return (data ?? []) as { jabatan: string; nama: string; foto_url: string }[];
+    },
+    staleTime: 60_000,
+  });
+  const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
