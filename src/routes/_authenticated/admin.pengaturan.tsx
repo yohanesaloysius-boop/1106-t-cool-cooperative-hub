@@ -17,6 +17,14 @@ export const Route = createFileRoute("/_authenticated/admin/pengaturan")({
 
 const GROUPS: { title: string; keys: { key: string; label: string; suffix?: string }[] }[] = [
   {
+    title: "Rekening Koperasi",
+    keys: [
+      { key: "koperasi.bank_nama", label: "Nama bank", suffix: "teks" },
+      { key: "koperasi.bank_rekening", label: "Nomor rekening", suffix: "teks" },
+      { key: "koperasi.bank_atas_nama", label: "Atas nama", suffix: "teks" },
+    ],
+  },
+  {
     title: "Pinjaman",
     keys: [
       { key: "pinjaman.bunga_persen", label: "Bunga pinjaman", suffix: "% / bulan" },
@@ -102,8 +110,9 @@ function Page() {
   const save = useMutation({
     mutationFn: async (key: string) => {
       const raw = values[key];
+      const isText = key.startsWith("koperasi.");
       const num = Number(raw);
-      const value = isNaN(num) ? raw : num;
+      const value = isText || isNaN(num) ? raw : num;
       const { error } = await supabase.from("settings").update({ value: value as never }).eq("key", key);
       if (error) throw error;
     },
