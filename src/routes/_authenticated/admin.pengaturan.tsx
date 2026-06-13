@@ -245,6 +245,7 @@ function Page() {
         <div className="flex justify-center p-8"><Loader2 className="h-5 w-5 animate-spin" /></div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
+          <PengurusEditor />
           {GROUPS.map((g) => (
             <Card key={g.title}>
               <CardHeader><CardTitle className="text-base">{g.title}</CardTitle></CardHeader>
