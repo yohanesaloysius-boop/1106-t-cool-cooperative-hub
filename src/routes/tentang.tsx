@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HeartHandshake, Sparkles, ShieldCheck, Users, Target, Eye } from "lucide-react";
@@ -23,6 +25,17 @@ const values = [
 ];
 
 function TentangPage() {
+  const { data: pengurus } = useQuery({
+    queryKey: ["public-pengurus"],
+    queryFn: async () => {
+      const { data, error } = await (supabase.rpc as any)("get_public_pengurus");
+      if (error) throw error;
+      return (data ?? []) as { jabatan: string; nama: string; foto_url: string }[];
+    },
+    staleTime: 60_000,
+  });
+  const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -79,6 +92,36 @@ function TentangPage() {
           ))}
         </div>
       </section>
+
+      {pengurusList.length > 0 && (
+        <section className="container mx-auto px-4 py-12">
+          <h2 className="text-3xl font-bold tracking-tight">Struktur Pengurus</h2>
+          <p className="mt-3 text-muted-foreground max-w-2xl">Pengurus & dewan pengawas Koperasi T-COOL.</p>
+          <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+            {pengurusList.map((p, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center rounded-3xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-primary/15 bg-muted">
+                  {p.foto_url ? (
+                    <img src={p.foto_url} alt={p.nama || p.jabatan} className="h-full w-full object-cover" loading="lazy" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-primary/40">
+                      {(p.nama || p.jabatan).charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-4 text-sm font-semibold leading-tight">{p.nama || "—"}</p>
+                <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
+                  {p.jabatan}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container mx-auto px-4 py-16">
         <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-white" style={{ background: "linear-gradient(135deg, hsl(160 84% 22%), hsl(160 70% 38%))", boxShadow: "var(--shadow-elegant)" }}>
