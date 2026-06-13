@@ -44,6 +44,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { to: "/profil", label: "Profil", icon: UserIcon },
+      { to: "/saldo", label: "Saldo & Pencairan", icon: Wallet },
       { to: "/riwayat", label: "Riwayat", icon: History },
       { to: "/favorit", label: "Favorit", icon: Heart },
       { to: "/lowongan", label: "Lowongan Kerja", icon: Briefcase },
@@ -74,7 +75,6 @@ export const navGroups: NavGroup[] = [
       { to: "/marketplace-saya", label: "Marketplace Saya", icon: StoreIcon },
       { to: "/dashboard-belanja", label: "Dashboard Belanja", icon: ClipboardList },
       { to: "/transaksi-saya", label: "Transaksi Saya", icon: Receipt },
-      { to: "/saldo", label: "Saldo & Pencairan", icon: Wallet },
     ],
   },
   {
