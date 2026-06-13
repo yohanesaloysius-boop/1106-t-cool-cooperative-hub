@@ -293,6 +293,28 @@ function AngsuranPage() {
                 )}
                 <div className="mt-2 flex justify-between border-t border-border pt-2"><span className="font-semibold">Total Bayar</span><span className="text-xl font-bold tabular-nums">{fmt.format(Number(payRow.nominal) + Number(payRow.denda ?? 0))}</span></div>
               </div>
+              {bank?.rekening && (
+                <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground">Transfer ke rekening koperasi</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{bank.nama} · a.n {bank.atasNama}</p>
+                      <p className="text-lg font-bold tabular-nums tracking-wide">{bank.rekening}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1 shrink-0"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(bank.rekening);
+                        toast.success("Nomor rekening disalin");
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Salin
+                    </Button>
+                  </div>
+                </div>
+              )}
               <FileUpload
                 bucket="bukti-transfer"
                 userId={user.id}
