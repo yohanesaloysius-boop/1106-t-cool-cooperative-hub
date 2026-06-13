@@ -352,37 +352,14 @@ export async function updateTransactionStatus(id: string, status: TrxStatus) {
 }
 
 // ---------- COUPONS ----------
-export type DbCoupon = {
-  id: string;
-  code: string;
-  deskripsi: string | null;
-  tipe: "percent" | "fixed";
-  nilai: number;
-  min_belanja: number;
-  max_diskon: number | null;
-  store_id: string | null;
-  kuota: number | null;
-  used_count: number;
-  berlaku_dari: string;
-  berlaku_sampai: string | null;
-  is_active: boolean;
-};
+import { validateCouponFn, consumeCouponFn, type DbCoupon } from "./coupons.functions";
+export type { DbCoupon };
 
+// Coupons are validated server-side (see coupons.functions.ts) so the coupons
+// table is not broadly readable by clients. This avoids enumeration of all
+// coupon codes while keeping checkout working.
 export async function validateCoupon(code: string): Promise<DbCoupon> {
-  const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from("marketplace_coupons")
-    .select("*")
-    .eq("code", code.trim().toUpperCase())
-    .eq("is_active", true)
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) throw new Error("Kode kupon tidak ditemukan");
-  const c = data as DbCoupon;
-  if (c.berlaku_dari > today) throw new Error("Kupon belum berlaku");
-  if (c.berlaku_sampai && c.berlaku_sampai < today) throw new Error("Kupon sudah kedaluwarsa");
-  if (c.kuota !== null && c.used_count >= c.kuota) throw new Error("Kuota kupon habis");
-  return c;
+  return validateCouponFn({ data: { code } });
 }
 
 export function calcCouponDiscount(c: DbCoupon, subtotal: number): number {
@@ -393,8 +370,8 @@ export function calcCouponDiscount(c: DbCoupon, subtotal: number): number {
   return Math.round(disc);
 }
 
-export async function consumeCoupon(id: string, currentUsed: number) {
-  await supabase.from("marketplace_coupons").update({ used_count: currentUsed + 1 }).eq("id", id);
+export async function consumeCoupon(id: string, _currentUsed: number) {
+  await consumeCouponFn({ data: { id } });
 }
 
 // ---------- REVIEWS ----------
