@@ -1,9 +1,11 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { canAccessAdminPath, PENGURUS_ROLES } from "@/lib/access";
+import type { AppRole } from "@/hooks/use-auth";
 import { ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw redirect({ to: "/auth" });
     const { data: roles } = await supabase
@@ -11,10 +13,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
       .select("role")
       .eq("user_id", user.id)
       .is("deleted_at", null);
-    const allowed = (roles ?? []).some((r) =>
-      ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r.role as string),
-    );
-    if (!allowed) throw redirect({ to: "/dashboard" });
+    const roleList = (roles ?? []).map((r) => r.role as AppRole);
+    const isPengurus = roleList.some((r) => PENGURUS_ROLES.includes(r));
+    // Anggota / non-pengurus tidak boleh masuk area admin sama sekali
+    if (!isPengurus) throw redirect({ to: "/dashboard" });
+    // Pengurus hanya boleh membuka menu sesuai job-desc-nya
+    if (!canAccessAdminPath(roleList, location.pathname)) {
+      throw redirect({ to: "/admin" });
+    }
   },
   component: AdminGuard,
   errorComponent: () => (
