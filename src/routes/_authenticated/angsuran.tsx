@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Receipt, Loader2, AlertTriangle, FileDown, ExternalLink } from "lucide-react";
+import { Copy } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/empty-state";
 import { FileUpload, type UploadResult } from "@/components/file-upload";
 import jsPDF from "jspdf";
