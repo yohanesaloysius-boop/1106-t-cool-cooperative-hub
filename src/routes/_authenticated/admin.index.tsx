@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AppRole } from "@/hooks/use-auth";
+import { canAccessAdminPath, isLeaderRoles } from "@/lib/access";
 import { StatCard, StatCardSkeleton } from "@/components/dashboard/stat-card";
 import { TransactionChart } from "@/components/dashboard/transaction-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -39,6 +40,8 @@ function pickRole(roles: AppRole[]): AppRole {
 function AdminDashboard() {
   const { profile, roles } = useAuth();
   const primaryRole = pickRole(roles);
+  const canFinance = canAccessAdminPath(roles, "/admin/simpanan");
+  const isLeader = isLeaderRoles(roles);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["admin-stats"],
@@ -94,11 +97,13 @@ function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <PushToggle variant="secondary" />
-            <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-neutral-950 hover:bg-white/25 backdrop-blur border border-white/20">
-              <Link to="/admin/pengaturan">
-                <SettingsIcon className="h-4 w-4" /> Pengaturan
-              </Link>
-            </Button>
+            {isLeader && (
+              <Button asChild size="lg" variant="secondary" className="shrink-0 bg-white/15 text-neutral-950 hover:bg-white/25 backdrop-blur border border-white/20">
+                <Link to="/admin/pengaturan">
+                  <SettingsIcon className="h-4 w-4" /> Pengaturan
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -143,7 +148,7 @@ function AdminDashboard() {
           { to: "/admin/voting", label: "E-Voting RAT", desc: "Suara digital", icon: Vote },
           { to: "/admin/notifikasi-wa", label: "Notif WA", desc: "Antrian reminder", icon: MessageSquare },
           { to: "/admin/surat", label: "Surat Resmi", desc: "Generator surat", icon: FileText },
-        ].map((m) => (
+        ].filter((m) => canAccessAdminPath(roles, m.to)).map((m) => (
           <Link key={m.to} to={m.to} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-md h-full" style={{ boxShadow: "var(--shadow-card)" }}>
               <CardContent className="p-4 flex items-center gap-3">
@@ -161,6 +166,7 @@ function AdminDashboard() {
       </div>
 
       {/* Pusat Verifikasi — gabungan Simpanan, Pinjaman, Angsuran */}
+      {canFinance && (
       <Card style={{ boxShadow: "var(--shadow-card)" }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -181,6 +187,7 @@ function AdminDashboard() {
           </Tabs>
         </CardContent>
       </Card>
+      )}
 
       {/* Activity */}
       <div className="grid gap-6 lg:grid-cols-2">

@@ -11,13 +11,15 @@ import {
 } from "@/components/ui/command";
 import { navGroups } from "@/routes/_authenticated";
 import { useAuth } from "@/hooks/use-auth";
+import { canAccessAdminPath } from "@/lib/access";
 import { LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { isPengurus, signOut } = useAuth();
+  const { roles, viewAsMember, signOut } = useAuth();
+  const effRoles = viewAsMember ? [] : roles;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -31,8 +33,12 @@ export function CommandPalette() {
   }, []);
 
   const visibleGroups = navGroups
-    .filter((g) => !g.adminOnly || isPengurus)
-    .map((g) => ({ ...g, items: g.items.filter((i) => !i.adminOnly || isPengurus) }));
+    .map((g) =>
+      g.adminOnly
+        ? { ...g, items: g.items.filter((i) => canAccessAdminPath(effRoles, i.to)) }
+        : g,
+    )
+    .filter((g) => !g.adminOnly || g.items.length > 0);
 
   const go = (to: string) => {
     setOpen(false);
