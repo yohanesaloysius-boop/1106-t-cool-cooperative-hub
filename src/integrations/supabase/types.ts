@@ -2535,6 +2535,9 @@ export type Database = {
           bukti_pencairan_url: string | null
           bunga_jenis: Database["public"]["Enums"]["bunga_jenis"]
           bunga_persen: number
+          cair_bank: string | null
+          cair_rekening_nama: string | null
+          cair_rekening_nomor: string | null
           cicilan_per_bulan: number | null
           created_at: string
           created_by: string | null
@@ -2557,6 +2560,9 @@ export type Database = {
           bukti_pencairan_url?: string | null
           bunga_jenis?: Database["public"]["Enums"]["bunga_jenis"]
           bunga_persen?: number
+          cair_bank?: string | null
+          cair_rekening_nama?: string | null
+          cair_rekening_nomor?: string | null
           cicilan_per_bulan?: number | null
           created_at?: string
           created_by?: string | null
@@ -2579,6 +2585,9 @@ export type Database = {
           bukti_pencairan_url?: string | null
           bunga_jenis?: Database["public"]["Enums"]["bunga_jenis"]
           bunga_persen?: number
+          cair_bank?: string | null
+          cair_rekening_nama?: string | null
+          cair_rekening_nomor?: string | null
           cicilan_per_bulan?: number | null
           created_at?: string
           created_by?: string | null
