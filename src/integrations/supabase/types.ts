@@ -4253,6 +4253,7 @@ export type Database = {
           posisi: string
         }[]
       }
+      get_public_pengurus: { Args: never; Returns: Json }
       get_public_recent_activity: {
         Args: { limit_count?: number }
         Returns: {
