@@ -38,7 +38,14 @@ export function MemberCardPrint({ open, onClose, member, koperasiName = "T-COOL 
     const html = cardRef.current.outerHTML;
     const win = window.open("", "_blank", "width=900,height=600");
     if (!win) return;
-    win.document.write(`<!doctype html><html><head><title>Kartu Anggota - ${member?.nama_lengkap ?? ""}</title>
+    const escHtml = (s: string) =>
+      s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    win.document.write(`<!doctype html><html><head><title>Kartu Anggota - ${escHtml(member?.nama_lengkap ?? "")}</title>
       <style>
         @page { size: 86mm 54mm; margin: 0; }
         * { box-sizing: border-box; }
