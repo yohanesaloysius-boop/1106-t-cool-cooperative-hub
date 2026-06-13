@@ -11,6 +11,7 @@ import { SignaturePadDialog, type SignatureResult } from "@/components/signature
 import { calcLoan } from "@/components/dashboard/loan-calculator";
 import { Loader2, PenLine, XCircle, Banknote, FileSignature } from "lucide-react";
 import { AkadSignDialog, AkadDownloadButton } from "@/components/akad-sign-dialog";
+import { DisburseDialog, type DisburseInfo } from "@/components/disburse-dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/pinjaman")({
   head: () => ({ meta: [{ title: "Approval Pinjaman — T-COOL Koperasi" }] }),
@@ -41,7 +42,7 @@ export function PinjamanApprovalPage() {
     queryFn: async () => {
       const { data: rows, error } = await supabase
         .from("pinjaman")
-        .select("id,user_id,nominal,tenor_bulan,bunga_persen,bunga_jenis,tujuan,status,created_at,cicilan_per_bulan,total_bayar")
+        .select("id,user_id,nominal,tenor_bulan,bunga_persen,bunga_jenis,tujuan,status,created_at,cicilan_per_bulan,total_bayar,cair_bank,cair_rekening_nomor,cair_rekening_nama")
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -135,7 +136,7 @@ export function PinjamanApprovalPage() {
   });
 
   const disburse = useMutation({
-    mutationFn: async ({ row, sig }: { row: any; sig: SignatureResult }) => {
+    mutationFn: async ({ row, sig, info }: { row: any; sig: SignatureResult; info: DisburseInfo }) => {
       await recordSignature(sig, row.id);
       const c = calcLoan(Number(row.nominal), row.tenor_bulan, Number(row.bunga_persen), row.bunga_jenis);
       const { error } = await supabase.from("pinjaman").update({
@@ -143,6 +144,9 @@ export function PinjamanApprovalPage() {
         disbursed_at: new Date().toISOString(),
         cicilan_per_bulan: c.cicilan,
         total_bayar: c.totalBayar,
+        cair_bank: info.bank,
+        cair_rekening_nomor: info.rekeningNomor,
+        cair_rekening_nama: info.rekeningNama,
       }).eq("id", row.id);
       if (error) throw error;
 
@@ -169,12 +173,12 @@ export function PinjamanApprovalPage() {
         nominal: row.nominal,
         ref_table: "pinjaman",
         ref_id: row.id,
-        keterangan: "Pencairan pinjaman",
+        keterangan: `Pencairan pinjaman ke ${info.bank} ${info.rekeningNomor} a.n. ${info.rekeningNama}`,
       });
       await supabase.from("notifications").insert({
         user_id: row.user_id,
         judul: "Pinjaman Dicairkan",
-        pesan: `Dana ${fmt.format(Number(row.nominal))} telah dicairkan. Jadwal angsuran tersedia.`,
+        pesan: `Dana ${fmt.format(Number(row.nominal))} telah dicairkan ke ${info.bank} ${info.rekeningNomor} a.n. ${info.rekeningNama}. Jadwal angsuran tersedia.`,
         kategori: "sukses",
       });
     },
@@ -221,6 +225,11 @@ export function PinjamanApprovalPage() {
                       <TableCell>
                         <div className="text-sm font-medium">{r.profiles?.nama_lengkap ?? "—"}</div>
                         <div className="font-mono text-[10px] text-muted-foreground">{r.profiles?.nomor_anggota ?? ""}</div>
+                        {r.cair_rekening_nomor && (
+                          <div className="mt-0.5 text-[10px] text-muted-foreground">
+                            {r.cair_bank} {r.cair_rekening_nomor} · a.n. {r.cair_rekening_nama}
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-medium">{fmt.format(Number(r.nominal))}</TableCell>
                       <TableCell className="hidden md:table-cell text-xs">{r.tenor_bulan} bln · {Number(r.bunga_persen)}% {r.bunga_jenis}</TableCell>
@@ -240,10 +249,9 @@ export function PinjamanApprovalPage() {
                             </>
                           )}
                           {r.status === "approved" && isBendahara && (
-                            <SignaturePadDialog
-                              title="Cairkan Pinjaman"
-                              onSign={(sig) => disburse.mutateAsync({ row: r, sig })}
-                              trigger={<Button size="sm" variant="outline" className="gap-1 text-xs"><Banknote className="h-3 w-3" /> Cairkan</Button>}
+                            <DisburseDialog
+                              defaultNama={r.profiles?.nama_lengkap ?? ""}
+                              onDisburse={(info, sig) => disburse.mutateAsync({ row: r, sig, info })}
                             />
                           )}
                           {r.akad?.status === "pending_pengurus" && (
