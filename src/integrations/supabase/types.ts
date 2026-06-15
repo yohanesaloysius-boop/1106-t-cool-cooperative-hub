@@ -4164,10 +4164,19 @@ export type Database = {
         Args: { _pilihan: Json; _voting_id: string }
         Returns: undefined
       }
+      check_critical_triggers: {
+        Args: never
+        Returns: {
+          present: boolean
+          table_name: string
+          trigger_name: string
+        }[]
+      }
       compute_asset_depreciation: {
         Args: { _asset_id: string }
         Returns: number
       }
+      ensure_my_profile: { Args: never; Returns: boolean }
       ensure_super_admin: { Args: never; Returns: boolean }
       gen_qris_invoice_no: { Args: never; Returns: string }
       get_email_by_phone: { Args: { _phone: string }; Returns: string }
@@ -4374,6 +4383,7 @@ export type Database = {
       }
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
       normalize_phone_id: { Args: { _raw: string }; Returns: string }
+      provision_member: { Args: { _uid: string }; Returns: undefined }
       qris_expire_pending: { Args: never; Returns: number }
       qris_mark_success: { Args: { _id: string }; Returns: undefined }
       sync_collection_cases: { Args: never; Returns: number }
