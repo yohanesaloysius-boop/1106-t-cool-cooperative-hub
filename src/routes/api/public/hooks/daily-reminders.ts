@@ -490,7 +490,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
           );
         }
 
-        return Response.json({ ok: true, summary: { ...summary, ...summaryEsc }, ts: new Date().toISOString() });
+        return Response.json({ ok: true, summary: { ...summary, ...summaryEsc, ...summaryDigest }, ts: new Date().toISOString() });
       },
     },
   },
