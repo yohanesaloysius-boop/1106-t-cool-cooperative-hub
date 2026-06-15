@@ -125,6 +125,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
         if (unauth) return unauth;
         const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0, wa_queued: 0 };
         const summaryEsc = { pinjaman_eskalasi: 0 };
+        const summaryDigest = { digest: 0 };
 
         // ===== Iuran wajib bulanan =====
         // - Tanggal 25 / 28 / akhir bulan → reminder kalau belum setor iuran wajib bulan berjalan
@@ -434,7 +435,62 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
           summaryEsc.pinjaman_eskalasi = await enqueue(escItems);
         }
 
-        return Response.json({ ok: true, summary: { ...summary, ...summaryEsc }, ts: new Date().toISOString() });
+        // 7) Digest harian pengurus — satu rekap ringkas tiap pagi (bukan notif satu-satu)
+        const dKey = new Date().toISOString().slice(0, 10);
+        const [pendingMembersC, pendingSimpananC, antriPinjamanC, overdueC] = await Promise.all([
+          supabaseAdmin
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "pending")
+            .is("deleted_at", null),
+          supabaseAdmin
+            .from("simpanan")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "pending")
+            .is("deleted_at", null),
+          supabaseAdmin
+            .from("pinjaman")
+            .select("id", { count: "exact", head: true })
+            .in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"])
+            .is("deleted_at", null),
+          supabaseAdmin
+            .from("angsuran")
+            .select("id", { count: "exact", head: true })
+            .in("status", ["overdue", "unpaid"])
+            .lt("jatuh_tempo", today.toISOString().slice(0, 10))
+            .is("deleted_at", null),
+        ]);
+        const nDaftar = pendingMembersC.count ?? 0;
+        const nSimpanan = pendingSimpananC.count ?? 0;
+        const nPinjaman = antriPinjamanC.count ?? 0;
+        const nOverdue = overdueC.count ?? 0;
+        if (nDaftar + nSimpanan + nPinjaman + nOverdue > 0) {
+          const { data: pengurusD } = await supabaseAdmin
+            .from("user_roles")
+            .select("user_id")
+            .in("role", ["super_admin", "ketua", "sekretaris", "bendahara"])
+            .is("deleted_at", null);
+          const recipients = Array.from(new Set((pengurusD ?? []).map((r) => r.user_id)));
+          const baris = [
+            nDaftar ? `• ${nDaftar} pendaftaran menunggu verifikasi` : null,
+            nSimpanan ? `• ${nSimpanan} setoran simpanan pending` : null,
+            nPinjaman ? `• ${nPinjaman} pengajuan pinjaman antri approval` : null,
+            nOverdue ? `• ${nOverdue} angsuran lewat jatuh tempo` : null,
+          ].filter(Boolean).join("\n");
+          summaryDigest.digest = await enqueue(
+            recipients.map((uid) => ({
+              user_id: uid,
+              judul: "📋 Rekap Harian Koperasi",
+              pesan: `Ringkasan tugas hari ini:\n${baris}`,
+              kategori: "info",
+              url: "/admin",
+              ref_table: `digest:harian:${dKey}`,
+              ref_id: uid,
+            })),
+          );
+        }
+
+        return Response.json({ ok: true, summary: { ...summary, ...summaryEsc, ...summaryDigest }, ts: new Date().toISOString() });
       },
     },
   },
