@@ -61,8 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const hydrateAuthState = async (nextSession: Session | null) => {
-    setLoading(true);
+  // Apply ONLY synchronous state updates here. Any Supabase data/auth call made
+  // directly inside the onAuthStateChange callback can re-enter the GoTrue lock
+  // and cause an auth-event storm (flicker / repeated /user + user_roles calls).
+  // All DB work is therefore deferred with setTimeout(0).
+  const applySession = (nextSession: Session | null, opts: { signedIn?: boolean } = {}) => {
     setSession(nextSession);
     setUser(nextSession?.user ?? null);
 
@@ -74,37 +77,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    const uid = nextSession.user.id;
+    const email = nextSession.user.email;
     setViewAsMemberState(false);
-    try {
-      await loadProfile(nextSession.user.id);
-    } finally {
-      setLoading(false);
-    }
+    setTimeout(() => {
+      void loadProfile(uid).finally(() => setLoading(false));
+      if (opts.signedIn) {
+        void (supabase.rpc as any)("ensure_super_admin").then((res: any) => {
+          if (res?.data === true) void loadProfile(uid);
+        });
+        void supabase.from("audit_logs").insert({
+          actor_id: uid,
+          action: "auth.login",
+          entity: "auth",
+          entity_id: uid,
+          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+          new_data: { email, at: new Date().toISOString() },
+        });
+      }
+    }, 0);
   };
 
   useEffect(() => {
+    let initialized = false;
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      void hydrateAuthState(s);
-      if (event === "SIGNED_IN" && s?.user) {
-        setTimeout(() => {
-          void (supabase.rpc as any)("ensure_super_admin").then((res: any) => {
-            if (res?.data === true) void loadProfile(s.user.id);
-          });
-          void supabase.from("audit_logs").insert({
-            actor_id: s.user.id,
-            action: "auth.login",
-            entity: "auth",
-            entity_id: s.user.id,
-            user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-            new_data: { email: s.user.email, at: new Date().toISOString() },
-          });
-        }, 0);
+      // Ignore token-refresh churn — identity hasn't changed, so re-hydrating
+      // would only thrash state and cause flicker.
+      if (event === "TOKEN_REFRESHED") {
+        setSession(s);
+        return;
       }
+      if (event === "INITIAL_SESSION" && initialized) return;
+      applySession(s, { signedIn: event === "SIGNED_IN" });
     });
     supabase.auth.getSession().then(({ data }) => {
-      void hydrateAuthState(data.session);
+      initialized = true;
+      applySession(data.session);
     });
     return () => sub.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value: AuthCtx = {
