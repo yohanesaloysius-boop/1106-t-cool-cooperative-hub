@@ -124,6 +124,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
         const unauth = verifyCronAuth(request);
         if (unauth) return unauth;
         const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0, wa_queued: 0 };
+        const summaryEsc = { pinjaman_eskalasi: 0 };
 
         // ===== Iuran wajib bulanan =====
         // - Tanggal 25 / 28 / akhir bulan → reminder kalau belum setor iuran wajib bulan berjalan
@@ -376,7 +377,64 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
           summary.pending_verifikasi = await enqueue(items);
         }
 
-        return Response.json({ ok: true, summary, ts: new Date().toISOString() });
+        // 6) Eskalasi approval pinjaman yang macet > 2 hari di status pending_*
+        //    Notif ulang ke approver penanggung jawab + eskalasi ke ketua & super_admin.
+        const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString();
+        const statusRole: Record<string, "sekretaris" | "bendahara" | "ketua"> = {
+          pending_sekretaris: "sekretaris",
+          pending_bendahara: "bendahara",
+          pending_ketua: "ketua",
+        };
+        const { data: stuckLoans } = await supabaseAdmin
+          .from("pinjaman")
+          .select("id, user_id, nominal, status, updated_at")
+          .in("status", ["pending_sekretaris", "pending_bendahara", "pending_ketua"])
+          .lte("updated_at", twoDaysAgo)
+          .is("deleted_at", null);
+        if (stuckLoans?.length) {
+          // Peta nama pemohon
+          const applicantIds = Array.from(new Set(stuckLoans.map((l) => l.user_id)));
+          const { data: applicants } = await supabaseAdmin
+            .from("profiles")
+            .select("id, nama_lengkap")
+            .in("id", applicantIds);
+          const nameMap = new Map((applicants ?? []).map((p) => [p.id, p.nama_lengkap]));
+
+          // Peta role → daftar user pengurus
+          const { data: roleRows } = await supabaseAdmin
+            .from("user_roles")
+            .select("user_id, role")
+            .in("role", ["sekretaris", "bendahara", "ketua", "super_admin"])
+            .is("deleted_at", null);
+          const roleUsers = (role: string) =>
+            Array.from(new Set((roleRows ?? []).filter((r) => r.role === role).map((r) => r.user_id)));
+
+          const escItems: NotifInsert[] = [];
+          for (const l of stuckLoans) {
+            const days = Math.max(2, Math.floor((Date.now() - new Date(l.updated_at).getTime()) / 86400000));
+            const namaPemohon = nameMap.get(l.user_id) ?? "(tanpa nama)";
+            const nominalStr = Number(l.nominal).toLocaleString("id-ID");
+            // Penanggung jawab langsung sesuai status
+            const responsible = roleUsers(statusRole[l.status]);
+            // Eskalasi ke ketua + super_admin (selalu), tanpa duplikasi
+            const escalateTo = Array.from(new Set([...roleUsers("ketua"), ...roleUsers("super_admin")]));
+            const recipients = Array.from(new Set([...responsible, ...escalateTo]));
+            for (const uid of recipients) {
+              escItems.push({
+                user_id: uid,
+                judul: "⏰ Approval pinjaman tertunda",
+                pesan: `Pengajuan pinjaman ${namaPemohon} (Rp ${nominalStr}) sudah ${days} hari menunggu di tahap ${l.status.replace("pending_", "")}. Mohon segera ditinjau.`,
+                kategori: "approval",
+                url: "/admin/pinjaman",
+                ref_table: `pinjaman:eskalasi:${new Date().toISOString().slice(0, 10)}`,
+                ref_id: l.id,
+              });
+            }
+          }
+          summaryEsc.pinjaman_eskalasi = await enqueue(escItems);
+        }
+
+        return Response.json({ ok: true, summary: { ...summary, ...summaryEsc }, ts: new Date().toISOString() });
       },
     },
   },
