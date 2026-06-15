@@ -125,6 +125,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
         if (unauth) return unauth;
         const summary = { simpanan_pokok: 0, h3: 0, overdue: 0, meeting: 0, pending_verifikasi: 0, iuran_wajib: 0, iuran_late: 0, wa_queued: 0 };
         const summaryEsc = { pinjaman_eskalasi: 0 };
+        const summaryDigest = { digest: 0 };
 
         // ===== Iuran wajib bulanan =====
         // - Tanggal 25 / 28 / akhir bulan → reminder kalau belum setor iuran wajib bulan berjalan
