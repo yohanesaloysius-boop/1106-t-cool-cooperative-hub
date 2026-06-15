@@ -159,6 +159,11 @@ function LoginForm() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
     setBusy(false);
     if (error) {
+      // Email belum diverifikasi
+      if (/confirm/i.test(error.message) || /not confirmed/i.test(error.message)) {
+        await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/dashboard` } });
+        return toast.error("Email belum diverifikasi. Kami kirim ulang tautan verifikasi ke email Anda — silakan cek inbox/spam.", { duration: 10000 });
+      }
       attemptsRef.current.count += 1;
       if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
       return toast.error("Email/Nomor HP atau password salah");
@@ -306,9 +311,18 @@ function RegisterForm() {
         return;
       }
 
-      // Pastikan session aktif untuk upload (jika auto-confirm off, signIn manual)
+      // Verifikasi email aktif: signUp tidak mengembalikan session sampai
+      // anggota mengklik tautan verifikasi di email. Tanpa session, upload
+      // dokumen ke storage tidak diizinkan, jadi arahkan anggota untuk
+      // verifikasi dulu lalu lengkapi dokumen di menu Profil.
       if (!data.session) {
-        await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password });
+        toast.success(
+          "Pendaftaran berhasil! Kami telah mengirim email verifikasi ke " +
+            parsed.data.email +
+            ". Buka email dan klik tautan verifikasi, lalu login dan lengkapi KTP & tanda tangan di menu Profil. Akun aktif setelah disetujui pengurus.",
+          { duration: 12000 },
+        );
+        return;
       }
 
       const updates: Record<string, string> = {};
@@ -346,7 +360,7 @@ function RegisterForm() {
         await supabase.from("profiles").update(updates as never).eq("id", uid);
       }
 
-      toast.success("Pendaftaran berhasil. Menunggu verifikasi pengurus.");
+      toast.success("Pendaftaran berhasil. Menunggu persetujuan pengurus.");
     } catch (err) {
       const msg = (err as Error).message || "Gagal mendaftar";
       toast.error(msg.includes("profiles_no_hp_unique") ? "Nomor HP sudah terdaftar" : msg);
