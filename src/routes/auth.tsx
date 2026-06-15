@@ -159,6 +159,11 @@ function LoginForm() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
     setBusy(false);
     if (error) {
+      // Email belum diverifikasi
+      if (/confirm/i.test(error.message) || /not confirmed/i.test(error.message)) {
+        await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/dashboard` } });
+        return toast.error("Email belum diverifikasi. Kami kirim ulang tautan verifikasi ke email Anda — silakan cek inbox/spam.", { duration: 10000 });
+      }
       attemptsRef.current.count += 1;
       if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
       return toast.error("Email/Nomor HP atau password salah");
