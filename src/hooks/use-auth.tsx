@@ -83,6 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTimeout(() => {
       void loadProfile(uid).finally(() => setLoading(false));
       if (opts.signedIn) {
+        // Self-healing: jika profil/role belum ada (mis. trigger auth.users
+        // sempat terlepas), buat sekarang agar anggota tidak pernah "hilang".
+        void (supabase.rpc as any)("ensure_my_profile").then((res: any) => {
+          if (res?.data === true) void loadProfile(uid);
+        });
         void (supabase.rpc as any)("ensure_super_admin").then((res: any) => {
           if (res?.data === true) void loadProfile(uid);
         });
