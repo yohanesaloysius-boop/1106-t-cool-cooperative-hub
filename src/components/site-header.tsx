@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { to: "/", label: "Beranda" },
+  { to: "/berita", label: "Berita & Kegiatan" },
   { to: "/marketplace", label: "Marketplace" },
   { to: "/daftar-anggota", label: "Daftar Anggota" },
   { to: "/tentang", label: "Tentang" },
