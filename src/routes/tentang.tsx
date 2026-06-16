@@ -127,7 +127,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
 }
 
 function Legend() {
-  const stroke = "hsl(var(--foreground))";
+  const stroke = "#111111";
   const Row = ({ label, dashed, plain }: { label: string; dashed?: boolean; plain?: boolean }) => (
     <div className="flex items-center gap-4">
       <span className="w-40 text-sm font-medium">{label}</span>
