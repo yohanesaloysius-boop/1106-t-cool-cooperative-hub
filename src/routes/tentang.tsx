@@ -73,9 +73,9 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const agW = 180, agCx = pgCx, agX = agCx - agW / 2, agH = 44, agY = mgBottom + 70;
   const agMid = agY + agH / 2, agLeft = agX, agRight = agX + agW, agBottom = agY + agH;
   // Outer service/command loops
-  const leftX = 120, rightX = 600;
+  const leftX = 120, rightX = 663;
   // Externals (far right)
-  const exX = 690, dinasW = 170, dinasH = 56, dinasY = coordY - dinasH / 2;
+  const exX = 700, dinasW = 170, dinasH = 56, dinasY = coordY - dinasH / 2;
   const pusW = 150, pusH = 56, pusY = dinasY + dinasH + 34;
   const dinasMid = dinasY + dinasH / 2, pusMid = pusY + pusH / 2;
   const H = agBottom + 40;
