@@ -7,10 +7,99 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Save, ShieldAlert, Upload, ImageOff } from "lucide-react";
 
 type Pengurus = { jabatan: string; nama: string; foto_url: string };
+
+const TENTANG_FIELDS: { key: string; label: string; hint?: string; rows?: number }[] = [
+  { key: "tentang.makna_logo", label: "Makna Logo dan Nama", rows: 3 },
+  { key: "tentang.visi", label: "Visi", rows: 2 },
+  { key: "tentang.misi", label: "Misi (satu poin per baris)", rows: 4 },
+  { key: "tentang.sejarah", label: "Sejarah Koperasi", rows: 4 },
+  { key: "tentang.struktur_manajemen", label: "Struktur Manajemen (satu jabatan per baris)", rows: 4 },
+  { key: "tentang.tata_kebijakan", label: "Tata Kebijakan (satu poin per baris)", rows: 4 },
+  { key: "tentang.org_rapat_anggota", label: "Bagan: Rapat Anggota", rows: 1 },
+  { key: "tentang.org_pengawas", label: "Bagan: Pengawas (satu per baris)", rows: 3 },
+  { key: "tentang.org_pengurus", label: "Bagan: Pengurus (satu per baris)", rows: 5 },
+  { key: "tentang.org_manajemen", label: "Bagan: Manajemen", rows: 1 },
+  { key: "tentang.org_anggota", label: "Bagan: Anggota", rows: 1 },
+  { key: "tentang.org_eksternal", label: "Bagan: Pihak Eksternal (satu per baris)", rows: 3 },
+];
+
+function TentangEditor() {
+  const qc = useQueryClient();
+  const [vals, setVals] = useState<Record<string, string>>({});
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings-tentang"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("settings").select("key,value").like("key", "tentang.%");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      const v: Record<string, string> = {};
+      data.forEach((row) => {
+        v[row.key] = typeof row.value === "string" ? row.value : String(row.value ?? "");
+      });
+      setVals(v);
+    }
+  }, [data]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      for (const f of TENTANG_FIELDS) {
+        const { error } = await supabase.from("settings").upsert({ key: f.key, value: (vals[f.key] ?? "") as never }, { onConflict: "key" });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Konten Tentang Kami tersimpan");
+      qc.invalidateQueries({ queryKey: ["settings-tentang"] });
+      qc.invalidateQueries({ queryKey: ["public-tentang"] });
+    },
+    onError: (e: Error) => toast.error("Gagal", { description: e.message }),
+  });
+
+  return (
+    <Card className="md:col-span-2">
+      <CardHeader>
+        <CardTitle className="text-base">Halaman "Tentang Kami"</CardTitle>
+        <p className="text-xs text-muted-foreground">Konten yang tampil di halaman publik Tentang Kami.</p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <div className="flex justify-center p-4"><Loader2 className="h-5 w-5 animate-spin" /></div>
+        ) : (
+          <>
+            <div className="grid gap-4 md:grid-cols-2">
+              {TENTANG_FIELDS.map((f) => (
+                <div key={f.key}>
+                  <Label className="text-xs">{f.label}</Label>
+                  <Textarea
+                    className="mt-1"
+                    rows={f.rows ?? 3}
+                    value={vals[f.key] ?? ""}
+                    onChange={(e) => setVals({ ...vals, [f.key]: e.target.value })}
+                  />
+                </div>
+              ))}
+            </div>
+            <Button onClick={() => save.mutate()} disabled={save.isPending} className="w-full">
+              {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Simpan Konten Tentang Kami
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function PengurusEditor() {
   const { user } = useAuth();
@@ -246,6 +335,7 @@ function Page() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           <PengurusEditor />
+          <TentangEditor />
           {GROUPS.map((g) => (
             <Card key={g.title}>
               <CardHeader><CardTitle className="text-base">{g.title}</CardTitle></CardHeader>

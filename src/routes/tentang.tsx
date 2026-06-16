@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, HeartHandshake, Sparkles, ShieldCheck, Users, Target, Eye } from "lucide-react";
+import { ArrowRight, HeartHandshake, Sparkles, ShieldCheck, Users, Target, Eye, BadgeInfo, ScrollText, Network, Building2, GitBranch } from "lucide-react";
 
 export const Route = createFileRoute("/tentang")({
   head: () => ({
@@ -24,6 +25,23 @@ const values = [
   { icon: Users, title: "Inklusif", desc: "Mendukung koperasi besar maupun kecil di seluruh Indonesia." },
 ];
 
+const splitLines = (s?: string) => (s ?? "").split("\n").map((x) => x.trim()).filter(Boolean);
+
+function OrgBox({ title, items, className = "" }: { title: string; items?: string[]; className?: string }) {
+  return (
+    <div className={`overflow-hidden rounded-lg border-2 border-foreground/70 bg-card text-center ${className}`}>
+      <div className="border-b-2 border-foreground/70 bg-primary/10 px-3 py-2 text-sm font-bold tracking-tight">{title}</div>
+      {items && items.length > 0 && (
+        <ul className="divide-y divide-border">
+          {items.map((it, i) => (
+            <li key={i} className="px-3 py-1.5 text-xs">{it}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function TentangPage() {
   const { data: pengurus } = useQuery({
     queryKey: ["public-pengurus"],
@@ -35,6 +53,25 @@ function TentangPage() {
     staleTime: 60_000,
   });
   const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
+
+  const { data: tentang } = useQuery({
+    queryKey: ["public-tentang"],
+    queryFn: async () => {
+      const { data, error } = await (supabase.rpc as any)("get_public_tentang");
+      if (error) throw error;
+      return (data ?? {}) as Record<string, string>;
+    },
+    staleTime: 60_000,
+  });
+  const t = tentang ?? {};
+
+  // Scroll to hash section when navigating from the dropdown
+  useEffect(() => {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+  }, [tentang]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,6 +127,109 @@ function TentangPage() {
               <p className="mt-2 text-sm text-muted-foreground">{v.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Makna Logo dan Nama */}
+      <section id="makna-logo" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><BadgeInfo className="h-5 w-5" /></div>
+            <h2 className="text-2xl font-bold tracking-tight">Makna Logo dan Nama</h2>
+          </div>
+          <p className="mt-4 whitespace-pre-line text-muted-foreground">{t.makna_logo || "—"}</p>
+        </div>
+      </section>
+
+      {/* Visi dan Misi */}
+      <section id="visi-misi" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><Target className="h-5 w-5" /></div>
+          <h2 className="text-2xl font-bold tracking-tight">Visi dan Misi</h2>
+        </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+            <h3 className="text-lg font-semibold">Visi</h3>
+            <p className="mt-3 whitespace-pre-line text-muted-foreground">{t.visi || "—"}</p>
+          </div>
+          <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+            <h3 className="text-lg font-semibold">Misi</h3>
+            <ul className="mt-3 list-decimal space-y-1.5 pl-5 text-muted-foreground">
+              {splitLines(t.misi).map((m, i) => <li key={i}>{m}</li>)}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Sejarah Koperasi */}
+      <section id="sejarah" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><ScrollText className="h-5 w-5" /></div>
+            <h2 className="text-2xl font-bold tracking-tight">Sejarah Koperasi</h2>
+          </div>
+          <p className="mt-4 whitespace-pre-line text-muted-foreground">{t.sejarah || "—"}</p>
+        </div>
+      </section>
+
+      {/* Struktur Organisasi */}
+      <section id="struktur-organisasi" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><Network className="h-5 w-5" /></div>
+          <h2 className="text-2xl font-bold tracking-tight">Struktur Organisasi</h2>
+        </div>
+        <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[1fr_auto]">
+            <div className="space-y-6">
+              <OrgBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} className="mx-auto w-full max-w-sm" />
+              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <OrgBox title="PENGAWAS" items={splitLines(t.org_pengawas)} />
+                <OrgBox title="PENGURUS" items={splitLines(t.org_pengurus)} />
+              </div>
+              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
+              <OrgBox title={t.org_manajemen || "MANAJEMEN"} className="mx-auto w-full max-w-sm" />
+              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
+              <OrgBox title={t.org_anggota || "ANGGOTA"} className="mx-auto w-full max-w-sm" />
+            </div>
+            <div className="space-y-4 md:pt-2">
+              {splitLines(t.org_eksternal).map((e, i) => (
+                <OrgBox key={i} title={e} className="w-full md:w-48" />
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 border-t border-border pt-4 text-xs text-muted-foreground">
+            <p className="font-semibold">Keterangan</p>
+            <p className="mt-1">Garis koordinasi, garis perintah, dan garis pelayanan menghubungkan setiap unsur organisasi koperasi.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Struktur Manajemen */}
+      <section id="struktur-manajemen" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><GitBranch className="h-5 w-5" /></div>
+            <h2 className="text-2xl font-bold tracking-tight">Struktur Manajemen</h2>
+          </div>
+          <ul className="mt-4 space-y-2">
+            {splitLines(t.struktur_manajemen).map((m, i) => (
+              <li key={i} className="flex items-center gap-2 text-muted-foreground"><Building2 className="h-4 w-4 text-primary" /> {m}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Tata Kebijakan */}
+      <section id="tata-kebijakan" className="container mx-auto scroll-mt-24 px-4 py-12">
+        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><ShieldCheck className="h-5 w-5" /></div>
+            <h2 className="text-2xl font-bold tracking-tight">Tata Kebijakan</h2>
+          </div>
+          <ul className="mt-4 list-disc space-y-1.5 pl-5 text-muted-foreground">
+            {splitLines(t.tata_kebijakan).map((m, i) => <li key={i}>{m}</li>)}
+          </ul>
         </div>
       </section>
 
