@@ -284,29 +284,8 @@ function TentangPage() {
           <h2 className="text-2xl font-bold tracking-tight">Struktur Organisasi</h2>
         </div>
         <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
-          <div className="mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[1fr_auto]">
-            <div className="space-y-6">
-              <OrgBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} className="mx-auto w-full max-w-sm" />
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <OrgBox title="PENGAWAS" items={splitLines(t.org_pengawas)} />
-                <OrgBox title="PENGURUS" items={splitLines(t.org_pengurus)} />
-              </div>
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <OrgBox title={t.org_manajemen || "MANAJEMEN"} className="mx-auto w-full max-w-sm" />
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <OrgBox title={t.org_anggota || "ANGGOTA"} className="mx-auto w-full max-w-sm" />
-            </div>
-            <div className="space-y-4 md:pt-2">
-              {splitLines(t.org_eksternal).map((e, i) => (
-                <OrgBox key={i} title={e} className="w-full md:w-48" />
-              ))}
-            </div>
-          </div>
-          <div className="mt-8 border-t border-border pt-4 text-xs text-muted-foreground">
-            <p className="font-semibold">Keterangan</p>
-            <p className="mt-1">Garis koordinasi, garis perintah, dan garis pelayanan menghubungkan setiap unsur organisasi koperasi.</p>
-          </div>
+          <OrgChart t={t} />
+          <Legend />
         </div>
       </section>
 
