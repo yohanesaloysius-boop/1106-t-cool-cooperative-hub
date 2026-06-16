@@ -63,7 +63,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const pgH = HEADER + Math.max(pengurus.length, 1) * ROW, pgBottom = pgY + pgH, pgRight = pgX + pgW;
   const coordY = pgY + HEADER / 2;
   // PENGAWAS (left of PENGURUS)
-  const pawW = 160, pawX = pgX - 170, pawY = pgY;
+  const pawW = 160, pawX = pgX - 240, pawY = pgY;
   const pawH = HEADER + Math.max(pengawas.length, 1) * ROW, pawRight = pawX + pawW;
   // DEWAN PENASEHAT (right of PENGURUS, small)
   const dwW = 96, dwH = 40, dwX = pgRight + 50, dwY = coordY - dwH / 2;
