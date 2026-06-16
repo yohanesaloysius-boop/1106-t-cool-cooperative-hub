@@ -18,6 +18,7 @@ import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BeritaIndexRouteImport } from './routes/berita.index'
 import { Route as MarketplaceKeranjangRouteImport } from './routes/marketplace.keranjang'
 import { Route as MarketplaceCheckoutRouteImport } from './routes/marketplace.checkout'
 import { Route as BeritaSlugRouteImport } from './routes/berita.$slug'
@@ -144,6 +145,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BeritaIndexRoute = BeritaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BeritaRoute,
 } as any)
 const MarketplaceKeranjangRoute = MarketplaceKeranjangRouteImport.update({
   id: '/keranjang',
@@ -638,6 +644,7 @@ export interface FileRoutesByFullPath {
   '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/berita/': typeof BeritaIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -696,7 +703,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -729,6 +735,7 @@ export interface FileRoutesByTo {
   '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/berita': typeof BeritaIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -823,6 +830,7 @@ export interface FileRoutesById {
   '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
+  '/berita/': typeof BeritaIndexRoute
   '/_authenticated/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/_authenticated/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -917,6 +925,7 @@ export interface FileRouteTypes {
     | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/berita/'
     | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
@@ -975,7 +984,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -1008,6 +1016,7 @@ export interface FileRouteTypes {
     | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/berita'
     | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
@@ -1101,6 +1110,7 @@ export interface FileRouteTypes {
     | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
+    | '/berita/'
     | '/_authenticated/admin/akad'
     | '/_authenticated/admin/analitik'
     | '/_authenticated/admin/anggota'
@@ -1238,6 +1248,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/berita/': {
+      id: '/berita/'
+      path: '/'
+      fullPath: '/berita/'
+      preLoaderRoute: typeof BeritaIndexRouteImport
+      parentRoute: typeof BeritaRoute
     }
     '/marketplace/keranjang': {
       id: '/marketplace/keranjang'
@@ -2011,10 +2028,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 interface BeritaRouteChildren {
   BeritaSlugRoute: typeof BeritaSlugRoute
+  BeritaIndexRoute: typeof BeritaIndexRoute
 }
 
 const BeritaRouteChildren: BeritaRouteChildren = {
   BeritaSlugRoute: BeritaSlugRoute,
+  BeritaIndexRoute: BeritaIndexRoute,
 }
 
 const BeritaRouteWithChildren =

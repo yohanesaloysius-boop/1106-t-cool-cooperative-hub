@@ -5,7 +5,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Newspaper } from "lucide-react";
 
-export const Route = createFileRoute("/berita")({
+export const Route = createFileRoute("/berita/")({
   head: () => ({
     meta: [
       { title: "Berita & Kegiatan — T-COOL Koperasi" },
