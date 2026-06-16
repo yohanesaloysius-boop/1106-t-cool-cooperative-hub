@@ -161,16 +161,6 @@ function TentangPage() {
         </div>
       </section>
 
-      {/* Sejarah Koperasi */}
-      <section id="sejarah" className="container mx-auto scroll-mt-24 px-4 py-12">
-        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><ScrollText className="h-5 w-5" /></div>
-            <h2 className="text-2xl font-bold tracking-tight">Sejarah Koperasi</h2>
-          </div>
-          <p className="mt-4 whitespace-pre-line text-muted-foreground">{t.sejarah || "—"}</p>
-        </div>
-      </section>
 
       {/* Struktur Organisasi */}
       <section id="struktur-organisasi" className="container mx-auto scroll-mt-24 px-4 py-12">
