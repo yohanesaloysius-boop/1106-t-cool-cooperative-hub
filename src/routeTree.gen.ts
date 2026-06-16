@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
+import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -121,6 +122,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const DaftarAnggotaRoute = DaftarAnggotaRouteImport.update({
   id: '/daftar-anggota',
   path: '/daftar-anggota',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeritaRoute = BeritaRouteImport.update({
+  id: '/berita',
+  path: '/berita',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -585,6 +591,7 @@ const AuthenticatedAdminGerejaPengadaanRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -674,6 +681,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -764,6 +772,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -855,6 +864,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -944,6 +954,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -1033,6 +1044,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -1124,6 +1136,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BeritaRoute: typeof BeritaRoute
   DaftarAnggotaRoute: typeof DaftarAnggotaRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   MarketplaceRoute: typeof MarketplaceRouteWithChildren
@@ -1171,6 +1184,13 @@ declare module '@tanstack/react-router' {
       path: '/daftar-anggota'
       fullPath: '/daftar-anggota'
       preLoaderRoute: typeof DaftarAnggotaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berita': {
+      id: '/berita'
+      path: '/berita'
+      fullPath: '/berita'
+      preLoaderRoute: typeof BeritaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1970,6 +1990,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  BeritaRoute: BeritaRoute,
   DaftarAnggotaRoute: DaftarAnggotaRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   MarketplaceRoute: MarketplaceRouteWithChildren,
