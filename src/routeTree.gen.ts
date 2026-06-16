@@ -14,11 +14,13 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
+import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketplaceKeranjangRouteImport } from './routes/marketplace.keranjang'
 import { Route as MarketplaceCheckoutRouteImport } from './routes/marketplace.checkout'
+import { Route as BeritaSlugRouteImport } from './routes/berita.$slug'
 import { Route as AuthenticatedVotingRouteImport } from './routes/_authenticated/voting'
 import { Route as AuthenticatedTransaksiSayaRouteImport } from './routes/_authenticated/transaksi-saya'
 import { Route as AuthenticatedTabunganBerjangkaRouteImport } from './routes/_authenticated/tabungan-berjangka'
@@ -80,6 +82,7 @@ import { Route as AuthenticatedAdminEscrowRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminDanaCadanganRouteImport } from './routes/_authenticated/admin.dana-cadangan'
 import { Route as AuthenticatedAdminBukuKasRouteImport } from './routes/_authenticated/admin.buku-kas'
 import { Route as AuthenticatedAdminBukuBesarRouteImport } from './routes/_authenticated/admin.buku-besar'
+import { Route as AuthenticatedAdminBeritaRouteImport } from './routes/_authenticated/admin.berita'
 import { Route as AuthenticatedAdminBackupRouteImport } from './routes/_authenticated/admin.backup'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminAsetRouteImport } from './routes/_authenticated/admin.aset'
@@ -123,6 +126,11 @@ const DaftarAnggotaRoute = DaftarAnggotaRouteImport.update({
   path: '/daftar-anggota',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BeritaRoute = BeritaRouteImport.update({
+  id: '/berita',
+  path: '/berita',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -146,6 +154,11 @@ const MarketplaceCheckoutRoute = MarketplaceCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
   getParentRoute: () => MarketplaceRoute,
+} as any)
+const BeritaSlugRoute = BeritaSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BeritaRoute,
 } as any)
 const AuthenticatedVotingRoute = AuthenticatedVotingRouteImport.update({
   id: '/voting',
@@ -482,6 +495,12 @@ const AuthenticatedAdminBukuBesarRoute =
     path: '/buku-besar',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminBeritaRoute =
+  AuthenticatedAdminBeritaRouteImport.update({
+    id: '/berita',
+    path: '/berita',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminBackupRoute =
   AuthenticatedAdminBackupRouteImport.update({
     id: '/backup',
@@ -585,6 +604,7 @@ const AuthenticatedAdminGerejaPengadaanRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -615,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
   '/voting': typeof AuthenticatedVotingRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
@@ -626,6 +647,7 @@ export interface FileRoutesByFullPath {
   '/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/backup': typeof AuthenticatedAdminBackupRoute
+  '/admin/berita': typeof AuthenticatedAdminBeritaRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -674,6 +696,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -703,6 +726,7 @@ export interface FileRoutesByTo {
   '/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
   '/voting': typeof AuthenticatedVotingRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
@@ -714,6 +738,7 @@ export interface FileRoutesByTo {
   '/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/backup': typeof AuthenticatedAdminBackupRoute
+  '/admin/berita': typeof AuthenticatedAdminBeritaRoute
   '/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -764,6 +789,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRouteWithChildren
@@ -794,6 +820,7 @@ export interface FileRoutesById {
   '/_authenticated/tabungan-berjangka': typeof AuthenticatedTabunganBerjangkaRoute
   '/_authenticated/transaksi-saya': typeof AuthenticatedTransaksiSayaRoute
   '/_authenticated/voting': typeof AuthenticatedVotingRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/_authenticated/admin/akad': typeof AuthenticatedAdminAkadRoute
@@ -805,6 +832,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/aset': typeof AuthenticatedAdminAsetRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/backup': typeof AuthenticatedAdminBackupRoute
+  '/_authenticated/admin/berita': typeof AuthenticatedAdminBeritaRoute
   '/_authenticated/admin/buku-besar': typeof AuthenticatedAdminBukuBesarRoute
   '/_authenticated/admin/buku-kas': typeof AuthenticatedAdminBukuKasRoute
   '/_authenticated/admin/dana-cadangan': typeof AuthenticatedAdminDanaCadanganRoute
@@ -855,6 +883,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -885,6 +914,7 @@ export interface FileRouteTypes {
     | '/tabungan-berjangka'
     | '/transaksi-saya'
     | '/voting'
+    | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/admin/akad'
@@ -896,6 +926,7 @@ export interface FileRouteTypes {
     | '/admin/aset'
     | '/admin/audit'
     | '/admin/backup'
+    | '/admin/berita'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
     | '/admin/dana-cadangan'
@@ -944,6 +975,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -973,6 +1005,7 @@ export interface FileRouteTypes {
     | '/tabungan-berjangka'
     | '/transaksi-saya'
     | '/voting'
+    | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/admin/akad'
@@ -984,6 +1017,7 @@ export interface FileRouteTypes {
     | '/admin/aset'
     | '/admin/audit'
     | '/admin/backup'
+    | '/admin/berita'
     | '/admin/buku-besar'
     | '/admin/buku-kas'
     | '/admin/dana-cadangan'
@@ -1033,6 +1067,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
     | '/marketplace'
@@ -1063,6 +1098,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tabungan-berjangka'
     | '/_authenticated/transaksi-saya'
     | '/_authenticated/voting'
+    | '/berita/$slug'
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/_authenticated/admin/akad'
@@ -1074,6 +1110,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/aset'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/backup'
+    | '/_authenticated/admin/berita'
     | '/_authenticated/admin/buku-besar'
     | '/_authenticated/admin/buku-kas'
     | '/_authenticated/admin/dana-cadangan'
@@ -1124,6 +1161,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BeritaRoute: typeof BeritaRouteWithChildren
   DaftarAnggotaRoute: typeof DaftarAnggotaRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   MarketplaceRoute: typeof MarketplaceRouteWithChildren
@@ -1173,6 +1211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DaftarAnggotaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/berita': {
+      id: '/berita'
+      path: '/berita'
+      fullPath: '/berita'
+      preLoaderRoute: typeof BeritaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -1207,6 +1252,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/marketplace/checkout'
       preLoaderRoute: typeof MarketplaceCheckoutRouteImport
       parentRoute: typeof MarketplaceRoute
+    }
+    '/berita/$slug': {
+      id: '/berita/$slug'
+      path: '/$slug'
+      fullPath: '/berita/$slug'
+      preLoaderRoute: typeof BeritaSlugRouteImport
+      parentRoute: typeof BeritaRoute
     }
     '/_authenticated/voting': {
       id: '/_authenticated/voting'
@@ -1635,6 +1687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBukuBesarRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/berita': {
+      id: '/_authenticated/admin/berita'
+      path: '/berita'
+      fullPath: '/admin/berita'
+      preLoaderRoute: typeof AuthenticatedAdminBeritaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/backup': {
       id: '/_authenticated/admin/backup'
       path: '/backup'
@@ -1767,6 +1826,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAsetRoute: typeof AuthenticatedAdminAsetRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminBackupRoute: typeof AuthenticatedAdminBackupRoute
+  AuthenticatedAdminBeritaRoute: typeof AuthenticatedAdminBeritaRoute
   AuthenticatedAdminBukuBesarRoute: typeof AuthenticatedAdminBukuBesarRoute
   AuthenticatedAdminBukuKasRoute: typeof AuthenticatedAdminBukuKasRoute
   AuthenticatedAdminDanaCadanganRoute: typeof AuthenticatedAdminDanaCadanganRoute
@@ -1813,6 +1873,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAsetRoute: AuthenticatedAdminAsetRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminBackupRoute: AuthenticatedAdminBackupRoute,
+  AuthenticatedAdminBeritaRoute: AuthenticatedAdminBeritaRoute,
   AuthenticatedAdminBukuBesarRoute: AuthenticatedAdminBukuBesarRoute,
   AuthenticatedAdminBukuKasRoute: AuthenticatedAdminBukuKasRoute,
   AuthenticatedAdminDanaCadanganRoute: AuthenticatedAdminDanaCadanganRoute,
@@ -1948,6 +2009,17 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface BeritaRouteChildren {
+  BeritaSlugRoute: typeof BeritaSlugRoute
+}
+
+const BeritaRouteChildren: BeritaRouteChildren = {
+  BeritaSlugRoute: BeritaSlugRoute,
+}
+
+const BeritaRouteWithChildren =
+  BeritaRoute._addFileChildren(BeritaRouteChildren)
+
 interface MarketplaceRouteChildren {
   MarketplaceCheckoutRoute: typeof MarketplaceCheckoutRoute
   MarketplaceKeranjangRoute: typeof MarketplaceKeranjangRoute
@@ -1970,6 +2042,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  BeritaRoute: BeritaRouteWithChildren,
   DaftarAnggotaRoute: DaftarAnggotaRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   MarketplaceRoute: MarketplaceRouteWithChildren,

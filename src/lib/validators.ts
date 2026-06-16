@@ -67,7 +67,7 @@ export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 export const ALLOWED_IMAGE = ["image/jpeg", "image/png", "image/webp"] as const;
 export const ALLOWED_DOC = ["application/pdf", ...ALLOWED_IMAGE] as const;
 
-export type UploadKind = "ktp" | "dokumen-pinjaman" | "bukti-transfer" | "tanda-tangan" | "laporan-pdf";
+export type UploadKind = "ktp" | "dokumen-pinjaman" | "bukti-transfer" | "tanda-tangan" | "laporan-pdf" | "berita";
 
 export const UPLOAD_RULES: Record<
   UploadKind,
@@ -78,6 +78,7 @@ export const UPLOAD_RULES: Record<
   "bukti-transfer": { mimes: ALLOWED_IMAGE, maxMB: 5, bucket: "bukti-transfer", label: "Bukti Transfer" },
   "tanda-tangan": { mimes: ["image/png"], maxMB: 1, bucket: "tanda-tangan", label: "Tanda Tangan" },
   "laporan-pdf": { mimes: ["application/pdf"], maxMB: 20, bucket: "laporan-pdf", label: "Laporan PDF" },
+  berita: { mimes: ALLOWED_IMAGE, maxMB: 5, bucket: "marketplace", label: "Gambar Berita" },
 };
 
 export function validateFile(file: File, kind: UploadKind): string | null {

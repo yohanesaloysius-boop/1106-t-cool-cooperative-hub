@@ -6,7 +6,7 @@ import { useAuth, type AppRole } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap, Menu as MenuIcon, MoreHorizontal, DatabaseBackup } from "lucide-react";
+import { LayoutDashboard, Wallet, HandCoins, Calculator, Receipt, PiggyBank, LogOut, Loader2, ShieldCheck, ShieldAlert, Users, User as UserIcon, FolderOpen, History, FileBarChart2, Coins, FileSignature, CalendarDays, Activity, Settings as SettingsIcon, ShoppingBag, Store as StoreIcon, Heart, ClipboardList, Home, Landmark, UsersRound, Shield, BookOpen, BookText, Archive, Briefcase, Package, QrCode, Church, GraduationCap, Menu as MenuIcon, MoreHorizontal, DatabaseBackup, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/dashboard/notification-center";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -84,6 +84,7 @@ export const navGroups: NavGroup[] = [
     icon: UsersRound,
     items: [
       { to: "/dokumen", label: "Dokumen", icon: FolderOpen },
+      { to: "/berita", label: "Berita & Kegiatan", icon: Newspaper },
       { to: "/rapat", label: "Rapat", icon: CalendarDays },
       { to: "/voting", label: "Voting RAT", icon: FileSignature },
       { to: "/survei", label: "Survei", icon: ClipboardList },
@@ -169,6 +170,7 @@ export const navGroups: NavGroup[] = [
     adminOnly: true,
     items: [
       { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon, adminOnly: true },
+      { to: "/admin/berita", label: "Berita & Kegiatan", icon: Newspaper, adminOnly: true },
       { to: "/admin/audit", label: "Audit Log", icon: Activity, adminOnly: true },
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
       { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },

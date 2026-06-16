@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpananVerifyPage } from "./admin.simpanan";
 import { AdminAngsuranPage } from "./admin.angsuran";
 import { PinjamanApprovalPage } from "./admin.pinjaman";
-import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark, Vote, Sparkles, Ticket, Church } from "lucide-react";
+import { Users, PiggyBank, HandCoins, AlertCircle, Wallet, CalendarClock, ShieldCheck, ClipboardCheck, Settings as SettingsIcon, FileText, MessageSquare, ClipboardList, Landmark, Vote, Sparkles, Ticket, Church, Newspaper } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { PushToggle } from "@/components/notifications/push-toggle";
@@ -148,6 +148,7 @@ function AdminDashboard() {
           { to: "/admin/voting", label: "E-Voting RAT", desc: "Suara digital", icon: Vote },
           { to: "/admin/notifikasi-wa", label: "Notif WA", desc: "Antrian reminder", icon: MessageSquare },
           { to: "/admin/surat", label: "Surat Resmi", desc: "Generator surat", icon: FileText },
+          { to: "/admin/berita", label: "Berita & Kegiatan", desc: "Kabar koperasi", icon: Newspaper },
         ].filter((m) => canAccessAdminPath(roles, m.to)).map((m) => (
           <Link key={m.to} to={m.to} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-md h-full" style={{ boxShadow: "var(--shadow-card)" }}>
