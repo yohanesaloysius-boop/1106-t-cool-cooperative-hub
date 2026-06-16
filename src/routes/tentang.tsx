@@ -70,13 +70,15 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const leftX = 360, rightX = 700;
   // externals
   const extX = 800, extW = 160;
+  const pawH = HEADER + Math.max(pengawas.length, 1) * ROW;
+  const pgH = HEADER + Math.max(pengurus.length, 1) * ROW;
   const ext = [
     { y: 40, h: 80 },
     { y: 150, h: 64 },
     { y: 250, h: 58 },
   ];
   const H = Math.max(anggBottom + 50, 360);
-  const stroke = "hsl(var(--foreground))";
+  const stroke = "#111111";
 
   return (
     <div className="overflow-x-auto">
@@ -112,8 +114,8 @@ function OrgChart({ t }: { t: Record<string, string> }) {
         </svg>
 
         <ChartBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} left={raX} top={raY} width={raW} height={raH} />
-        <ChartBox title="PENGAWAS" items={pengawas} left={pawX} top={pawY} width={pawW} />
-        <ChartBox title="PENGURUS" items={pengurus} left={pgX} top={pgY} width={pgW} />
+        <ChartBox title="PENGAWAS" items={pengawas} left={pawX} top={pawY} width={pawW} height={pawH} />
+        <ChartBox title="PENGURUS" items={pengurus} left={pgX} top={pgY} width={pgW} height={pgH} />
         <ChartBox title={t.org_manajemen || "MANAGEMEN"} left={managX} top={managY} width={managW} height={managH} />
         <ChartBox title={t.org_anggota || "ANGGOTA"} left={anggX} top={anggY} width={anggW} height={anggH} />
         {ext.map((e, i) => (
@@ -125,7 +127,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
 }
 
 function Legend() {
-  const stroke = "hsl(var(--foreground))";
+  const stroke = "#111111";
   const Row = ({ label, dashed, plain }: { label: string; dashed?: boolean; plain?: boolean }) => (
     <div className="flex items-center gap-4">
       <span className="w-40 text-sm font-medium">{label}</span>
