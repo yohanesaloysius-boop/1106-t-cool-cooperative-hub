@@ -63,23 +63,23 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const pgH = HEADER + Math.max(pengurus.length, 1) * ROW, pgBottom = pgY + pgH, pgRight = pgX + pgW;
   const coordY = pgY + HEADER / 2;
   // PENGAWAS (left of PENGURUS)
-  const pawW = 160, pawX = pgX - 170, pawY = pgY;
+  const pawW = 160, pawX = pgX - 240, pawY = pgY;
   const pawH = HEADER + Math.max(pengawas.length, 1) * ROW, pawRight = pawX + pawW;
   // DEWAN PENASEHAT (right of PENGURUS, small)
-  const dwW = 96, dwH = 40, dwX = pgRight + 50, dwY = coordY - dwH / 2;
+  const dwW = 96, dwH = 40, dwX = pgRight + 70, dwY = coordY - dwH / 2;
   // MANAGEMEN
   const mgW = 180, mgCx = pgCx, mgX = mgCx - mgW / 2, mgH = 50, mgY = pgBottom + 70, mgBottom = mgY + mgH;
   // ANGGOTA
   const agW = 180, agCx = pgCx, agX = agCx - agW / 2, agH = 44, agY = mgBottom + 70;
   const agMid = agY + agH / 2, agLeft = agX, agRight = agX + agW, agBottom = agY + agH;
   // Outer service/command loops
-  const leftX = 120, rightX = 663;
+  const leftX = 60, rightX = 680;
   // Externals (far right)
-  const exX = 700, dinasW = 170, dinasH = 56, dinasY = coordY - dinasH / 2;
+  const exX = 720, dinasW = 170, dinasH = 56, dinasY = coordY - dinasH / 2;
   const pusW = 150, pusH = 56, pusY = dinasY + dinasH + 34;
   const dinasMid = dinasY + dinasH / 2, pusMid = pusY + pusH / 2;
   const H = agBottom + 40;
-  const W = 880;
+  const W = 920;
   const stroke = "#111111";
 
   return (
