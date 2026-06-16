@@ -65,7 +65,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const managY = pgBottom + 88, managCx = managX + managW / 2, managBottom = managY + managH;
   // ANGGOTA
   const anggW = 200, anggX = 410, anggH = 46;
-  const anggY = managBottom + 88, anggCx = anggX + anggW / 2, anggMid = anggY + anggH / 2, anggRight = anggX + anggW;
+  const anggY = managBottom + 88, anggMid = anggY + anggH / 2, anggRight = anggX + anggW, anggBottom = anggY + anggH;
   // loops
   const leftX = 360, rightX = 700;
   // externals
