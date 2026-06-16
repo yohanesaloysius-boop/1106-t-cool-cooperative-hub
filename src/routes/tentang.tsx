@@ -106,10 +106,10 @@ function OrgChart({ t }: { t: Record<string, string> }) {
           {/* Garis koordinasi (dashed) */}
           {/* PENGAWAS <-> PENGURUS double arrow */}
           <path d={`M${pawRight},${coordY} L${pgX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerStart="url(#arrStart)" markerEnd="url(#arr)" />
-          {/* PENGURUS -> DEWAN PENASEHAT single arrow */}
-          <path d={`M${pgRight},${coordY} L${dwX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerEnd="url(#arr)" />
-          {/* Garis pelayanan (solid, no arrow) — LEFT outer loop: ANGGOTA -> RAPAT ANGGOTA */}
-          <path d={`M${agLeft},${agMid} L${leftX},${agMid} L${leftX},${raMidY} L${raLeft},${raMidY}`} stroke={stroke} strokeWidth={1.5} fill="none" />
+          {/* PENGURUS <-> DEWAN PENASEHAT double arrow */}
+          <path d={`M${pgRight},${coordY} L${dwX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerStart="url(#arrStart)" markerEnd="url(#arr)" />
+          {/* Garis pelayanan (solid) — LEFT outer loop: ANGGOTA -> RAPAT ANGGOTA (arrow into RA) */}
+          <path d={`M${agLeft},${agMid} L${leftX},${agMid} L${leftX},${raMidY} L${raLeft},${raMidY}`} stroke={stroke} strokeWidth={1.5} fill="none" markerEnd="url(#arr)" />
           {/* RIGHT outer spine: ANGGOTA -> RAPAT ANGGOTA (arrow into RA) */}
           <g stroke={stroke} strokeWidth={1.5} fill="none">
             <path d={`M${agRight},${agMid} L${rightX},${agMid} L${rightX},${raMidY} L${raRight},${raMidY}`} markerEnd="url(#arr)" />
