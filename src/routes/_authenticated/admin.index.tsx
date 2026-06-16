@@ -148,6 +148,7 @@ function AdminDashboard() {
           { to: "/admin/voting", label: "E-Voting RAT", desc: "Suara digital", icon: Vote },
           { to: "/admin/notifikasi-wa", label: "Notif WA", desc: "Antrian reminder", icon: MessageSquare },
           { to: "/admin/surat", label: "Surat Resmi", desc: "Generator surat", icon: FileText },
+          { to: "/admin/berita", label: "Berita & Kegiatan", desc: "Kabar koperasi", icon: Newspaper },
         ].filter((m) => canAccessAdminPath(roles, m.to)).map((m) => (
           <Link key={m.to} to={m.to} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-md h-full" style={{ boxShadow: "var(--shadow-card)" }}>
