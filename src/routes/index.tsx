@@ -136,6 +136,22 @@ function Landing() {
     },
     staleTime: 60_000,
   });
+
+  const { data: berita } = useQuery({
+    queryKey: ["public-berita-landing"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("berita")
+        .select("id,title,slug,excerpt,cover_url,category,published_at")
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+  const beritaList = berita ?? [];
   const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
