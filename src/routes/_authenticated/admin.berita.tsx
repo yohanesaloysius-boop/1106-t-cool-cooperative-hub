@@ -237,7 +237,7 @@ function AdminBeritaPage() {
             <EmptyState
               icon={Newspaper}
               title="Belum ada berita"
-              description="Buat berita pertama untuk koperasi Anda."
+              desc="Buat berita pertama untuk koperasi Anda."
             />
           ) : (
             <ul className="divide-y divide-border">
