@@ -210,18 +210,6 @@ function TentangPage() {
         </div>
       </section>
 
-      {/* Tata Kebijakan */}
-      <section id="tata-kebijakan" className="container mx-auto scroll-mt-24 px-4 py-12">
-        <div className="rounded-3xl border border-border bg-card p-8" style={{ boxShadow: "var(--shadow-card)" }}>
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><ShieldCheck className="h-5 w-5" /></div>
-            <h2 className="text-2xl font-bold tracking-tight">Tata Kebijakan</h2>
-          </div>
-          <ul className="mt-4 list-disc space-y-1.5 pl-5 text-muted-foreground">
-            {splitLines(t.tata_kebijakan).map((m, i) => <li key={i}>{m}</li>)}
-          </ul>
-        </div>
-      </section>
 
       {pengurusList.length > 0 && (
         <section className="container mx-auto px-4 py-12">
