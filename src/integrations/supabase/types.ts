@@ -4317,6 +4317,7 @@ export type Database = {
           ts: string
         }[]
       }
+      get_public_tentang: { Args: never; Returns: Json }
       get_rapb_realisasi: {
         Args: { _plan_id: string }
         Returns: {
