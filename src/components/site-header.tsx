@@ -19,10 +19,8 @@ const links = [
 const tentangItems = [
   { hash: "makna-logo", label: "Makna Logo dan Nama" },
   { hash: "visi-misi", label: "Visi dan Misi" },
-  { hash: "sejarah", label: "Sejarah Koperasi" },
   { hash: "struktur-organisasi", label: "Struktur Organisasi" },
   { hash: "struktur-manajemen", label: "Struktur Manajemen" },
-  { hash: "tata-kebijakan", label: "Tata Kebijakan" },
 ] as const;
 
 export function SiteHeader() {
