@@ -50,40 +50,42 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const pengawas = splitLines(t.org_pengawas);
   const pengurus = splitLines(t.org_pengurus);
   const eksternal = splitLines(t.org_eksternal);
+  const dinas = eksternal[0] || "DINAS KOPERASI KOTA BATAM";
+  const puskopdit = eksternal[1] || "PUSKOPDIT BATAM";
+  const dewan = eksternal[2] || "DEWAN PENASEHAT";
 
   const HEADER = 34, ROW = 30;
-  // RAPAT ANGGOTA
-  const raX = 410, raY = 30, raW = 200, raH = 46;
-  const raCx = raX + raW / 2, raBottom = raY + raH, raMidY = raY + raH / 2;
-  // PENGAWAS / PENGURUS
-  const pawX = 140, pawY = 150, pawW = 180;
-  const pgX = 410, pgY = 150, pgW = 200, pgCx = pgX + pgW / 2;
-  const pgBottom = pgY + HEADER + Math.max(pengurus.length, 1) * ROW;
+  // RAPAT ANGGOTA (top center)
+  const raX = 300, raY = 16, raW = 200, raH = 44;
+  const raCx = raX + raW / 2, raBottom = raY + raH, raMidY = raY + raH / 2, raLeft = raX, raRight = raX + raW;
+  // PENGURUS (center, aligned to RA center)
+  const pgW = 180, pgCx = raCx, pgX = pgCx - pgW / 2, pgY = 120;
+  const pgH = HEADER + Math.max(pengurus.length, 1) * ROW, pgBottom = pgY + pgH, pgRight = pgX + pgW;
   const coordY = pgY + HEADER / 2;
+  // PENGAWAS (left of PENGURUS)
+  const pawW = 160, pawX = pgX - 170, pawY = pgY;
+  const pawH = HEADER + Math.max(pengawas.length, 1) * ROW, pawRight = pawX + pawW;
+  // DEWAN PENASEHAT (right of PENGURUS, small)
+  const dwW = 96, dwH = 40, dwX = pgRight + 50, dwY = coordY - dwH / 2;
   // MANAGEMEN
-  const managW = 200, managX = 410, managH = 54;
-  const managY = pgBottom + 88, managCx = managX + managW / 2, managBottom = managY + managH;
+  const mgW = 180, mgCx = pgCx, mgX = mgCx - mgW / 2, mgH = 50, mgY = pgBottom + 70, mgBottom = mgY + mgH;
   // ANGGOTA
-  const anggW = 200, anggX = 410, anggH = 46;
-  const anggY = managBottom + 88, anggMid = anggY + anggH / 2, anggRight = anggX + anggW, anggBottom = anggY + anggH;
-  // loops
-  const leftX = 360, rightX = 700;
-  // externals
-  const extX = 800, extW = 160;
-  const pawH = HEADER + Math.max(pengawas.length, 1) * ROW;
-  const pgH = HEADER + Math.max(pengurus.length, 1) * ROW;
-  const ext = [
-    { y: 40, h: 80 },
-    { y: 150, h: 64 },
-    { y: 250, h: 58 },
-  ];
-  const H = Math.max(anggBottom + 50, 360);
+  const agW = 180, agCx = pgCx, agX = agCx - agW / 2, agH = 44, agY = mgBottom + 70;
+  const agMid = agY + agH / 2, agLeft = agX, agRight = agX + agW, agBottom = agY + agH;
+  // Outer service/command loops
+  const leftX = 120, rightX = 600;
+  // Externals (far right)
+  const exX = 690, dinasW = 170, dinasH = 56, dinasY = coordY - dinasH / 2;
+  const pusW = 150, pusH = 56, pusY = dinasY + dinasH + 34;
+  const dinasMid = dinasY + dinasH / 2, pusMid = pusY + pusH / 2;
+  const H = agBottom + 40;
+  const W = 880;
   const stroke = "#111111";
 
   return (
     <div className="overflow-x-auto">
-      <div className="relative mx-auto" style={{ width: 980, height: H, minWidth: 980 }}>
-        <svg className="absolute inset-0 pointer-events-none" width={980} height={H} viewBox={`0 0 980 ${H}`}>
+      <div className="relative mx-auto" style={{ width: W, height: H, minWidth: W }}>
+        <svg className="absolute inset-0 pointer-events-none" width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
           <defs>
             <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
               <path d="M0,0 L8,4 L0,8 Z" fill={stroke} />
@@ -95,32 +97,33 @@ function OrgChart({ t }: { t: Record<string, string> }) {
           {/* Garis perintah (solid + arrow) */}
           <g stroke={stroke} strokeWidth={1.5} fill="none">
             <path d={`M${raCx},${raBottom} L${raCx},${pgY}`} markerEnd="url(#arr)" />
-            <path d={`M${pgCx},${pgBottom} L${pgCx},${managY}`} markerEnd="url(#arr)" />
-            <path d={`M${managCx},${managBottom} L${managCx},${anggY}`} markerEnd="url(#arr)" />
-            {ext.map((e, i) => (
-              <path key={i} d={`M${rightX},${e.y + e.h / 2} L${extX},${e.y + e.h / 2}`} markerEnd="url(#arr)" />
-            ))}
+            <path d={`M${pgCx},${pgBottom} L${pgCx},${mgY}`} markerEnd="url(#arr)" />
+            <path d={`M${mgCx},${mgBottom} L${mgCx},${agY}`} markerEnd="url(#arr)" />
+            {/* externals branch off right spine */}
+            <path d={`M${rightX},${dinasMid} L${exX},${dinasMid}`} markerEnd="url(#arr)" />
+            <path d={`M${rightX},${pusMid} L${exX},${pusMid}`} markerEnd="url(#arr)" />
           </g>
-          {/* Garis koordinasi (dashed double arrow) */}
-          <path d={`M${pawX + pawW},${coordY} L${pgX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerStart="url(#arrStart)" markerEnd="url(#arr)" />
-          {/* Garis pelayanan (solid, no arrow) — left service loop */}
-          <path d={`M${raX},${raMidY} L${leftX},${raMidY} L${leftX},${anggMid} L${anggX},${anggMid}`} stroke={stroke} strokeWidth={1.5} fill="none" />
-          {/* Right command spine: into RA + down to ANGGOTA */}
+          {/* Garis koordinasi (dashed) */}
+          {/* PENGAWAS <-> PENGURUS double arrow */}
+          <path d={`M${pawRight},${coordY} L${pgX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerStart="url(#arrStart)" markerEnd="url(#arr)" />
+          {/* PENGURUS -> DEWAN PENASEHAT single arrow */}
+          <path d={`M${pgRight},${coordY} L${dwX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerEnd="url(#arr)" />
+          {/* Garis pelayanan (solid, no arrow) — LEFT outer loop: ANGGOTA -> RAPAT ANGGOTA */}
+          <path d={`M${agLeft},${agMid} L${leftX},${agMid} L${leftX},${raMidY} L${raLeft},${raMidY}`} stroke={stroke} strokeWidth={1.5} fill="none" />
+          {/* RIGHT outer spine: ANGGOTA -> RAPAT ANGGOTA (arrow into RA) */}
           <g stroke={stroke} strokeWidth={1.5} fill="none">
-            <path d={`M${rightX},${raMidY} L${raX + raW},${raMidY}`} markerEnd="url(#arr)" />
-            <path d={`M${rightX},${raMidY} L${rightX},${anggMid}`} />
-            <path d={`M${rightX},${anggMid} L${anggRight},${anggMid}`} />
+            <path d={`M${agRight},${agMid} L${rightX},${agMid} L${rightX},${raMidY} L${raRight},${raMidY}`} markerEnd="url(#arr)" />
           </g>
         </svg>
 
         <ChartBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} left={raX} top={raY} width={raW} height={raH} />
         <ChartBox title="PENGAWAS" items={pengawas} left={pawX} top={pawY} width={pawW} height={pawH} />
         <ChartBox title="PENGURUS" items={pengurus} left={pgX} top={pgY} width={pgW} height={pgH} />
-        <ChartBox title={t.org_manajemen || "MANAGEMEN"} left={managX} top={managY} width={managW} height={managH} />
-        <ChartBox title={t.org_anggota || "ANGGOTA"} left={anggX} top={anggY} width={anggW} height={anggH} />
-        {ext.map((e, i) => (
-          <ChartBox key={i} title={eksternal[i] || ""} left={extX} top={e.y} width={extW} height={e.h} />
-        ))}
+        <ChartBox title={dewan} left={dwX} top={dwY} width={dwW} height={dwH} />
+        <ChartBox title={t.org_manajemen || "MANAGEMEN"} left={mgX} top={mgY} width={mgW} height={mgH} />
+        <ChartBox title={t.org_anggota || "ANGGOTA"} left={agX} top={agY} width={agW} height={agH} />
+        <ChartBox title={dinas} left={exX} top={dinasY} width={dinasW} height={dinasH} />
+        <ChartBox title={puskopdit} left={exX} top={pusY} width={pusW} height={pusH} />
       </div>
     </div>
   );
