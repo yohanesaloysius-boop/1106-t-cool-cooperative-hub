@@ -441,6 +441,46 @@ function Landing() {
         </section>
       </main>
 
+        {beritaList.length > 0 && (
+          <section className="container mx-auto mt-12 px-4">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#372f2f]">Berita & Kegiatan</h2>
+                <p className="mt-2 text-sm text-muted-foreground">Kabar terbaru dan dokumentasi kegiatan koperasi.</p>
+              </div>
+              <Link to="/berita" className="shrink-0 text-sm font-medium text-primary hover:underline">
+                Lihat semua →
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {beritaList.map((b: any) => (
+                <Link
+                  key={b.id}
+                  to="/berita/$slug"
+                  params={{ slug: b.slug }}
+                  className="group block overflow-hidden rounded-3xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/40"
+                  style={{ boxShadow: "var(--shadow-card)" }}
+                >
+                  <div className="aspect-[16/10] overflow-hidden bg-muted">
+                    {b.cover_url ? (
+                      <img src={b.cover_url} alt={b.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-primary/30">
+                        <Plus className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    <Badge variant="secondary" className="text-[10px] uppercase">{b.category}</Badge>
+                    <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug">{b.title}</h3>
+                    {b.excerpt && <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{b.excerpt}</p>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {pengurusList.length > 0 && (
           <section className="container mx-auto mt-12 px-4 pb-16">
             <div className="text-center">
