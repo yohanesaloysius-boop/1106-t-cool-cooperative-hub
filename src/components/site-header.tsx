@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard, Shield, User as UserIcon, Menu } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin, LogIn, LayoutDashboard, Shield, User as UserIcon, Menu, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,15 @@ const links = [
   { to: "/marketplace", label: "Marketplace" },
   { to: "/daftar-anggota", label: "Daftar Anggota" },
   { to: "/tentang", label: "Tentang Kami" },
+] as const;
+
+const tentangItems = [
+  { hash: "makna-logo", label: "Makna Logo dan Nama" },
+  { hash: "visi-misi", label: "Visi dan Misi" },
+  { hash: "sejarah", label: "Sejarah Koperasi" },
+  { hash: "struktur-organisasi", label: "Struktur Organisasi" },
+  { hash: "struktur-manajemen", label: "Struktur Manajemen" },
+  { hash: "tata-kebijakan", label: "Tata Kebijakan" },
 ] as const;
 
 export function SiteHeader() {
@@ -39,7 +49,26 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {links.map((l) => (
+          {links.map((l) =>
+            l.to === "/tentang" ? (
+              <DropdownMenu key={l.to}>
+                <DropdownMenuTrigger asChild>
+                  <button className="group flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground focus:outline-none">
+                    {l.label}
+                    <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {tentangItems.map((it) => (
+                    <DropdownMenuItem key={it.hash} asChild>
+                      <Link to="/tentang" hash={it.hash} className="cursor-pointer">
+                        {it.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
             <Link
               key={l.to}
               to={l.to}
@@ -50,7 +79,8 @@ export function SiteHeader() {
             >
               {l.label}
             </Link>
-          ))}
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -122,7 +152,31 @@ export function SiteHeader() {
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
               <nav className="mt-6 flex flex-col gap-1">
-                {links.map((l) => (
+                {links.map((l) =>
+                  l.to === "/tentang" ? (
+                    <div key={l.to} className="flex flex-col">
+                      <Link
+                        to={l.to}
+                        onClick={() => setMobileOpen(false)}
+                        className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-primary/10"
+                      >
+                        {l.label}
+                      </Link>
+                      <div className="ml-3 flex flex-col border-l border-border pl-2">
+                        {tentangItems.map((it) => (
+                          <Link
+                            key={it.hash}
+                            to="/tentang"
+                            hash={it.hash}
+                            onClick={() => setMobileOpen(false)}
+                            className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-primary/10 hover:text-foreground"
+                          >
+                            {it.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
                   <Link
                     key={l.to}
                     to={l.to}
@@ -131,7 +185,8 @@ export function SiteHeader() {
                   >
                     {l.label}
                   </Link>
-                ))}
+                  ),
+                )}
                 {user && realPengurus && (
                   <div className="mt-4 border-t pt-4">
                     <p className="px-3 text-xs text-muted-foreground mb-2">Mode Tampilan</p>
