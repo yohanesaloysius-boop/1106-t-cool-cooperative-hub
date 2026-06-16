@@ -12,7 +12,7 @@ const links = [
   { to: "/berita", label: "Berita & Kegiatan" },
   { to: "/marketplace", label: "Marketplace" },
   { to: "/daftar-anggota", label: "Daftar Anggota" },
-  { to: "/tentang", label: "Tentang" },
+  { to: "/tentang", label: "Tentang Kami" },
 ] as const;
 
 export function SiteHeader() {
