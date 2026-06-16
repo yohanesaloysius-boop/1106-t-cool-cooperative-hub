@@ -79,7 +79,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const pusW = 150, pusH = 56, pusY = dinasY + dinasH + 34;
   const dinasMid = dinasY + dinasH / 2, pusMid = pusY + pusH / 2;
   const H = agBottom + 40;
-  const W = 880;
+  const W = 920;
   const stroke = "#111111";
 
   return (
