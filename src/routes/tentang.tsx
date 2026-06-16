@@ -27,17 +27,132 @@ const values = [
 
 const splitLines = (s?: string) => (s ?? "").split("\n").map((x) => x.trim()).filter(Boolean);
 
-function OrgBox({ title, items, className = "" }: { title: string; items?: string[]; className?: string }) {
+function ChartBox({ title, items, left, top, width, height }: { title: string; items?: string[]; left: number; top: number; width: number; height?: number }) {
   return (
-    <div className={`overflow-hidden rounded-lg border-2 border-foreground/70 bg-card text-center ${className}`}>
-      <div className="border-b-2 border-foreground/70 bg-primary/10 px-3 py-2 text-sm font-bold tracking-tight">{title}</div>
-      {items && items.length > 0 && (
-        <ul className="divide-y divide-border">
-          {items.map((it, i) => (
-            <li key={i} className="px-3 py-1.5 text-xs">{it}</li>
-          ))}
-        </ul>
-      )}
+    <div className="absolute" style={{ left, top, width, height }}>
+      <div className="overflow-hidden rounded-md border-2 border-foreground/70 bg-card text-center" style={height ? { height: "100%" } : undefined}>
+        {items && items.length > 0 ? (
+          <>
+            <div className="flex h-[34px] items-center justify-center border-b-2 border-foreground/70 bg-primary/10 px-2 text-sm font-bold tracking-tight">{title}</div>
+            {items.map((it, i) => (
+              <div key={i} className="flex h-[30px] items-center justify-center border-b border-border px-2 text-xs last:border-b-0">{it}</div>
+            ))}
+          </>
+        ) : (
+          <div className="flex items-center justify-center px-2 text-center text-sm font-bold tracking-tight" style={{ height: "100%" }}>{title}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function OrgChart({ t }: { t: Record<string, string> }) {
+  const pengawas = splitLines(t.org_pengawas);
+  const pengurus = splitLines(t.org_pengurus);
+  const eksternal = splitLines(t.org_eksternal);
+
+  const HEADER = 34, ROW = 30;
+  // RAPAT ANGGOTA
+  const raX = 410, raY = 30, raW = 200, raH = 46;
+  const raCx = raX + raW / 2, raBottom = raY + raH, raMidY = raY + raH / 2;
+  // PENGAWAS / PENGURUS
+  const pawX = 140, pawY = 150, pawW = 180;
+  const pgX = 410, pgY = 150, pgW = 200, pgCx = pgX + pgW / 2;
+  const pgBottom = pgY + HEADER + Math.max(pengurus.length, 1) * ROW;
+  const coordY = pgY + HEADER / 2;
+  // MANAGEMEN
+  const managW = 200, managX = 410, managH = 54;
+  const managY = pgBottom + 88, managCx = managX + managW / 2, managBottom = managY + managH;
+  // ANGGOTA
+  const anggW = 200, anggX = 410, anggH = 46;
+  const anggY = managBottom + 88, anggMid = anggY + anggH / 2, anggRight = anggX + anggW, anggBottom = anggY + anggH;
+  // loops
+  const leftX = 360, rightX = 700;
+  // externals
+  const extX = 800, extW = 160;
+  const ext = [
+    { y: 40, h: 80 },
+    { y: 150, h: 64 },
+    { y: 250, h: 58 },
+  ];
+  const H = Math.max(anggBottom + 50, 360);
+  const stroke = "hsl(var(--foreground))";
+
+  return (
+    <div className="overflow-x-auto">
+      <div className="relative mx-auto" style={{ width: 980, height: H, minWidth: 980 }}>
+        <svg className="absolute inset-0 pointer-events-none" width={980} height={H} viewBox={`0 0 980 ${H}`}>
+          <defs>
+            <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill={stroke} />
+            </marker>
+            <marker id="arrStart" markerWidth="9" markerHeight="9" refX="1" refY="4" orient="auto">
+              <path d="M8,0 L0,4 L8,8 Z" fill={stroke} />
+            </marker>
+          </defs>
+          {/* Garis perintah (solid + arrow) */}
+          <g stroke={stroke} strokeWidth={1.5} fill="none">
+            <path d={`M${raCx},${raBottom} L${raCx},${pgY}`} markerEnd="url(#arr)" />
+            <path d={`M${pgCx},${pgBottom} L${pgCx},${managY}`} markerEnd="url(#arr)" />
+            <path d={`M${managCx},${managBottom} L${managCx},${anggY}`} markerEnd="url(#arr)" />
+            {ext.map((e, i) => (
+              <path key={i} d={`M${rightX},${e.y + e.h / 2} L${extX},${e.y + e.h / 2}`} markerEnd="url(#arr)" />
+            ))}
+          </g>
+          {/* Garis koordinasi (dashed double arrow) */}
+          <path d={`M${pawX + pawW},${coordY} L${pgX},${coordY}`} stroke={stroke} strokeWidth={1.5} strokeDasharray="5 4" fill="none" markerStart="url(#arrStart)" markerEnd="url(#arr)" />
+          {/* Garis pelayanan (solid, no arrow) — left service loop */}
+          <path d={`M${raX},${raMidY} L${leftX},${raMidY} L${leftX},${anggMid} L${anggX},${anggMid}`} stroke={stroke} strokeWidth={1.5} fill="none" />
+          {/* Right command spine: into RA + down to ANGGOTA */}
+          <g stroke={stroke} strokeWidth={1.5} fill="none">
+            <path d={`M${rightX},${raMidY} L${raX + raW},${raMidY}`} markerEnd="url(#arr)" />
+            <path d={`M${rightX},${raMidY} L${rightX},${anggMid}`} />
+            <path d={`M${rightX},${anggMid} L${anggRight},${anggMid}`} />
+          </g>
+        </svg>
+
+        <ChartBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} left={raX} top={raY} width={raW} height={raH} />
+        <ChartBox title="PENGAWAS" items={pengawas} left={pawX} top={pawY} width={pawW} />
+        <ChartBox title="PENGURUS" items={pengurus} left={pgX} top={pgY} width={pgW} />
+        <ChartBox title={t.org_manajemen || "MANAGEMEN"} left={managX} top={managY} width={managW} height={managH} />
+        <ChartBox title={t.org_anggota || "ANGGOTA"} left={anggX} top={anggY} width={anggW} height={anggH} />
+        {ext.map((e, i) => (
+          <ChartBox key={i} title={eksternal[i] || ""} left={extX} top={e.y} width={extW} height={e.h} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Legend() {
+  const stroke = "hsl(var(--foreground))";
+  const Row = ({ label, dashed, plain }: { label: string; dashed?: boolean; plain?: boolean }) => (
+    <div className="flex items-center gap-4">
+      <span className="w-40 text-sm font-medium">{label}</span>
+      <svg width="80" height="14" viewBox="0 0 80 14">
+        <defs>
+          <marker id={`lg-${label}`} markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill={stroke} />
+          </marker>
+          <marker id={`lgs-${label}`} markerWidth="9" markerHeight="9" refX="1" refY="4" orient="auto">
+            <path d="M8,0 L0,4 L8,8 Z" fill={stroke} />
+          </marker>
+        </defs>
+        <path d="M4,7 L72,7" stroke={stroke} strokeWidth={1.5} fill="none"
+          strokeDasharray={dashed ? "5 4" : undefined}
+          markerEnd={plain ? undefined : `url(#lg-${label})`}
+          markerStart={dashed ? `url(#lgs-${label})` : undefined} />
+      </svg>
+    </div>
+  );
+  return (
+    <div className="mt-8 border-t border-border pt-5">
+      <p className="mb-3 font-bold">Keterangan</p>
+      <div className="space-y-2">
+        <Row label="Garis koordinasi" dashed />
+        <Row label="Garis perintah" />
+        <Row label="Garis pelayanan" plain />
+      </div>
     </div>
   );
 }
@@ -169,29 +284,8 @@ function TentangPage() {
           <h2 className="text-2xl font-bold tracking-tight">Struktur Organisasi</h2>
         </div>
         <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
-          <div className="mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[1fr_auto]">
-            <div className="space-y-6">
-              <OrgBox title={t.org_rapat_anggota || "RAPAT ANGGOTA"} className="mx-auto w-full max-w-sm" />
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <OrgBox title="PENGAWAS" items={splitLines(t.org_pengawas)} />
-                <OrgBox title="PENGURUS" items={splitLines(t.org_pengurus)} />
-              </div>
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <OrgBox title={t.org_manajemen || "MANAJEMEN"} className="mx-auto w-full max-w-sm" />
-              <div className="flex justify-center"><div className="h-6 w-px bg-foreground/40" /></div>
-              <OrgBox title={t.org_anggota || "ANGGOTA"} className="mx-auto w-full max-w-sm" />
-            </div>
-            <div className="space-y-4 md:pt-2">
-              {splitLines(t.org_eksternal).map((e, i) => (
-                <OrgBox key={i} title={e} className="w-full md:w-48" />
-              ))}
-            </div>
-          </div>
-          <div className="mt-8 border-t border-border pt-4 text-xs text-muted-foreground">
-            <p className="font-semibold">Keterangan</p>
-            <p className="mt-1">Garis koordinasi, garis perintah, dan garis pelayanan menghubungkan setiap unsur organisasi koperasi.</p>
-          </div>
+          <OrgChart t={t} />
+          <Legend />
         </div>
       </section>
 
