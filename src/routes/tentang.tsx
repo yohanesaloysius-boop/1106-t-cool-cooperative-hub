@@ -52,7 +52,7 @@ function OrgChart({ t }: { t: Record<string, string> }) {
   const eksternal = splitLines(t.org_eksternal);
   const dinas = eksternal[0] || "DINAS KOPERASI KOTA BATAM";
   const puskopdit = eksternal[1] || "PUSKOPDIT BATAM";
-  const dewan = eksternal[2] || "DEWAN PENASEHAT";
+  const dewan = eksternal[2] || "PUSKOPDIT";
 
   const HEADER = 34, ROW = 30;
   // RAPAT ANGGOTA (top center)
