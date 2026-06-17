@@ -39,13 +39,13 @@ export const TATA_KELOLA_DOMAINS: DomainMap[] = [
         adart:
           "Syarat keanggotaan (WNI cakap hukum, melengkapi data NIK/alamat/HP/email + KTP) dan keanggotaan sah setelah disetujui pengurus serta menandatangani AD/ART secara elektronik.",
         sop:
-          "1) Calon isi form daftar → 2) verifikasi email → 3) login & lengkapi profil + unggah KTP/foto/tanda tangan → 4) status 'pending'.",
+          "1) Calon isi form daftar -> 2) verifikasi email -> 3) login & lengkapi profil + unggah KTP/foto/tanda tangan -> 4) status 'pending'.",
       },
       {
         fitur: "Approval anggota oleh pengurus (Kelola Anggota)",
         jenis: "SOP",
         sop:
-          "Notifikasi masuk ke pengurus → cek kelengkapan & keabsahan data → setujui (status 'active') atau tolak dengan alasan. Hanya sekretaris/pimpinan yang memproses.",
+          "Notifikasi masuk ke pengurus -> cek kelengkapan & keabsahan data -> setujui (status 'active') atau tolak dengan alasan. Hanya sekretaris/pimpinan yang memproses.",
       },
       {
         fitur: "Simpanan pokok & simpanan wajib (besaran)",
@@ -88,7 +88,7 @@ export const TATA_KELOLA_DOMAINS: DomainMap[] = [
         fitur: "Pengajuan & verifikasi pinjaman (wizard, scoring, penjamin)",
         jenis: "SOP",
         sop:
-          "1) Anggota ajukan via wizard → 2) sistem hitung kelayakan/scoring → 3) verifikasi berkas & penjamin → 4) keputusan pengurus berdasarkan kemampuan bayar.",
+          "1) Anggota ajukan via wizard -> 2) sistem hitung kelayakan/scoring -> 3) verifikasi berkas & penjamin -> 4) keputusan pengurus berdasarkan kemampuan bayar.",
       },
       {
         fitur: "Akad/perjanjian pinjaman + tanda tangan elektronik",
@@ -113,7 +113,7 @@ export const TATA_KELOLA_DOMAINS: DomainMap[] = [
         fitur: "Perhitungan & distribusi SHU tahunan",
         jenis: "SOP",
         sop:
-          "Tutup buku → hitung SHU per anggota (bobot simpanan & partisipasi transaksi) → potong penalti tunggakan → distribusi & laporan.",
+          "Tutup buku -> hitung SHU per anggota (bobot simpanan & partisipasi transaksi) -> potong penalti tunggakan -> distribusi & laporan.",
       },
     ],
   },
@@ -132,7 +132,7 @@ export const TATA_KELOLA_DOMAINS: DomainMap[] = [
         fitur: "Verifikasi penjual, escrow, pelepasan dana, komplain",
         jenis: "SOP",
         sop:
-          "Verifikasi toko → dana pembeli ditahan escrow → barang diterima → pelepasan dana ke penjual; alur komplain & penyelesaian sengketa.",
+          "Verifikasi toko -> dana pembeli ditahan escrow -> barang diterima -> pelepasan dana ke penjual; alur komplain & penyelesaian sengketa.",
       },
       {
         fitur: "Fee/biaya layanan marketplace & pengadaan",
@@ -141,11 +141,11 @@ export const TATA_KELOLA_DOMAINS: DomainMap[] = [
         sop: "Persentase fee, pemotongan otomatis, pencatatan pendapatan jasa.",
       },
       {
-        fitur: "Jasa pengadaan (Purchase Request → PO → serah terima)",
+        fitur: "Jasa pengadaan (Purchase Request -> PO -> serah terima)",
         jenis: "AD/ART + SOP",
         adart: "Koperasi sebagai penyedia jasa pengadaan dengan fee yang ditetapkan.",
         sop:
-          "PR diajukan → approval keuangan → fee dihitung & dikunci → pilih vendor → PO → pembayaran → catat fee → serah terima (bukti & tanda tangan).",
+          "PR diajukan -> approval keuangan -> fee dihitung & dikunci -> pilih vendor -> PO -> pembayaran -> catat fee -> serah terima (bukti & tanda tangan).",
       },
     ],
   },
