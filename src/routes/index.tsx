@@ -9,14 +9,12 @@ import {
   UserPlus,
   Star,
   Clock,
-  
   Wallet,
   ShieldAlert,
   UserCog,
   Briefcase,
   Phone,
   MapPin,
-  Plus,
   ShoppingBag,
   Lock,
 } from "lucide-react";
@@ -127,32 +125,6 @@ function Landing() {
     staleTime: 30_000,
   });
 
-  const { data: pengurus } = useQuery({
-    queryKey: ["public-pengurus"],
-    queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)("get_public_pengurus");
-      if (error) throw error;
-      return (data ?? []) as { jabatan: string; nama: string; foto_url: string }[];
-    },
-    staleTime: 60_000,
-  });
-
-  const { data: berita } = useQuery({
-    queryKey: ["public-berita-landing"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("berita")
-        .select("id,title,slug,excerpt,cover_url,category,published_at")
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return data ?? [];
-    },
-    staleTime: 60_000,
-  });
-  const beritaList = berita ?? [];
-  const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
@@ -440,78 +412,6 @@ function Landing() {
           </div>
         </section>
       </main>
-
-        {beritaList.length > 0 && (
-          <section className="container mx-auto mt-12 px-4">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#372f2f]">Berita & Kegiatan</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Kabar terbaru dan dokumentasi kegiatan koperasi.</p>
-              </div>
-              <Link to="/berita" className="shrink-0 text-sm font-medium text-primary hover:underline">
-                Lihat semua →
-              </Link>
-            </div>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {beritaList.map((b: any) => (
-                <Link
-                  key={b.id}
-                  to="/berita/$slug"
-                  params={{ slug: b.slug }}
-                  className="group block overflow-hidden rounded-3xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/40"
-                  style={{ boxShadow: "var(--shadow-card)" }}
-                >
-                  <div className="aspect-[16/10] overflow-hidden bg-muted">
-                    {b.cover_url ? (
-                      <img src={b.cover_url} alt={b.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-primary/30">
-                        <Plus className="h-8 w-8" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <Badge variant="secondary" className="text-[10px] uppercase">{b.category}</Badge>
-                    <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug">{b.title}</h3>
-                    {b.excerpt && <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{b.excerpt}</p>}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {pengurusList.length > 0 && (
-          <section className="container mx-auto mt-12 px-4 pb-16">
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#372f2f]">Struktur Pengurus</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Pengurus & dewan pengawas Koperasi T-COOL.</p>
-            </div>
-            <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
-              {pengurusList.map((p, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center rounded-3xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1"
-                  style={{ boxShadow: "var(--shadow-card)" }}
-                >
-                  <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-primary/15 bg-muted">
-                    {p.foto_url ? (
-                      <img src={p.foto_url} alt={p.nama || p.jabatan} className="h-full w-full object-cover" loading="lazy" />
-                    ) : (
-                      <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-primary/40">
-                        {(p.nama || p.jabatan).charAt(0)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-4 text-sm font-semibold leading-tight">{p.nama || "—"}</p>
-                  <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
-                    {p.jabatan}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
       <SiteFooter />
     </div>
