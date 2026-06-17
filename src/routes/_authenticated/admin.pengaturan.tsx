@@ -27,8 +27,11 @@ const TENTANG_FIELDS: { key: string; label: string; hint?: string; rows?: number
 ];
 
 function TentangEditor() {
+  const { user } = useAuth();
   const qc = useQueryClient();
   const [vals, setVals] = useState<Record<string, string>>({});
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [logoBusy, setLogoBusy] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings-tentang"],
@@ -39,6 +42,18 @@ function TentangEditor() {
     },
   });
 
+  const { data: logoData } = useQuery({
+    queryKey: ["settings-logo"],
+    queryFn: async () => {
+      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
+      return (typeof data?.value === "string" ? data.value : "") as string;
+    },
+  });
+
+  useEffect(() => {
+    if (typeof logoData === "string") setLogoUrl(logoData);
+  }, [logoData]);
+
   useEffect(() => {
     if (data) {
       const v: Record<string, string> = {};
@@ -48,6 +63,46 @@ function TentangEditor() {
       setVals(v);
     }
   }, [data]);
+
+  const uploadLogo = async (file: File) => {
+    if (!user) return;
+    if (file.size > 2 * 1024 * 1024) return toast.error("Ukuran logo maksimal 2MB");
+    if (!file.type.startsWith("image/")) return toast.error("File harus berupa gambar");
+    setLogoBusy(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "png";
+      const path = `${user.id}/logo-koperasi-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (error) throw error;
+      const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+      const { error: sErr } = await supabase.from("settings").upsert({ key: "koperasi.logo_url", value: url as never }, { onConflict: "key" });
+      if (sErr) throw sErr;
+      setLogoUrl(url);
+      toast.success("Logo koperasi tersimpan & tersinkron");
+      qc.invalidateQueries({ queryKey: ["settings-logo"] });
+      qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setLogoBusy(false);
+    }
+  };
+
+  const removeLogo = async () => {
+    setLogoBusy(true);
+    try {
+      const { error } = await supabase.from("settings").upsert({ key: "koperasi.logo_url", value: "" as never }, { onConflict: "key" });
+      if (error) throw error;
+      setLogoUrl("");
+      toast.success("Logo dihapus");
+      qc.invalidateQueries({ queryKey: ["settings-logo"] });
+      qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setLogoBusy(false);
+    }
+  };
 
   const save = useMutation({
     mutationFn: async () => {
@@ -75,6 +130,32 @@ function TentangEditor() {
           <div className="flex justify-center p-4"><Loader2 className="h-5 w-5 animate-spin" /></div>
         ) : (
           <>
+            <div className="rounded-xl border border-border p-4">
+              <Label className="text-xs font-semibold">Logo Koperasi</Label>
+              <p className="mb-3 text-[11px] text-muted-foreground">Logo tersinkron otomatis ke header situs, halaman Makna Logo, surat resmi, dan dokumen AD/ART.</p>
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo koperasi" className="h-full w-full object-contain" />
+                  ) : (
+                    <ImageOff className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-xs font-medium hover:bg-accent">
+                    {logoBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                    {logoUrl ? "Ganti logo" : "Unggah logo"}
+                    <input type="file" accept="image/*" className="hidden" disabled={logoBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) void uploadLogo(f); }} />
+                  </label>
+                  {logoUrl && (
+                    <Button size="sm" variant="ghost" className="w-fit text-destructive hover:text-destructive" onClick={() => void removeLogo()} disabled={logoBusy}>
+                      <Trash2 className="mr-1 h-3.5 w-3.5" /> Hapus logo
+                    </Button>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">PNG/JPG transparan disarankan. Maks 2MB.</p>
+                </div>
+              </div>
+            </div>
             <div className="grid gap-4 md:grid-cols-2">
               {TENTANG_FIELDS.map((f) => (
                 <div key={f.key}>
