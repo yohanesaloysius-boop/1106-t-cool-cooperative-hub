@@ -4,6 +4,8 @@ import type { AppRole } from "@/hooks/use-auth";
 export const PENGURUS_ROLES: AppRole[] = ["super_admin", "ketua", "sekretaris", "bendahara"];
 // Pimpinan — akses penuh & boleh edit/tambah fitur & menu
 export const LEADER_ROLES: AppRole[] = ["ketua", "super_admin"];
+// Khusus super admin — pengelolaan paling sensitif (role/izin)
+export const SUPER_ADMIN_ROLES: AppRole[] = ["super_admin"];
 // Keuangan — bendahara + pimpinan
 export const FINANCE_ROLES: AppRole[] = ["bendahara", "ketua", "super_admin"];
 // Administrasi/kesekretariatan — sekretaris + pimpinan
@@ -59,6 +61,7 @@ export const ADMIN_ACCESS: Record<string, AppRole[]> = {
   "/admin/berita": LEADER_ROLES,
   "/admin/audit": LEADER_ROLES,
   "/admin/backup": LEADER_ROLES,
+  "/admin/role": SUPER_ADMIN_ROLES,
   "/admin/aset": FINANCE_ROLES,
   "/admin/opex": FINANCE_ROLES,
   "/admin/lowongan": SECRETARY_ROLES,
