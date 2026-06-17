@@ -256,6 +256,9 @@ function MarketplacePage() {
           )}
         </section>
 
+        </>
+        )}
+
         {/* CTA */}
         <section
           className="relative overflow-hidden rounded-3xl border border-border p-8 md:p-12"
