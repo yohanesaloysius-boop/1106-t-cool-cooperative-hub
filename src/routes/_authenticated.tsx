@@ -183,6 +183,7 @@ export const navGroups: NavGroup[] = [
       { to: "/admin/gereja/pengadaan", label: "Belanja Gereja (Admin)", icon: Church, adminOnly: true },
       { to: "/admin/sekolah/pengadaan", label: "Belanja Sekolah (Admin)", icon: GraduationCap, adminOnly: true },
       { to: "/admin/backup", label: "Backup & Export Data", icon: DatabaseBackup, adminOnly: true },
+      { to: "/admin/role", label: "Kelola Role", icon: Shield, adminOnly: true },
     ],
   },
 ];
