@@ -120,7 +120,7 @@ function PengurusEditor() {
 
   const save = useMutation({
     mutationFn: async (next: Pengurus[]) => {
-      const { error } = await supabase.from("settings").update({ value: next as never }).eq("key", "koperasi.pengurus");
+      const { error } = await supabase.from("settings").upsert({ key: "koperasi.pengurus", value: next as never }, { onConflict: "key" });
       if (error) throw error;
     },
     onSuccess: () => {
