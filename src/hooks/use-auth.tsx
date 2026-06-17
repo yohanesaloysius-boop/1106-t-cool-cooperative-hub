@@ -135,7 +135,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     viewAsMember: realPengurus ? viewAsMember : false,
     setViewAsMember: realPengurus ? setViewAsMember : () => {},
     signOut: async () => {
+      // 1) Hentikan query yang sedang berjalan agar tidak menembak sesi yang sudah dibersihkan
+      try { await queryClient.cancelQueries(); } catch { /* noop */ }
+      // 2) Hapus sesi Supabase (local + server)
       await supabase.auth.signOut();
+      // 3) Bersihkan cache data terproteksi
+      queryClient.clear();
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setRoles([]);
+      // 4) Hard replace ke /auth: full reload mengosongkan memori &
+      //    history REPLACE memastikan tombol Back tidak mengembalikan halaman privat
+      if (typeof window !== "undefined") {
+        window.location.replace("/auth");
+      }
     },
     refresh: async () => {
       if (user) await loadProfile(user.id);
