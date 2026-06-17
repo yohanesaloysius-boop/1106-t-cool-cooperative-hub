@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type AppRole = "super_admin" | "ketua" | "sekretaris" | "bendahara" | "anggota";
 
@@ -30,6 +31,7 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -133,7 +135,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     viewAsMember: realPengurus ? viewAsMember : false,
     setViewAsMember: realPengurus ? setViewAsMember : () => {},
     signOut: async () => {
+      // 1) Hentikan query yang sedang berjalan agar tidak menembak sesi yang sudah dibersihkan
+      try { await queryClient.cancelQueries(); } catch { /* noop */ }
+      // 2) Hapus sesi Supabase (local + server)
       await supabase.auth.signOut();
+      // 3) Bersihkan cache data terproteksi
+      queryClient.clear();
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setRoles([]);
+      // 4) Hard replace ke /auth: full reload mengosongkan memori &
+      //    history REPLACE memastikan tombol Back tidak mengembalikan halaman privat
+      if (typeof window !== "undefined") {
+        window.location.replace("/auth");
+      }
     },
     refresh: async () => {
       if (user) await loadProfile(user.id);

@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useRouterState, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,16 @@ import { canAccessAdminPath } from "@/lib/access";
 
 
 export const Route = createFileRoute("/_authenticated")({
+  // Sesi Supabase disimpan di localStorage (tidak terbaca server), jadi gate berjalan di klien.
+  ssr: false,
+  // Gate router-level: cek sesi SEBELUM komponen dirender. Mencegah konten privat
+  // sempat tampil (flash) dan memblokir akses via tombol Back setelah logout.
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: AuthLayout,
 });
 

@@ -29,6 +29,7 @@ export const Route = createFileRoute("/auth")({
 
 const passwordPolicy = z
   .string()
+  .min(8, "Password minimal 8 karakter")
   .max(72)
   .regex(/[a-z]/, "Password wajib mengandung huruf kecil")
   .regex(/[A-Z]/, "Password wajib mengandung huruf besar")
