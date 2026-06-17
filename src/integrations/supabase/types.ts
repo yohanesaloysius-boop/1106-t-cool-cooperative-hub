@@ -4430,6 +4430,7 @@ export type Database = {
       mp_verify_payment: { Args: { _trx_id: string }; Returns: undefined }
       normalize_phone_id: { Args: { _raw: string }; Returns: string }
       normalize_phone_local: { Args: { _raw: string }; Returns: string }
+      notify_backup_reminder: { Args: never; Returns: number }
       provision_member: { Args: { _uid: string }; Returns: undefined }
       qris_expire_pending: { Args: never; Returns: number }
       qris_mark_success: { Args: { _id: string }; Returns: undefined }
