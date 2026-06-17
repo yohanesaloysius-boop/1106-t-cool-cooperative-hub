@@ -157,7 +157,7 @@ function TentangEditor() {
               <div className="flex items-center gap-4">
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="Logo koperasi" className="h-full w-full object-contain" />
+                    <img src={logoUrl} alt="Logo koperasi" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain"}`} />
                   ) : (
                     <ImageOff className="h-6 w-6 text-muted-foreground" />
                   )}
@@ -176,6 +176,37 @@ function TentangEditor() {
                   <p className="text-[11px] text-muted-foreground">PNG/JPG transparan disarankan. Maks 2MB.</p>
                 </div>
               </div>
+              {logoUrl && (
+                <div className="mt-4 space-y-2 border-t border-border pt-3">
+                  <Label className="text-xs font-semibold">Mode tampilan logo</Label>
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" size="sm" variant={logoFit === "contain" ? "default" : "outline"} onClick={() => void saveLogoFit("contain")}>
+                      Rapat (Contain)
+                    </Button>
+                    <Button type="button" size="sm" variant={logoFit === "cover" ? "default" : "outline"} onClick={() => void saveLogoFit("cover")}>
+                      Penuh (Cover)
+                    </Button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    <strong>Contain</strong>: seluruh logo tampil utuh (disarankan untuk logo persegi panjang/berteks).{" "}
+                    <strong>Cover</strong>: logo memenuhi area & dipangkas (cocok untuk logo bulat/ikon).
+                  </p>
+                  <div className="flex items-end gap-4 pt-1">
+                    <div className="text-center">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-muted">
+                        <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain"}`} />
+                      </div>
+                      <span className="mt-1 block text-[10px] text-muted-foreground">Header/Footer</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border bg-white">
+                        <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain p-1"}`} />
+                      </div>
+                      <span className="mt-1 block text-[10px] text-muted-foreground">Kop surat / PDF</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               {TENTANG_FIELDS.map((f) => (
