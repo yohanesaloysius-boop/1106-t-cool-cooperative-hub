@@ -262,7 +262,7 @@ function TentangPage() {
               <img
                 src={t.logo_url}
                 alt="Logo koperasi"
-                className={`h-32 w-32 shrink-0 rounded-2xl border border-border bg-background ${t.logo_fit === "cover" ? "object-cover" : "object-contain p-2"}`}
+                className={`h-32 w-32 shrink-0 rounded-2xl border border-border ${t.logo_bg === "white" ? "bg-white" : "bg-background"} ${t.logo_fit === "cover" ? "object-cover" : "object-contain p-2"}`}
               />
             )}
             <p className="whitespace-pre-line text-muted-foreground">{t.makna_logo || "—"}</p>
