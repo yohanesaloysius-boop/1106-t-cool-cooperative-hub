@@ -207,15 +207,30 @@ function TentangEditor() {
                     <strong>Contain</strong>: seluruh logo tampil utuh (disarankan untuk logo persegi panjang/berteks).{" "}
                     <strong>Cover</strong>: logo memenuhi area & dipangkas (cocok untuk logo bulat/ikon).
                   </p>
+                  <div className="space-y-2 border-t border-border pt-3">
+                    <Label className="text-xs font-semibold">Latar logo</Label>
+                    <div className="flex flex-wrap gap-2">
+                      <Button type="button" size="sm" variant={logoBg === "transparent" ? "default" : "outline"} onClick={() => void saveLogoBg("transparent")}>
+                        Transparan
+                      </Button>
+                      <Button type="button" size="sm" variant={logoBg === "white" ? "default" : "outline"} onClick={() => void saveLogoBg("white")}>
+                        Putih
+                      </Button>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      <strong>Transparan</strong>: cocok untuk logo PNG transparan agar menyatu dengan latar.{" "}
+                      <strong>Putih</strong>: menambah latar putih agar logo gelap tetap rapi di kop surat & PDF.
+                    </p>
+                  </div>
                   <div className="flex items-end gap-4 pt-1">
                     <div className="text-center">
-                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-muted">
+                      <div className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border ${logoBg === "white" ? "bg-white" : "bg-muted"}`}>
                         <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain"}`} />
                       </div>
                       <span className="mt-1 block text-[10px] text-muted-foreground">Header/Footer</span>
                     </div>
                     <div className="text-center">
-                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border bg-white">
+                      <div className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border ${logoBg === "white" ? "bg-white" : "bg-muted"}`}>
                         <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain p-1"}`} />
                       </div>
                       <span className="mt-1 block text-[10px] text-muted-foreground">Kop surat / PDF</span>
