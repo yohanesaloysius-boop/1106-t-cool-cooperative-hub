@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Save, ShieldAlert, Upload, ImageOff } from "lucide-react";
+import { Loader2, Save, ShieldAlert, Upload, ImageOff, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
 type Pengurus = { jabatan: string; nama: string; foto_url: string };
 
@@ -151,11 +151,21 @@ function PengurusEditor() {
     }
   };
 
+  const addRow = () => setList([...list, { jabatan: "", nama: "", foto_url: "" }]);
+  const removeRow = (idx: number) => setList(list.filter((_, i) => i !== idx));
+  const moveRow = (idx: number, dir: -1 | 1) => {
+    const target = idx + dir;
+    if (target < 0 || target >= list.length) return;
+    const next = [...list];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    setList(next);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Struktur Pengurus</CardTitle>
-        <p className="text-xs text-muted-foreground">Nama & foto pengurus yang tampil di halaman utama.</p>
+        <p className="text-xs text-muted-foreground">Nama & foto pengurus yang tampil di halaman utama. Tambah, hapus, atau urutkan jabatan sesuai kebutuhan.</p>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
@@ -186,8 +196,22 @@ function PengurusEditor() {
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void uploadFoto(idx, f); }} />
                   </label>
                 </div>
+                <div className="flex shrink-0 flex-col gap-1">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => moveRow(idx, -1)} disabled={idx === 0} title="Naik">
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => moveRow(idx, 1)} disabled={idx === list.length - 1} title="Turun">
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => removeRow(idx)} title="Hapus">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
             ))}
+            <Button variant="outline" onClick={addRow} className="w-full">
+              <Plus className="mr-2 h-4 w-4" /> Tambah Jabatan
+            </Button>
             <Button onClick={() => save.mutate(list)} disabled={save.isPending} className="w-full">
               {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Simpan Struktur Pengurus
