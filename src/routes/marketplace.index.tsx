@@ -17,12 +17,10 @@ import {
   type DbStore,
 } from "@/lib/marketplace-api";
 import { cartItemEffectivePrice, useCart } from "@/lib/cart";
-import { PRODUCTS as DEMO_PRODUCTS } from "@/lib/marketplace-mock";
-import { ProductCard as DemoProductCard } from "@/components/marketplace/product-card";
 
 type Search = { kategori?: string; q?: string };
 
-export const Route = createFileRoute("/marketplace")({
+export const Route = createFileRoute("/marketplace/")({
   head: () => ({
     meta: [
       { title: "Marketplace Komunitas — T-COOL Koperasi" },
@@ -40,7 +38,7 @@ const PAGE_SIZE = 12;
 
 function MarketplacePage() {
   const { kategori, q } = Route.useSearch();
-  const navigate = useNavigate({ from: "/marketplace" });
+  const navigate = useNavigate({ from: "/marketplace/" });
   const cart = useCart();
 
   // Debounced search input
@@ -204,25 +202,45 @@ function MarketplacePage() {
           </section>
         )}
 
-        {/* SEMUA PRODUK — DEMO (data dummy mirip Tokopedia) */}
+        {/* SEMUA PRODUK — data nyata dari database */}
         <section id="semua-produk" className="scroll-mt-24">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold tracking-tight md:text-2xl">Semua Produk</h2>
-                <Badge variant="secondary" className="rounded-full">Demo</Badge>
-              </div>
+              <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+                {currentCat ? currentCat.nama_kategori : q ? `Hasil pencarian "${q}"` : "Semua Produk"}
+              </h2>
               <p className="text-sm text-muted-foreground">
-                Tampilan contoh ({DEMO_PRODUCTS.length} produk dummy) — akan diganti saat ada pembaruan.
+                {total > 0 ? `${total} produk tersedia` : "Produk dari toko-toko anggota koperasi"}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
-            {DEMO_PRODUCTS.map((p) => (
-              <DemoProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          {infinite.isLoading ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="aspect-[3/4] animate-pulse rounded-2xl bg-muted" />
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+              <p className="text-sm font-medium">Belum ada produk yang cocok.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Coba ubah kata kunci atau pilih kategori lain.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
+                {products.map((p) => (
+                  <RealProductCard key={p.id} product={p} />
+                ))}
+              </div>
+              <div ref={sentinelRef} className="h-10" />
+              {infinite.isFetchingNextPage && (
+                <p className="py-4 text-center text-sm text-muted-foreground">Memuat produk lainnya…</p>
+              )}
+            </>
+          )}
         </section>
 
         {/* CTA */}

@@ -11,13 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
 import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
 import { Route as BeritaIndexRouteImport } from './routes/berita.index'
 import { Route as MarketplaceKeranjangRouteImport } from './routes/marketplace.keranjang'
 import { Route as MarketplaceCheckoutRouteImport } from './routes/marketplace.checkout'
@@ -112,11 +112,6 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketplaceRoute = MarketplaceRouteImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -146,20 +141,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BeritaIndexRoute = BeritaIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BeritaRoute,
 } as any)
 const MarketplaceKeranjangRoute = MarketplaceKeranjangRouteImport.update({
-  id: '/keranjang',
-  path: '/keranjang',
-  getParentRoute: () => MarketplaceRoute,
+  id: '/marketplace/keranjang',
+  path: '/marketplace/keranjang',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceCheckoutRoute = MarketplaceCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => MarketplaceRoute,
+  id: '/marketplace/checkout',
+  path: '/marketplace/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BeritaSlugRoute = BeritaSlugRouteImport.update({
   id: '/$slug',
@@ -301,14 +301,14 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const MarketplaceTokoSlugRoute = MarketplaceTokoSlugRouteImport.update({
-  id: '/toko/$slug',
-  path: '/toko/$slug',
-  getParentRoute: () => MarketplaceRoute,
+  id: '/marketplace/toko/$slug',
+  path: '/marketplace/toko/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceProdukIdRoute = MarketplaceProdukIdRouteImport.update({
-  id: '/produk/$id',
-  path: '/produk/$id',
-  getParentRoute: () => MarketplaceRoute,
+  id: '/marketplace/produk/$id',
+  path: '/marketplace/produk/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSekolahPengadaanRoute =
   AuthenticatedSekolahPengadaanRouteImport.update({
@@ -613,7 +613,6 @@ export interface FileRoutesByFullPath {
   '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
@@ -645,6 +644,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/berita/': typeof BeritaIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -705,7 +705,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify': typeof VerifyRoute
@@ -736,6 +735,7 @@ export interface FileRoutesByTo {
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/berita': typeof BeritaIndexRoute
+  '/marketplace': typeof MarketplaceIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -799,7 +799,6 @@ export interface FileRoutesById {
   '/berita': typeof BeritaRouteWithChildren
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/marketplace': typeof MarketplaceRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
@@ -831,6 +830,7 @@ export interface FileRoutesById {
   '/marketplace/checkout': typeof MarketplaceCheckoutRoute
   '/marketplace/keranjang': typeof MarketplaceKeranjangRoute
   '/berita/': typeof BeritaIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/_authenticated/admin/akad': typeof AuthenticatedAdminAkadRoute
   '/_authenticated/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
@@ -894,7 +894,6 @@ export interface FileRouteTypes {
     | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
-    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify/'
@@ -926,6 +925,7 @@ export interface FileRouteTypes {
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/berita/'
+    | '/marketplace/'
     | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
@@ -986,7 +986,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/daftar-anggota'
     | '/forgot-password'
-    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify'
@@ -1017,6 +1016,7 @@ export interface FileRouteTypes {
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/berita'
+    | '/marketplace'
     | '/admin/akad'
     | '/admin/analitik'
     | '/admin/anggota'
@@ -1079,7 +1079,6 @@ export interface FileRouteTypes {
     | '/berita'
     | '/daftar-anggota'
     | '/forgot-password'
-    | '/marketplace'
     | '/reset-password'
     | '/tentang'
     | '/verify/'
@@ -1111,6 +1110,7 @@ export interface FileRouteTypes {
     | '/marketplace/checkout'
     | '/marketplace/keranjang'
     | '/berita/'
+    | '/marketplace/'
     | '/_authenticated/admin/akad'
     | '/_authenticated/admin/analitik'
     | '/_authenticated/admin/anggota'
@@ -1174,10 +1174,14 @@ export interface RootRouteChildren {
   BeritaRoute: typeof BeritaRouteWithChildren
   DaftarAnggotaRoute: typeof DaftarAnggotaRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
-  MarketplaceRoute: typeof MarketplaceRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
+  MarketplaceCheckoutRoute: typeof MarketplaceCheckoutRoute
+  MarketplaceKeranjangRoute: typeof MarketplaceKeranjangRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+  MarketplaceProdukIdRoute: typeof MarketplaceProdukIdRoute
+  MarketplaceTokoSlugRoute: typeof MarketplaceTokoSlugRoute
   ApiPublicHooksAccrueFeesRoute: typeof ApiPublicHooksAccrueFeesRoute
   ApiPublicHooksAutoDebetWajibRoute: typeof ApiPublicHooksAutoDebetWajibRoute
   ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
@@ -1198,13 +1202,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/marketplace': {
-      id: '/marketplace'
-      path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -1249,6 +1246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/berita/': {
       id: '/berita/'
       path: '/'
@@ -1258,17 +1262,17 @@ declare module '@tanstack/react-router' {
     }
     '/marketplace/keranjang': {
       id: '/marketplace/keranjang'
-      path: '/keranjang'
+      path: '/marketplace/keranjang'
       fullPath: '/marketplace/keranjang'
       preLoaderRoute: typeof MarketplaceKeranjangRouteImport
-      parentRoute: typeof MarketplaceRoute
+      parentRoute: typeof rootRouteImport
     }
     '/marketplace/checkout': {
       id: '/marketplace/checkout'
-      path: '/checkout'
+      path: '/marketplace/checkout'
       fullPath: '/marketplace/checkout'
       preLoaderRoute: typeof MarketplaceCheckoutRouteImport
-      parentRoute: typeof MarketplaceRoute
+      parentRoute: typeof rootRouteImport
     }
     '/berita/$slug': {
       id: '/berita/$slug'
@@ -1461,17 +1465,17 @@ declare module '@tanstack/react-router' {
     }
     '/marketplace/toko/$slug': {
       id: '/marketplace/toko/$slug'
-      path: '/toko/$slug'
+      path: '/marketplace/toko/$slug'
       fullPath: '/marketplace/toko/$slug'
       preLoaderRoute: typeof MarketplaceTokoSlugRouteImport
-      parentRoute: typeof MarketplaceRoute
+      parentRoute: typeof rootRouteImport
     }
     '/marketplace/produk/$id': {
       id: '/marketplace/produk/$id'
-      path: '/produk/$id'
+      path: '/marketplace/produk/$id'
       fullPath: '/marketplace/produk/$id'
       preLoaderRoute: typeof MarketplaceProdukIdRouteImport
-      parentRoute: typeof MarketplaceRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/sekolah/pengadaan': {
       id: '/_authenticated/sekolah/pengadaan'
@@ -2039,24 +2043,6 @@ const BeritaRouteChildren: BeritaRouteChildren = {
 const BeritaRouteWithChildren =
   BeritaRoute._addFileChildren(BeritaRouteChildren)
 
-interface MarketplaceRouteChildren {
-  MarketplaceCheckoutRoute: typeof MarketplaceCheckoutRoute
-  MarketplaceKeranjangRoute: typeof MarketplaceKeranjangRoute
-  MarketplaceProdukIdRoute: typeof MarketplaceProdukIdRoute
-  MarketplaceTokoSlugRoute: typeof MarketplaceTokoSlugRoute
-}
-
-const MarketplaceRouteChildren: MarketplaceRouteChildren = {
-  MarketplaceCheckoutRoute: MarketplaceCheckoutRoute,
-  MarketplaceKeranjangRoute: MarketplaceKeranjangRoute,
-  MarketplaceProdukIdRoute: MarketplaceProdukIdRoute,
-  MarketplaceTokoSlugRoute: MarketplaceTokoSlugRoute,
-}
-
-const MarketplaceRouteWithChildren = MarketplaceRoute._addFileChildren(
-  MarketplaceRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -2064,10 +2050,14 @@ const rootRouteChildren: RootRouteChildren = {
   BeritaRoute: BeritaRouteWithChildren,
   DaftarAnggotaRoute: DaftarAnggotaRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
-  MarketplaceRoute: MarketplaceRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
+  MarketplaceCheckoutRoute: MarketplaceCheckoutRoute,
+  MarketplaceKeranjangRoute: MarketplaceKeranjangRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
+  MarketplaceProdukIdRoute: MarketplaceProdukIdRoute,
+  MarketplaceTokoSlugRoute: MarketplaceTokoSlugRoute,
   ApiPublicHooksAccrueFeesRoute: ApiPublicHooksAccrueFeesRoute,
   ApiPublicHooksAutoDebetWajibRoute: ApiPublicHooksAutoDebetWajibRoute,
   ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
