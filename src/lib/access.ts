@@ -60,6 +60,7 @@ export const ADMIN_ACCESS: Record<string, AppRole[]> = {
   "/admin/pengaturan": LEADER_ROLES,
   "/admin/berita": LEADER_ROLES,
   "/admin/audit": LEADER_ROLES,
+  "/admin/aktivitas": LEADER_ROLES,
   "/admin/backup": LEADER_ROLES,
   "/admin/role": SUPER_ADMIN_ROLES,
   "/admin/aset": FINANCE_ROLES,
