@@ -228,7 +228,7 @@ export function SiteFooter() {
                 className="flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm ring-1 ring-white/60"
                 style={{ background: "var(--gradient-primary)" }}
               >
-                {logo ? <img src={logo} alt="Logo koperasi" className="h-full w-full rounded-full object-cover" /> : <Sprout className="h-4 w-4" />}
+                {logo.url ? <img src={logo.url} alt="Logo koperasi" className={cn("h-full w-full rounded-full", logo.fit === "cover" ? "object-cover" : "object-contain")} /> : <Sprout className="h-4 w-4" />}
               </span>
               <span className="text-base font-bold tracking-tight">
                 T-Cool <span className="text-primary">Koperasi</span>
