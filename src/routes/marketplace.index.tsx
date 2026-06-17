@@ -119,8 +119,10 @@ function MarketplacePage() {
       )}
 
       <main className="container mx-auto space-y-10 px-4 pt-6 pb-16 md:pt-8">
-        <MarketplaceHero />
+        <MarketplaceHero onExplore={reveal} />
 
+        {showProducts && (
+        <>
         {/* SEARCH BAR */}
         <section className="sticky top-16 z-30 -mx-4 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:p-0">
           <div className="relative">
