@@ -7,9 +7,10 @@ export function useKoperasiLogo() {
     queryKey: ["koperasi-logo"],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
-      const v = data?.value;
-      return typeof v === "string" ? v : null;
+      const { data, error } = await (supabase.rpc as any)("get_public_tentang");
+      if (error) return null;
+      const url = (data as Record<string, unknown> | null)?.logo_url;
+      return typeof url === "string" && url ? url : null;
     },
   });
   return data ?? null;
