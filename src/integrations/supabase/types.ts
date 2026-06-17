@@ -4195,6 +4195,14 @@ export type Database = {
         Args: { _action: string; _id: string; _reason?: string }
         Returns: undefined
       }
+      admin_set_role: {
+        Args: {
+          enable: boolean
+          target_role: Database["public"]["Enums"]["app_role"]
+          target_user: string
+        }
+        Returns: Json
+      }
       approve_member: { Args: { p_user_id: string }; Returns: undefined }
       auto_debet_simpanan_wajib: {
         Args: { _periode?: string }
