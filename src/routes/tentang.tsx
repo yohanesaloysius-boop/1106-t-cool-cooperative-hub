@@ -282,11 +282,11 @@ function TentangPage() {
       </section>
 
 
-      {/* Struktur Organisasi */}
+      {/* Alur Tata kelola Koperasi */}
       <section id="struktur-organisasi" className="container mx-auto scroll-mt-24 px-4 py-12">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><Network className="h-5 w-5" /></div>
-          <h2 className="text-2xl font-bold tracking-tight">Struktur Organisasi</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Alur Tata kelola Koperasi</h2>
         </div>
         <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
           <OrgChart t={t} />
