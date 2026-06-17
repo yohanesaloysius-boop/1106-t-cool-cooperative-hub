@@ -33,6 +33,7 @@ function TentangEditor() {
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoBusy, setLogoBusy] = useState(false);
   const [logoFit, setLogoFit] = useState<"contain" | "cover">("contain");
+  const [logoBg, setLogoBg] = useState<"transparent" | "white">("transparent");
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings-tentang"],
@@ -46,11 +47,12 @@ function TentangEditor() {
   const { data: logoData } = useQuery({
     queryKey: ["settings-logo"],
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("key,value").in("key", ["koperasi.logo_url", "koperasi.logo_fit"]);
+      const { data } = await supabase.from("settings").select("key,value").in("key", ["koperasi.logo_url", "koperasi.logo_fit", "koperasi.logo_bg"]);
       const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
       return {
         url: typeof map["koperasi.logo_url"] === "string" ? (map["koperasi.logo_url"] as string) : "",
         fit: (map["koperasi.logo_fit"] === "cover" ? "cover" : "contain") as "contain" | "cover",
+        bg: (map["koperasi.logo_bg"] === "white" ? "white" : "transparent") as "transparent" | "white",
       };
     },
   });
@@ -59,6 +61,7 @@ function TentangEditor() {
     if (logoData) {
       setLogoUrl(logoData.url);
       setLogoFit(logoData.fit);
+      setLogoBg(logoData.bg);
     }
   }, [logoData]);
 
@@ -118,6 +121,19 @@ function TentangEditor() {
       const { error } = await supabase.from("settings").upsert({ key: "koperasi.logo_fit", value: fit as never }, { onConflict: "key" });
       if (error) throw error;
       toast.success(fit === "cover" ? "Mode logo: Penuh (cover)" : "Mode logo: Rapat (contain)");
+      qc.invalidateQueries({ queryKey: ["settings-logo"] });
+      qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const saveLogoBg = async (bg: "transparent" | "white") => {
+    setLogoBg(bg);
+    try {
+      const { error } = await supabase.from("settings").upsert({ key: "koperasi.logo_bg", value: bg as never }, { onConflict: "key" });
+      if (error) throw error;
+      toast.success(bg === "white" ? "Latar logo: Putih" : "Latar logo: Transparan");
       qc.invalidateQueries({ queryKey: ["settings-logo"] });
       qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
     } catch (e) {
