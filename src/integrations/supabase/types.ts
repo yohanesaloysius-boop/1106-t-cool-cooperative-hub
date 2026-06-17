@@ -2712,6 +2712,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           email: string | null
+          foto_bg: string
           foto_url: string | null
           id: string
           jenis_kelamin: string | null
@@ -2746,6 +2747,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           email?: string | null
+          foto_bg?: string
           foto_url?: string | null
           id: string
           jenis_kelamin?: string | null
@@ -2780,6 +2782,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           email?: string | null
+          foto_bg?: string
           foto_url?: string | null
           id?: string
           jenis_kelamin?: string | null
