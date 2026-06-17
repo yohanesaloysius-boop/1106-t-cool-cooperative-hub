@@ -112,6 +112,19 @@ function TentangEditor() {
     }
   };
 
+  const saveLogoFit = async (fit: "contain" | "cover") => {
+    setLogoFit(fit);
+    try {
+      const { error } = await supabase.from("settings").upsert({ key: "koperasi.logo_fit", value: fit as never }, { onConflict: "key" });
+      if (error) throw error;
+      toast.success(fit === "cover" ? "Mode logo: Penuh (cover)" : "Mode logo: Rapat (contain)");
+      qc.invalidateQueries({ queryKey: ["settings-logo"] });
+      qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
   const save = useMutation({
     mutationFn: async () => {
       for (const f of TENTANG_FIELDS) {
