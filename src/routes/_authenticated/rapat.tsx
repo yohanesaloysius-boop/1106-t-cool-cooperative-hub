@@ -67,9 +67,8 @@ function statusBadge(s: Meeting["status"]) {
 }
 
 function RapatPage() {
-  const { user, roles } = useAuth();
+  const { user, roles, isPengurus } = useAuth();
   const qc = useQueryClient();
-  const isPengurus = useAuth().isPengurus;
   const isKetua = roles.includes("ketua") || roles.includes("super_admin");
 
   const { data: meetings = [], isLoading } = useQuery({
