@@ -13,6 +13,7 @@ import { Download, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { buildLetterPdf, type LetterType, type LetterAnggota } from "@/lib/letter-pdf";
 import type { KoperasiInfo } from "@/lib/adart-pdf";
+import { urlToDataUrl } from "@/lib/image-data";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/admin/surat")({
@@ -89,6 +90,14 @@ function AdminSuratPage() {
     },
   });
 
+  const { data: logoUrl } = useQuery({
+    queryKey: ["letter-logo"],
+    queryFn: async () => {
+      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
+      return (typeof data?.value === "string" ? data.value : "") as string;
+    },
+  });
+
   const { data: history = [], refetch } = useQuery({
     queryKey: ["letter-history"],
     queryFn: async () => {
@@ -130,6 +139,7 @@ function AdminSuratPage() {
         type, nomorSurat: nomor, tanggal: new Date().toISOString(),
         perihal, isi: isi || undefined, koperasi: koperasiInfo, anggota, extra,
         ttd: { jabatan: "Ketua", nama: koperasiInfo.ketua ?? "Pengurus" },
+        logoDataUrl: await urlToDataUrl(logoUrl),
       });
       doc.save(`${nomor.replace(/\//g, "-")}.pdf`);
 
