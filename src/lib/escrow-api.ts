@@ -175,14 +175,15 @@ export async function listAllWithdrawals(): Promise<any[]> {
 }
 
 export async function listPendingPayments(): Promise<any[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("marketplace_transactions")
     .select(
       "*, marketplace_products(nama_produk), marketplace_stores(nama_toko), profiles!marketplace_transactions_buyer_id_fkey(nama_lengkap)",
     )
-    .eq("status", "pending")
+    .in("status", ["pending", "confirmed"])
     .not("bukti_transfer_url", "is", null)
     .order("created_at", { ascending: false });
+  if (error) throw error;
   return (data ?? []) as any[];
 }
 
