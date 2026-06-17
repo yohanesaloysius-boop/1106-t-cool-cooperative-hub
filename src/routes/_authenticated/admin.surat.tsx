@@ -13,7 +13,7 @@ import { Download, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { buildLetterPdf, type LetterType, type LetterAnggota } from "@/lib/letter-pdf";
 import type { KoperasiInfo } from "@/lib/adart-pdf";
-import { urlToDataUrl } from "@/lib/image-data";
+import { fitImageToSquare, type LogoFit } from "@/lib/image-data";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/admin/surat")({
@@ -90,11 +90,15 @@ function AdminSuratPage() {
     },
   });
 
-  const { data: logoUrl } = useQuery({
+  const { data: logo } = useQuery({
     queryKey: ["letter-logo"],
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
-      return (typeof data?.value === "string" ? data.value : "") as string;
+      const { data } = await supabase.from("settings").select("key,value").in("key", ["koperasi.logo_url", "koperasi.logo_fit"]);
+      const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+      return {
+        url: typeof map["koperasi.logo_url"] === "string" ? (map["koperasi.logo_url"] as string) : "",
+        fit: (map["koperasi.logo_fit"] === "cover" ? "cover" : "contain") as LogoFit,
+      };
     },
   });
 
@@ -139,7 +143,7 @@ function AdminSuratPage() {
         type, nomorSurat: nomor, tanggal: new Date().toISOString(),
         perihal, isi: isi || undefined, koperasi: koperasiInfo, anggota, extra,
         ttd: { jabatan: "Ketua", nama: koperasiInfo.ketua ?? "Pengurus" },
-        logoDataUrl: await urlToDataUrl(logoUrl),
+        logoDataUrl: await fitImageToSquare(logo?.url, logo?.fit ?? "contain"),
       });
       doc.save(`${nomor.replace(/\//g, "-")}.pdf`);
 
