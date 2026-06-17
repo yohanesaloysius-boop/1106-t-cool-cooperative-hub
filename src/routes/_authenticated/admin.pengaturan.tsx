@@ -32,6 +32,7 @@ function TentangEditor() {
   const [vals, setVals] = useState<Record<string, string>>({});
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoBusy, setLogoBusy] = useState(false);
+  const [logoFit, setLogoFit] = useState<"contain" | "cover">("contain");
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings-tentang"],
@@ -45,13 +46,20 @@ function TentangEditor() {
   const { data: logoData } = useQuery({
     queryKey: ["settings-logo"],
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
-      return (typeof data?.value === "string" ? data.value : "") as string;
+      const { data } = await supabase.from("settings").select("key,value").in("key", ["koperasi.logo_url", "koperasi.logo_fit"]);
+      const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+      return {
+        url: typeof map["koperasi.logo_url"] === "string" ? (map["koperasi.logo_url"] as string) : "",
+        fit: (map["koperasi.logo_fit"] === "cover" ? "cover" : "contain") as "contain" | "cover",
+      };
     },
   });
 
   useEffect(() => {
-    if (typeof logoData === "string") setLogoUrl(logoData);
+    if (logoData) {
+      setLogoUrl(logoData.url);
+      setLogoFit(logoData.fit);
+    }
   }, [logoData]);
 
   useEffect(() => {
@@ -104,6 +112,19 @@ function TentangEditor() {
     }
   };
 
+  const saveLogoFit = async (fit: "contain" | "cover") => {
+    setLogoFit(fit);
+    try {
+      const { error } = await supabase.from("settings").upsert({ key: "koperasi.logo_fit", value: fit as never }, { onConflict: "key" });
+      if (error) throw error;
+      toast.success(fit === "cover" ? "Mode logo: Penuh (cover)" : "Mode logo: Rapat (contain)");
+      qc.invalidateQueries({ queryKey: ["settings-logo"] });
+      qc.invalidateQueries({ queryKey: ["koperasi-logo"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
   const save = useMutation({
     mutationFn: async () => {
       for (const f of TENTANG_FIELDS) {
@@ -136,7 +157,7 @@ function TentangEditor() {
               <div className="flex items-center gap-4">
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="Logo koperasi" className="h-full w-full object-contain" />
+                    <img src={logoUrl} alt="Logo koperasi" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain"}`} />
                   ) : (
                     <ImageOff className="h-6 w-6 text-muted-foreground" />
                   )}
@@ -155,6 +176,37 @@ function TentangEditor() {
                   <p className="text-[11px] text-muted-foreground">PNG/JPG transparan disarankan. Maks 2MB.</p>
                 </div>
               </div>
+              {logoUrl && (
+                <div className="mt-4 space-y-2 border-t border-border pt-3">
+                  <Label className="text-xs font-semibold">Mode tampilan logo</Label>
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" size="sm" variant={logoFit === "contain" ? "default" : "outline"} onClick={() => void saveLogoFit("contain")}>
+                      Rapat (Contain)
+                    </Button>
+                    <Button type="button" size="sm" variant={logoFit === "cover" ? "default" : "outline"} onClick={() => void saveLogoFit("cover")}>
+                      Penuh (Cover)
+                    </Button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    <strong>Contain</strong>: seluruh logo tampil utuh (disarankan untuk logo persegi panjang/berteks).{" "}
+                    <strong>Cover</strong>: logo memenuhi area & dipangkas (cocok untuk logo bulat/ikon).
+                  </p>
+                  <div className="flex items-end gap-4 pt-1">
+                    <div className="text-center">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-muted">
+                        <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain"}`} />
+                      </div>
+                      <span className="mt-1 block text-[10px] text-muted-foreground">Header/Footer</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border bg-white">
+                        <img src={logoUrl} alt="" className={`h-full w-full ${logoFit === "cover" ? "object-cover" : "object-contain p-1"}`} />
+                      </div>
+                      <span className="mt-1 block text-[10px] text-muted-foreground">Kop surat / PDF</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               {TENTANG_FIELDS.map((f) => (
