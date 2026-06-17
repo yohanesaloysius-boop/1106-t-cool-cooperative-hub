@@ -41,7 +41,7 @@ export const Route = createFileRoute("/marketplace/produk/$id")({
 function ProductDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const cart = useCart();
   const [imgIdx, setImgIdx] = useState(0);
   const [qty, setQty] = useState(1);
@@ -101,7 +101,22 @@ function ProductDetail() {
   const avgRating =
     reviews.length > 0 ? reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length : 0;
 
+  // Hanya anggota yang sudah login (dan berstatus aktif) yang boleh transaksi.
+  const ensureCanTransact = () => {
+    if (!user) {
+      toast.error("Login dulu untuk berbelanja. Hanya anggota koperasi yang dapat bertransaksi.");
+      navigate({ to: "/auth" });
+      return false;
+    }
+    if (profile?.status !== "active") {
+      toast.error("Hanya anggota aktif koperasi yang dapat berbelanja.");
+      return false;
+    }
+    return true;
+  };
+
   const handleAdd = () => {
+    if (!ensureCanTransact()) return;
     cart.add(
       {
         product_id: p.id,
@@ -121,6 +136,7 @@ function ProductDetail() {
   };
 
   const handleBuyNow = () => {
+    if (!ensureCanTransact()) return;
     handleAdd();
     navigate({ to: "/marketplace/checkout" });
   };
