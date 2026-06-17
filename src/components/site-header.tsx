@@ -217,6 +217,7 @@ export function SiteHeader() {
 
 
 export function SiteFooter() {
+  const logo = useKoperasiLogo();
   return (
     <footer className="border-t border-border/60 py-12 mt-20">
       <div className="container mx-auto px-4">
