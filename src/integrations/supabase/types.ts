@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          id: string
+          ip_address: string | null
+          module: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          module: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          module?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       angsuran: {
         Row: {
           bukti_url: string | null
@@ -4390,6 +4420,15 @@ export type Database = {
       }
       is_school_requester: { Args: { _uid: string }; Returns: boolean }
       is_secretary: { Args: { _uid: string }; Returns: boolean }
+      log_activity: {
+        Args: {
+          _action: string
+          _description?: string
+          _ip_address?: string
+          _module: string
+        }
+        Returns: undefined
+      }
       mature_tabungan_berjangka: { Args: never; Returns: number }
       mp_auto_release_escrow: {
         Args: { _days?: number }

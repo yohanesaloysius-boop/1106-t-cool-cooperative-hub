@@ -101,6 +101,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
           new_data: { email, at: new Date().toISOString() },
         });
+        void (supabase.rpc as any)("log_activity", {
+          _action: "login",
+          _module: "auth",
+          _description: `Login: ${email ?? uid}`,
+        });
       }
     }, 0);
   };
@@ -135,6 +140,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     viewAsMember: realPengurus ? viewAsMember : false,
     setViewAsMember: realPengurus ? setViewAsMember : () => {},
     signOut: async () => {
+      // Catat aktivitas logout sebelum sesi dibersihkan
+      try { await (supabase.rpc as any)("log_activity", { _action: "logout", _module: "auth", _description: "Logout" }); } catch { /* noop */ }
       // 1) Hentikan query yang sedang berjalan agar tidak menembak sesi yang sudah dibersihkan
       try { await queryClient.cancelQueries(); } catch { /* noop */ }
       // 2) Hapus sesi Supabase (local + server)
