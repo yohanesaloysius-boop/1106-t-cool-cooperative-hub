@@ -1,4 +1,5 @@
 export type LogoFit = "contain" | "cover";
+export type LogoBg = "transparent" | "white";
 
 /** Fetch a remote image URL and convert it to a base64 data URL. */
 export async function urlToDataUrl(url?: string | null): Promise<string | undefined> {
@@ -37,6 +38,7 @@ export async function fitImageToSquare(
   url: string | null | undefined,
   fit: LogoFit = "contain",
   boxPx = 240,
+  bg: LogoBg = "transparent",
 ): Promise<string | undefined> {
   if (!url) return undefined;
   try {
@@ -47,6 +49,11 @@ export async function fitImageToSquare(
     canvas.height = boxPx;
     const ctx = canvas.getContext("2d");
     if (!ctx) return dataUrl;
+
+    if (bg === "white") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, boxPx, boxPx);
+    }
 
     const iw = img.naturalWidth || img.width;
     const ih = img.naturalHeight || img.height;

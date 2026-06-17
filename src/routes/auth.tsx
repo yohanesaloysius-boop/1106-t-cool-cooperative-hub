@@ -16,7 +16,7 @@ import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/pho
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
 import { buildDefaultAdart, rulesFromSettings } from "@/lib/adart-default";
-import { fitImageToSquare, type LogoFit } from "@/lib/image-data";
+import { fitImageToSquare, type LogoFit, type LogoBg } from "@/lib/image-data";
 import { CheckCircle2, FileText, Download } from "lucide-react";
 import { RequiredMark } from "@/components/ui/required-mark";
 
@@ -244,6 +244,7 @@ function RegisterForm() {
   const [koperasi, setKoperasi] = useState<KoperasiInfo>(DEFAULT_KOPERASI);
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoFit, setLogoFit] = useState<LogoFit>("contain");
+  const [logoBg, setLogoBg] = useState<LogoBg>("transparent");
 
   useEffect(() => {
     (async () => {
@@ -255,6 +256,7 @@ function RegisterForm() {
         if (map.koperasi_info) setKoperasi(info);
         if (typeof map["koperasi.logo_url"] === "string") setLogoUrl(map["koperasi.logo_url"] as string);
         if (map["koperasi.logo_fit"] === "cover" || map["koperasi.logo_fit"] === "contain") setLogoFit(map["koperasi.logo_fit"] as LogoFit);
+        if (map["koperasi.logo_bg"] === "white" || map["koperasi.logo_bg"] === "transparent") setLogoBg(map["koperasi.logo_bg"] as LogoBg);
         // Jika pengurus sudah menyusun AD/ART manual, pakai itu; jika belum,
         // bangun AD/ART lengkap otomatis dari aturan koperasi yang berlaku di sistem.
         if (map.adart_content) {
@@ -270,7 +272,7 @@ function RegisterForm() {
 
   const downloadAdart = async () => {
     try {
-      const logoDataUrl = await fitImageToSquare(logoUrl, logoFit);
+      const logoDataUrl = await fitImageToSquare(logoUrl, logoFit, 240, logoBg);
       const doc = buildAdartPdf(koperasi, adart, undefined, logoDataUrl);
       const fileName = `AD-ART-${(koperasi.nama || "Koperasi").replace(/\s+/g, "-")}.pdf`;
       doc.save(fileName);
