@@ -24,7 +24,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/")({
