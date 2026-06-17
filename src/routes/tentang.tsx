@@ -257,7 +257,12 @@ function TentangPage() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl text-primary-foreground" style={{ background: "var(--gradient-primary)" }}><BadgeInfo className="h-5 w-5" /></div>
             <h2 className="text-2xl font-bold tracking-tight">Makna Logo dan Nama</h2>
           </div>
-          <p className="mt-4 whitespace-pre-line text-muted-foreground">{t.makna_logo || "—"}</p>
+          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-start">
+            {t.logo_url && (
+              <img src={t.logo_url} alt="Logo koperasi" className="h-32 w-32 shrink-0 rounded-2xl border border-border bg-background object-contain p-2" />
+            )}
+            <p className="whitespace-pre-line text-muted-foreground">{t.makna_logo || "—"}</p>
+          </div>
         </div>
       </section>
 

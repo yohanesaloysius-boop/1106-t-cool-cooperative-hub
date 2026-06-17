@@ -6,6 +6,7 @@ export interface AdartContent { version: string; updated_at?: string; pasal?: Ad
 export interface KoperasiInfo {
   nama: string; alamat?: string; nomor_badan_hukum?: string;
   telepon?: string; email?: string; ketua?: string; sekretaris?: string;
+  logo_url?: string;
 }
 export interface AdartSignature {
   dataUrl: string; fullName: string; hash: string; signedAt: string;
@@ -52,6 +53,7 @@ export function buildAdartPdf(
   koperasi: KoperasiInfo,
   content: AdartContent,
   signature?: AdartSignature,
+  logoDataUrl?: string,
 ): jsPDF {
   const pasal = normalizePasal(content);
 
@@ -60,6 +62,9 @@ export function buildAdartPdf(
   const pageH = doc.internal.pageSize.getHeight();
 
   // KOP
+  if (logoDataUrl) {
+    try { doc.addImage(logoDataUrl, "PNG", 14, 8, 22, 22); } catch { /* ignore bad logo */ }
+  }
   doc.setFont("helvetica", "bold"); doc.setFontSize(16);
   doc.text(koperasi.nama.toUpperCase(), pageW / 2, 18, { align: "center" });
   doc.setFontSize(9); doc.setFont("helvetica", "normal");

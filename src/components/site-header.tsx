@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useKoperasiLogo } from "@/hooks/use-koperasi-logo";
 
 
 const links = [
@@ -25,6 +26,7 @@ const tentangItems = [
 
 export function SiteHeader() {
   const { user, roles, viewAsMember, setViewAsMember } = useAuth();
+  const logo = useKoperasiLogo();
   const [mobileOpen, setMobileOpen] = useState(false);
   const realPengurus = roles.some((r) => ["super_admin", "ketua", "sekretaris", "bendahara"].includes(r));
 
@@ -39,7 +41,7 @@ export function SiteHeader() {
             className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm ring-1 ring-white/60 transition-transform duration-300 group-hover:scale-105 group-hover:rotate-6"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Sprout className="h-5 w-5" />
+            {logo ? <img src={logo} alt="Logo koperasi" className="h-full w-full rounded-full object-cover" /> : <Sprout className="h-5 w-5" />}
           </span>
           <span className="text-[15px] font-bold tracking-tight md:text-base">
             T-Cool <span className="text-primary">Koperasi</span>
@@ -215,6 +217,7 @@ export function SiteHeader() {
 
 
 export function SiteFooter() {
+  const logo = useKoperasiLogo();
   return (
     <footer className="border-t border-border/60 py-12 mt-20">
       <div className="container mx-auto px-4">
@@ -225,7 +228,7 @@ export function SiteFooter() {
                 className="flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm ring-1 ring-white/60"
                 style={{ background: "var(--gradient-primary)" }}
               >
-                <Sprout className="h-4 w-4" />
+                {logo ? <img src={logo} alt="Logo koperasi" className="h-full w-full rounded-full object-cover" /> : <Sprout className="h-4 w-4" />}
               </span>
               <span className="text-base font-bold tracking-tight">
                 T-Cool <span className="text-primary">Koperasi</span>
