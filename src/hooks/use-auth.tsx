@@ -101,6 +101,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
           new_data: { email, at: new Date().toISOString() },
         });
+        void (supabase.rpc as any)("log_activity", {
+          _action: "login",
+          _module: "auth",
+          _description: `Login: ${email ?? uid}`,
+        });
       }
     }, 0);
   };
