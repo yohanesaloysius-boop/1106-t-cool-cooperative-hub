@@ -23,6 +23,7 @@ export interface LetterData {
   anggota: LetterAnggota;
   extra?: Record<string, string | number | null | undefined>;
   ttd?: { jabatan: string; nama: string };
+  logoDataUrl?: string;
 }
 
 const TYPE_LABEL: Record<LetterType, string> = {
@@ -56,6 +57,9 @@ export function buildLetterPdf(d: LetterData): jsPDF {
   const pageH = doc.internal.pageSize.getHeight();
 
   // KOP
+  if (d.logoDataUrl) {
+    try { doc.addImage(d.logoDataUrl, "PNG", 14, 7, 22, 22); } catch { /* ignore bad logo */ }
+  }
   doc.setFont("helvetica", "bold"); doc.setFontSize(15);
   doc.text(d.koperasi.nama.toUpperCase(), pageW / 2, 18, { align: "center" });
   doc.setFont("helvetica", "normal"); doc.setFontSize(9);
