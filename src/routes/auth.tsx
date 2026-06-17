@@ -16,7 +16,7 @@ import { isPhoneLike, isValidIndonesianPhone, normalizePhoneId } from "@/lib/pho
 import { SignaturePadDialog } from "@/components/signature-pad";
 import { buildAdartPdf, type AdartContent, type KoperasiInfo } from "@/lib/adart-pdf";
 import { buildDefaultAdart, rulesFromSettings } from "@/lib/adart-default";
-import { fitImageToSquare, type LogoFit } from "@/lib/image-data";
+import { fitImageToSquare, type LogoFit, type LogoBg } from "@/lib/image-data";
 import { CheckCircle2, FileText, Download } from "lucide-react";
 import { RequiredMark } from "@/components/ui/required-mark";
 
