@@ -176,7 +176,7 @@ function BukuBesarPage() {
               nomor={profile.nomor_anggota ?? null}
               foto_url={profile.foto_url ?? null}
               joined_at={profileExtra.data?.joined_at ?? null}
-              fotoBg={(profileExtra.data?.foto_bg as "transparent" | "white" | undefined) ?? "white"}
+              fotoBg={((profileExtra.data as { foto_bg?: string } | null | undefined)?.foto_bg as "transparent" | "white" | undefined) ?? "white"}
             />
           </div>
           <div className="lg:col-span-2 grid grid-cols-2 gap-3">
