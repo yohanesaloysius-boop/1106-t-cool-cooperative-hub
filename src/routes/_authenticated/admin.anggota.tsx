@@ -42,7 +42,7 @@ function AnggotaPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [roleMember, setRoleMember] = useState<{ id: string; nama_lengkap: string } | null>(null);
   
-  const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null } | null>(null);
+  const [printMember, setPrintMember] = useState<{ id: string; nama_lengkap: string; nomor_anggota: string | null; foto_url: string | null; joined_at?: string | null; foto_bg?: "transparent" | "white" | null } | null>(null);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
@@ -50,7 +50,7 @@ function AnggotaPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id,nomor_anggota,nama_lengkap,email,no_hp,status,joined_at,foto_url")
+        .select("id,nomor_anggota,nama_lengkap,email,no_hp,status,joined_at,foto_url,foto_bg")
         .order("joined_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -198,7 +198,7 @@ function AnggotaPage() {
                           <Button size="sm" variant="ghost" onClick={() => setDetailId(m.id)} title="Detail">
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => setPrintMember({ id: m.id, nama_lengkap: m.nama_lengkap, nomor_anggota: m.nomor_anggota, foto_url: m.foto_url, joined_at: m.joined_at })} title="Cetak Kartu Anggota">
+                          <Button size="sm" variant="ghost" onClick={() => setPrintMember({ id: m.id, nama_lengkap: m.nama_lengkap, nomor_anggota: m.nomor_anggota, foto_url: m.foto_url, joined_at: m.joined_at, foto_bg: (m as { foto_bg?: "transparent" | "white" | null }).foto_bg })} title="Cetak Kartu Anggota">
                             <Printer className="h-4 w-4 text-primary" />
                           </Button>
                           {m.status !== "active" && (

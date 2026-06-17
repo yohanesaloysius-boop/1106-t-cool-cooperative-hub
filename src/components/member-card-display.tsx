@@ -8,9 +8,10 @@ interface Props {
   foto_url: string | null;
   joined_at?: string | null;
   koperasiName?: string;
+  fotoBg?: "transparent" | "white";
 }
 
-export function MemberCardDisplay({ nama, nomor, foto_url, joined_at, koperasiName = "T-COOL Koperasi" }: Props) {
+export function MemberCardDisplay({ nama, nomor, foto_url, joined_at, koperasiName = "T-COOL Koperasi", fotoBg = "white" }: Props) {
   const [qr, setQr] = useState<string | null>(null);
   const [fotoSigned, setFotoSigned] = useState<string | null>(null);
 
@@ -52,7 +53,7 @@ export function MemberCardDisplay({ nama, nomor, foto_url, joined_at, koperasiNa
         </div>
 
         <div style={{ position: "relative", display: "flex", padding: "3mm 4mm", gap: "3mm", height: "calc(100% - 14mm)" }}>
-          <div style={{ width: "20mm", height: "26mm", borderRadius: "2mm", overflow: "hidden", border: "0.4mm solid #ffffff", boxShadow: "0 1mm 3mm rgba(6,95,70,.25)", background: "linear-gradient(135deg,#a7f3d0,#6ee7b7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width: "20mm", height: "26mm", borderRadius: "2mm", overflow: "hidden", border: "0.4mm solid #ffffff", boxShadow: "0 1mm 3mm rgba(6,95,70,.25)", background: fotoBg === "white" ? "#ffffff" : "linear-gradient(135deg,#a7f3d0,#6ee7b7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             {fotoSigned ? (
               <img src={fotoSigned} alt={nama} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (

@@ -14,6 +14,7 @@ interface Props {
     nomor_anggota: string | null;
     foto_url: string | null;
     joined_at?: string | null;
+    foto_bg?: "transparent" | "white" | null;
   } | null;
   koperasiName?: string;
 }
@@ -58,6 +59,7 @@ export function MemberCardPrint({ open, onClose, member, koperasiName = "T-COOL 
 
   if (!member) return null;
   const initials = member.nama_lengkap.split(" ").slice(0, 2).map((s) => s[0]).join("").toUpperCase();
+  const fotoBg = member.foto_bg === "transparent" ? "transparent" : "white";
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -95,7 +97,7 @@ export function MemberCardPrint({ open, onClose, member, koperasiName = "T-COOL 
             {/* Body */}
             <div style={{ position: "relative", display: "flex", padding: "3mm 4mm", gap: "3mm", height: "calc(100% - 14mm)" }}>
               {/* Photo */}
-              <div style={{ width: "20mm", height: "26mm", borderRadius: "2mm", overflow: "hidden", border: "0.4mm solid #ffffff", boxShadow: "0 1mm 3mm rgba(6,95,70,.25)", background: "linear-gradient(135deg,#a7f3d0,#6ee7b7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div style={{ width: "20mm", height: "26mm", borderRadius: "2mm", overflow: "hidden", border: "0.4mm solid #ffffff", boxShadow: "0 1mm 3mm rgba(6,95,70,.25)", background: fotoBg === "white" ? "#ffffff" : "linear-gradient(135deg,#a7f3d0,#6ee7b7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 {fotoSigned ? (
                   <img src={fotoSigned} alt={member.nama_lengkap} crossOrigin="anonymous" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
