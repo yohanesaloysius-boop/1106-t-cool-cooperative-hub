@@ -88,6 +88,11 @@ function ProfilPage() {
     qc.invalidateQueries({ queryKey: ["profile-full"] });
     void refresh();
   };
+  const setFotoBg = async (bg: "transparent" | "white") => {
+    await supabase.from("profiles").update({ foto_bg: bg } as never).eq("id", user!.id);
+    qc.invalidateQueries({ queryKey: ["profile-full"] });
+    toast.success(bg === "white" ? "Latar foto: Putih" : "Latar foto: Transparan");
+  };
   const setKtp = async (path: string) => {
     await supabase.from("profiles").update({ ktp_url: path }).eq("id", user!.id);
     qc.invalidateQueries({ queryKey: ["profile-full"] });
@@ -129,6 +134,21 @@ function ProfilPage() {
             <div className="space-y-3 border-t border-border pt-4">
               <FileUpload bucket="avatars" userId={user!.id} label="Foto profil" hint="JPG/PNG, maks 4MB" publicBucket onUploaded={(r) => r.publicUrl && setAvatar(r.publicUrl)} />
               <FileUpload bucket="ktp" userId={user!.id} label="Foto KTP" hint="Disimpan privat untuk verifikasi pengurus" onUploaded={(r) => setKtp(r.path)} />
+            </div>
+            <div className="space-y-2 border-t border-border pt-4">
+              <Label className="text-xs font-semibold">Latar foto kartu anggota</Label>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" size="sm" variant={((data as { foto_bg?: string }).foto_bg ?? "white") === "white" ? "default" : "outline"} onClick={() => void setFotoBg("white")}>
+                  Putih
+                </Button>
+                <Button type="button" size="sm" variant={((data as { foto_bg?: string }).foto_bg ?? "white") === "transparent" ? "default" : "outline"} onClick={() => void setFotoBg("transparent")}>
+                  Transparan
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                <strong>Putih</strong> membuat semua kartu anggota seragam (disarankan).{" "}
+                <strong>Transparan</strong> menampilkan latar gradien kartu di belakang foto.
+              </p>
             </div>
             <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5 font-semibold text-foreground"><IdCard className="h-3.5 w-3.5" /> Status Kartu</div>
