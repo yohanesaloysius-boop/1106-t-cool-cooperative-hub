@@ -182,6 +182,7 @@ export const navGroups: NavGroup[] = [
       { to: "/admin/pengaturan", label: "Pengaturan Koperasi", icon: SettingsIcon, adminOnly: true },
       { to: "/admin/berita", label: "Berita & Kegiatan", icon: Newspaper, adminOnly: true },
       { to: "/admin/audit", label: "Audit Log", icon: Activity, adminOnly: true },
+      { to: "/admin/aktivitas", label: "Audit Log Aktivitas", icon: Activity, adminOnly: true },
       { to: "/admin/aset", label: "Aset & Inventaris", icon: Package, adminOnly: true },
       { to: "/admin/opex", label: "OPEX (Operasional)", icon: Receipt, adminOnly: true },
       { to: "/admin/lowongan", label: "Kelola Lowongan", icon: Briefcase, adminOnly: true },
