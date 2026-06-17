@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as TataKelolaRouteImport } from './routes/tata-kelola'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DaftarAnggotaRouteImport } from './routes/daftar-anggota'
@@ -107,6 +108,11 @@ import { Route as AuthenticatedAdminGerejaPengadaanRouteImport } from './routes/
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
   path: '/tentang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TataKelolaRoute = TataKelolaRouteImport.update({
+  id: '/tata-kelola',
+  path: '/tata-kelola',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -627,6 +633,7 @@ export interface FileRoutesByFullPath {
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tata-kelola': typeof TataKelolaRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -721,6 +728,7 @@ export interface FileRoutesByTo {
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tata-kelola': typeof TataKelolaRoute
   '/tentang': typeof TentangRoute
   '/verify': typeof VerifyRoute
   '/angsuran': typeof AuthenticatedAngsuranRoute
@@ -817,6 +825,7 @@ export interface FileRoutesById {
   '/daftar-anggota': typeof DaftarAnggotaRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tata-kelola': typeof TataKelolaRoute
   '/tentang': typeof TentangRoute
   '/verify/': typeof VerifyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -914,6 +923,7 @@ export interface FileRouteTypes {
     | '/daftar-anggota'
     | '/forgot-password'
     | '/reset-password'
+    | '/tata-kelola'
     | '/tentang'
     | '/verify/'
     | '/admin'
@@ -1008,6 +1018,7 @@ export interface FileRouteTypes {
     | '/daftar-anggota'
     | '/forgot-password'
     | '/reset-password'
+    | '/tata-kelola'
     | '/tentang'
     | '/verify'
     | '/angsuran'
@@ -1103,6 +1114,7 @@ export interface FileRouteTypes {
     | '/daftar-anggota'
     | '/forgot-password'
     | '/reset-password'
+    | '/tata-kelola'
     | '/tentang'
     | '/verify/'
     | '/_authenticated/admin'
@@ -1200,6 +1212,7 @@ export interface RootRouteChildren {
   DaftarAnggotaRoute: typeof DaftarAnggotaRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TataKelolaRoute: typeof TataKelolaRoute
   TentangRoute: typeof TentangRoute
   VerifyRoute: typeof VerifyRoute
   MarketplaceCheckoutRoute: typeof MarketplaceCheckoutRoute
@@ -1220,6 +1233,13 @@ declare module '@tanstack/react-router' {
       path: '/tentang'
       fullPath: '/tentang'
       preLoaderRoute: typeof TentangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tata-kelola': {
+      id: '/tata-kelola'
+      path: '/tata-kelola'
+      fullPath: '/tata-kelola'
+      preLoaderRoute: typeof TataKelolaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -2094,6 +2114,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarAnggotaRoute: DaftarAnggotaRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TataKelolaRoute: TataKelolaRoute,
   TentangRoute: TentangRoute,
   VerifyRoute: VerifyRoute,
   MarketplaceCheckoutRoute: MarketplaceCheckoutRoute,
