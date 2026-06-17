@@ -30,3 +30,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables (jangan commit secret ke repo)
+.env
+.env.*
+!.env.example
