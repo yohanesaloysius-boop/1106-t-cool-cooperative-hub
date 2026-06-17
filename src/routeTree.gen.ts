@@ -93,6 +93,7 @@ import { Route as AuthenticatedAdminApprovalRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminAngsuranRouteImport } from './routes/_authenticated/admin.angsuran'
 import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authenticated/admin.anggota'
 import { Route as AuthenticatedAdminAnalitikRouteImport } from './routes/_authenticated/admin.analitik'
+import { Route as AuthenticatedAdminAktivitasRouteImport } from './routes/_authenticated/admin.aktivitas'
 import { Route as AuthenticatedAdminAkadRouteImport } from './routes/_authenticated/admin.akad'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
@@ -559,6 +560,12 @@ const AuthenticatedAdminAnalitikRoute =
     path: '/analitik',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAktivitasRoute =
+  AuthenticatedAdminAktivitasRouteImport.update({
+    id: '/aktivitas',
+    path: '/aktivitas',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAkadRoute = AuthenticatedAdminAkadRouteImport.update({
   id: '/akad',
   path: '/akad',
@@ -652,6 +659,7 @@ export interface FileRoutesByFullPath {
   '/berita/': typeof BeritaIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
+  '/admin/aktivitas': typeof AuthenticatedAdminAktivitasRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -744,6 +752,7 @@ export interface FileRoutesByTo {
   '/berita': typeof BeritaIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/admin/akad': typeof AuthenticatedAdminAkadRoute
+  '/admin/aktivitas': typeof AuthenticatedAdminAktivitasRoute
   '/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -840,6 +849,7 @@ export interface FileRoutesById {
   '/berita/': typeof BeritaIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/_authenticated/admin/akad': typeof AuthenticatedAdminAkadRoute
+  '/_authenticated/admin/aktivitas': typeof AuthenticatedAdminAktivitasRoute
   '/_authenticated/admin/analitik': typeof AuthenticatedAdminAnalitikRoute
   '/_authenticated/admin/anggota': typeof AuthenticatedAdminAnggotaRoute
   '/_authenticated/admin/angsuran': typeof AuthenticatedAdminAngsuranRoute
@@ -936,6 +946,7 @@ export interface FileRouteTypes {
     | '/berita/'
     | '/marketplace/'
     | '/admin/akad'
+    | '/admin/aktivitas'
     | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
@@ -1028,6 +1039,7 @@ export interface FileRouteTypes {
     | '/berita'
     | '/marketplace'
     | '/admin/akad'
+    | '/admin/aktivitas'
     | '/admin/analitik'
     | '/admin/anggota'
     | '/admin/angsuran'
@@ -1123,6 +1135,7 @@ export interface FileRouteTypes {
     | '/berita/'
     | '/marketplace/'
     | '/_authenticated/admin/akad'
+    | '/_authenticated/admin/aktivitas'
     | '/_authenticated/admin/analitik'
     | '/_authenticated/admin/anggota'
     | '/_authenticated/admin/angsuran'
@@ -1790,6 +1803,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalitikRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/aktivitas': {
+      id: '/_authenticated/admin/aktivitas'
+      path: '/aktivitas'
+      fullPath: '/admin/aktivitas'
+      preLoaderRoute: typeof AuthenticatedAdminAktivitasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/akad': {
       id: '/_authenticated/admin/akad'
       path: '/akad'
@@ -1858,6 +1878,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAkadRoute: typeof AuthenticatedAdminAkadRoute
+  AuthenticatedAdminAktivitasRoute: typeof AuthenticatedAdminAktivitasRoute
   AuthenticatedAdminAnalitikRoute: typeof AuthenticatedAdminAnalitikRoute
   AuthenticatedAdminAnggotaRoute: typeof AuthenticatedAdminAnggotaRoute
   AuthenticatedAdminAngsuranRoute: typeof AuthenticatedAdminAngsuranRoute
@@ -1906,6 +1927,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAkadRoute: AuthenticatedAdminAkadRoute,
+  AuthenticatedAdminAktivitasRoute: AuthenticatedAdminAktivitasRoute,
   AuthenticatedAdminAnalitikRoute: AuthenticatedAdminAnalitikRoute,
   AuthenticatedAdminAnggotaRoute: AuthenticatedAdminAnggotaRoute,
   AuthenticatedAdminAngsuranRoute: AuthenticatedAdminAngsuranRoute,
