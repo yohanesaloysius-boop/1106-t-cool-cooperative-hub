@@ -41,6 +41,17 @@ function MarketplacePage() {
   const navigate = useNavigate({ from: "/marketplace/" });
   const cart = useCart();
 
+  // Produk hanya ditampilkan setelah pengunjung klik "Jelajahi Produk",
+  // atau saat mereka memilih kategori / mencari sesuatu.
+  const [explored, setExplored] = useState(false);
+  const showProducts = explored || !!kategori || !!q;
+  const reveal = () => {
+    setExplored(true);
+    setTimeout(() => {
+      document.getElementById("semua-produk")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
   // Debounced search input
   const [term, setTerm] = useState(q ?? "");
   useEffect(() => setTerm(q ?? ""), [q]);
@@ -108,8 +119,10 @@ function MarketplacePage() {
       )}
 
       <main className="container mx-auto space-y-10 px-4 pt-6 pb-16 md:pt-8">
-        <MarketplaceHero />
+        <MarketplaceHero onExplore={reveal} />
 
+        {showProducts && (
+        <>
         {/* SEARCH BAR */}
         <section className="sticky top-16 z-30 -mx-4 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:p-0">
           <div className="relative">
@@ -242,6 +255,9 @@ function MarketplacePage() {
             </>
           )}
         </section>
+
+        </>
+        )}
 
         {/* CTA */}
         <section

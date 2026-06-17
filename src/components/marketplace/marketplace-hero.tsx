@@ -3,14 +3,14 @@ import { Sparkles, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
-export function MarketplaceHero() {
+export function MarketplaceHero({ onExplore }: { onExplore?: () => void }) {
   const { user } = useAuth();
-  const bukaTokoTo = user ? "/marketplace-saya" : "/auth";
+  // Hanya anggota aktif yang bisa buka toko → pengunjung diarahkan mendaftar.
+  const bukaTokoTo = user ? "/marketplace-saya" : "/daftar-anggota";
 
-  const scrollToProduk = (e: React.MouseEvent) => {
+  const handleExplore = (e: React.MouseEvent) => {
     e.preventDefault();
-    const el = document.getElementById("semua-produk") || document.getElementById("produk-unggulan");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    onExplore?.();
   };
   return (
     <section
@@ -39,7 +39,7 @@ export function MarketplaceHero() {
                 <Store className="mr-2 h-4 w-4" /> Buka Toko Sekarang
               </Button>
             </Link>
-            <a href="#semua-produk" onClick={scrollToProduk}>
+            <a href="#semua-produk" onClick={handleExplore}>
               <Button size="lg" variant="outline" className="rounded-full bg-card/80 backdrop-blur">
                 Jelajahi Produk
               </Button>
