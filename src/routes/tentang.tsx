@@ -259,7 +259,11 @@ function TentangPage() {
           </div>
           <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-start">
             {t.logo_url && (
-              <img src={t.logo_url} alt="Logo koperasi" className="h-32 w-32 shrink-0 rounded-2xl border border-border bg-background object-contain p-2" />
+              <img
+                src={t.logo_url}
+                alt="Logo koperasi"
+                className={`h-32 w-32 shrink-0 rounded-2xl border border-border bg-background ${t.logo_fit === "cover" ? "object-cover" : "object-contain p-2"}`}
+              />
             )}
             <p className="whitespace-pre-line text-muted-foreground">{t.makna_logo || "—"}</p>
           </div>
