@@ -20,7 +20,7 @@ import { cartItemEffectivePrice, useCart } from "@/lib/cart";
 
 type Search = { kategori?: string; q?: string };
 
-export const Route = createFileRoute("/marketplace")({
+export const Route = createFileRoute("/marketplace/")({
   head: () => ({
     meta: [
       { title: "Marketplace Komunitas — T-COOL Koperasi" },
@@ -38,7 +38,7 @@ const PAGE_SIZE = 12;
 
 function MarketplacePage() {
   const { kategori, q } = Route.useSearch();
-  const navigate = useNavigate({ from: "/marketplace" });
+  const navigate = useNavigate({ from: "/marketplace/" });
   const cart = useCart();
 
   // Debounced search input
