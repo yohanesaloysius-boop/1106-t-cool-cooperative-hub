@@ -19,7 +19,7 @@ const links = [
 const tentangItems = [
   { hash: "makna-logo", label: "Makna Logo dan Nama" },
   { hash: "visi-misi", label: "Visi dan Misi" },
-  { hash: "struktur-organisasi", label: "Struktur Organisasi" },
+  { hash: "struktur-organisasi", label: "Alur Tata kelola Koperasi" },
   { hash: "struktur-manajemen", label: "Struktur Manajemen" },
 ] as const;
 
