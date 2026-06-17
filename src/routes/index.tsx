@@ -124,32 +124,6 @@ function Landing() {
     staleTime: 30_000,
   });
 
-  const { data: pengurus } = useQuery({
-    queryKey: ["public-pengurus"],
-    queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)("get_public_pengurus");
-      if (error) throw error;
-      return (data ?? []) as { jabatan: string; nama: string; foto_url: string }[];
-    },
-    staleTime: 60_000,
-  });
-
-  const { data: berita } = useQuery({
-    queryKey: ["public-berita-landing"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("berita")
-        .select("id,title,slug,excerpt,cover_url,category,published_at")
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return data ?? [];
-    },
-    staleTime: 60_000,
-  });
-  const beritaList = berita ?? [];
-  const pengurusList = (pengurus ?? []).filter((p) => p.nama || p.foto_url);
 
   // Realtime: refresh on any change to profiles / simpanan / pinjaman / lowongan
   useEffect(() => {
