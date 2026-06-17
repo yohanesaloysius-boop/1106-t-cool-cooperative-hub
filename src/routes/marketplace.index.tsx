@@ -41,6 +41,17 @@ function MarketplacePage() {
   const navigate = useNavigate({ from: "/marketplace/" });
   const cart = useCart();
 
+  // Produk hanya ditampilkan setelah pengunjung klik "Jelajahi Produk",
+  // atau saat mereka memilih kategori / mencari sesuatu.
+  const [explored, setExplored] = useState(false);
+  const showProducts = explored || !!kategori || !!q;
+  const reveal = () => {
+    setExplored(true);
+    setTimeout(() => {
+      document.getElementById("semua-produk")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
   // Debounced search input
   const [term, setTerm] = useState(q ?? "");
   useEffect(() => setTerm(q ?? ""), [q]);
