@@ -292,6 +292,15 @@ function TentangPage() {
           <OrgChart t={t} />
           <Legend />
         </div>
+        <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div>
+            <p className="font-semibold">Aturan Main: AD/ART, SOP & Job Desk Pengurus</p>
+            <p className="text-sm text-muted-foreground">Pemetaan setiap alur sistem ke aturan main koperasi dan tugas pengurus.</p>
+          </div>
+          <Button asChild>
+            <Link to="/tata-kelola">Lihat & Unduh <ArrowRight className="ml-1 h-4 w-4" /></Link>
+          </Button>
+        </div>
       </section>
 
       {/* Struktur Manajemen */}
