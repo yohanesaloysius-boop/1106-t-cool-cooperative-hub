@@ -32,6 +32,7 @@ function TentangEditor() {
   const [vals, setVals] = useState<Record<string, string>>({});
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoBusy, setLogoBusy] = useState(false);
+  const [logoFit, setLogoFit] = useState<"contain" | "cover">("contain");
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings-tentang"],
@@ -45,13 +46,20 @@ function TentangEditor() {
   const { data: logoData } = useQuery({
     queryKey: ["settings-logo"],
     queryFn: async () => {
-      const { data } = await supabase.from("settings").select("value").eq("key", "koperasi.logo_url").maybeSingle();
-      return (typeof data?.value === "string" ? data.value : "") as string;
+      const { data } = await supabase.from("settings").select("key,value").in("key", ["koperasi.logo_url", "koperasi.logo_fit"]);
+      const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+      return {
+        url: typeof map["koperasi.logo_url"] === "string" ? (map["koperasi.logo_url"] as string) : "",
+        fit: (map["koperasi.logo_fit"] === "cover" ? "cover" : "contain") as "contain" | "cover",
+      };
     },
   });
 
   useEffect(() => {
-    if (typeof logoData === "string") setLogoUrl(logoData);
+    if (logoData) {
+      setLogoUrl(logoData.url);
+      setLogoFit(logoData.fit);
+    }
   }, [logoData]);
 
   useEffect(() => {
