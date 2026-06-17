@@ -94,7 +94,6 @@ import { Route as AuthenticatedAdminAnggotaRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminAnalitikRouteImport } from './routes/_authenticated/admin.analitik'
 import { Route as AuthenticatedAdminAkadRouteImport } from './routes/_authenticated/admin.akad'
 import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
-import { Route as ApiPublicHooksBackupReminderRouteImport } from './routes/api/public/hooks/backup-reminder'
 import { Route as ApiPublicHooksAutoReleaseEscrowRouteImport } from './routes/api/public/hooks/auto-release-escrow'
 import { Route as ApiPublicHooksAutoDebetWajibRouteImport } from './routes/api/public/hooks/auto-debet-wajib'
 import { Route as ApiPublicHooksAccrueFeesRouteImport } from './routes/api/public/hooks/accrue-fees'
@@ -565,12 +564,6 @@ const ApiPublicHooksDailyRemindersRoute =
     path: '/api/public/hooks/daily-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHooksBackupReminderRoute =
-  ApiPublicHooksBackupReminderRouteImport.update({
-    id: '/api/public/hooks/backup-reminder',
-    path: '/api/public/hooks/backup-reminder',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicHooksAutoReleaseEscrowRoute =
   ApiPublicHooksAutoReleaseEscrowRouteImport.update({
     id: '/api/public/hooks/auto-release-escrow',
@@ -705,7 +698,6 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
-  '/api/public/hooks/backup-reminder': typeof ApiPublicHooksBackupReminderRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -797,7 +789,6 @@ export interface FileRoutesByTo {
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
-  '/api/public/hooks/backup-reminder': typeof ApiPublicHooksBackupReminderRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesById {
@@ -893,7 +884,6 @@ export interface FileRoutesById {
   '/api/public/hooks/accrue-fees': typeof ApiPublicHooksAccrueFeesRoute
   '/api/public/hooks/auto-debet-wajib': typeof ApiPublicHooksAutoDebetWajibRoute
   '/api/public/hooks/auto-release-escrow': typeof ApiPublicHooksAutoReleaseEscrowRoute
-  '/api/public/hooks/backup-reminder': typeof ApiPublicHooksBackupReminderRoute
   '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRouteTypes {
@@ -989,7 +979,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
-    | '/api/public/hooks/backup-reminder'
     | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1081,7 +1070,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
-    | '/api/public/hooks/backup-reminder'
     | '/api/public/hooks/daily-reminders'
   id:
     | '__root__'
@@ -1176,7 +1164,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/accrue-fees'
     | '/api/public/hooks/auto-debet-wajib'
     | '/api/public/hooks/auto-release-escrow'
-    | '/api/public/hooks/backup-reminder'
     | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
 }
@@ -1198,7 +1185,6 @@ export interface RootRouteChildren {
   ApiPublicHooksAccrueFeesRoute: typeof ApiPublicHooksAccrueFeesRoute
   ApiPublicHooksAutoDebetWajibRoute: typeof ApiPublicHooksAutoDebetWajibRoute
   ApiPublicHooksAutoReleaseEscrowRoute: typeof ApiPublicHooksAutoReleaseEscrowRoute
-  ApiPublicHooksBackupReminderRoute: typeof ApiPublicHooksBackupReminderRoute
   ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
 
@@ -1799,13 +1785,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDailyRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/hooks/backup-reminder': {
-      id: '/api/public/hooks/backup-reminder'
-      path: '/api/public/hooks/backup-reminder'
-      fullPath: '/api/public/hooks/backup-reminder'
-      preLoaderRoute: typeof ApiPublicHooksBackupReminderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/auto-release-escrow': {
       id: '/api/public/hooks/auto-release-escrow'
       path: '/api/public/hooks/auto-release-escrow'
@@ -2082,7 +2061,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksAccrueFeesRoute: ApiPublicHooksAccrueFeesRoute,
   ApiPublicHooksAutoDebetWajibRoute: ApiPublicHooksAutoDebetWajibRoute,
   ApiPublicHooksAutoReleaseEscrowRoute: ApiPublicHooksAutoReleaseEscrowRoute,
-  ApiPublicHooksBackupReminderRoute: ApiPublicHooksBackupReminderRoute,
   ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
 export const routeTree = rootRouteImport
