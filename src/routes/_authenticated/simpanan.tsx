@@ -182,7 +182,8 @@ function SimpananPage() {
 
     if (simpErr) {
       setCreatingQr(false);
-      return toast.error(simpErr.message);
+      console.error("simpanan insert (qris)", simpErr);
+      return toast.error("Gagal membuat tagihan simpanan. Silakan coba lagi.");
     }
 
     // 2) Buat QRIS payment yang ditautkan ke simpanan tadi
@@ -198,7 +199,10 @@ function SimpananPage() {
     }).select().single();
 
     setCreatingQr(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      console.error("qris_payments insert", error);
+      return toast.error("Gagal membuat QRIS. Silakan coba lagi.");
+    }
 
     const row = data as any;
     setActiveQr(row);
