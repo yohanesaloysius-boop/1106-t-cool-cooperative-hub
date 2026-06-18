@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { supabaseAdmin as SupabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Tabel yang boleh diekspor untuk backup. Whitelist eksplisit demi keamanan.
 export const BACKUP_TABLES = [
@@ -32,7 +32,7 @@ export const BACKUP_TABLES = [
   "school_pr_payments", "school_pr_receipts", "school_pr_audit",
 ] as const;
 
-async function assertSuperAdmin(userId: string) {
+async function assertSuperAdmin(supabaseAdmin: typeof SupabaseAdmin, userId: string) {
   const { data, error } = await supabaseAdmin
     .from("user_roles").select("role").eq("user_id", userId);
   if (error) throw new Error(error.message);
@@ -48,7 +48,8 @@ export const exportBackup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => inputSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await assertSuperAdmin(supabaseAdmin, context.userId);
     const results: { table: string; rows: any[]; error: string | null; count: number }[] = [];
     for (const t of data.tables) {
       const { data: rows, error } = await supabaseAdmin.from(t as any).select("*").limit(50000);
@@ -68,6 +69,7 @@ export const exportBackup = createServerFn({ method: "POST" })
 export const listBackupTables = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertSuperAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await assertSuperAdmin(supabaseAdmin, context.userId);
     return { tables: BACKUP_TABLES as readonly string[] };
   });
