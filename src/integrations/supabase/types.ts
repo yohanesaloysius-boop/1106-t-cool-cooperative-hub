@@ -3522,6 +3522,33 @@ export type Database = {
         }
         Relationships: []
       }
+      security_logs: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           created_at: string
@@ -4431,6 +4458,15 @@ export type Database = {
           _module: string
         }
         Returns: undefined
+      }
+      log_security_event: {
+        Args: {
+          _description?: string
+          _event_type: string
+          _ip_address?: string
+          _user_id?: string
+        }
+        Returns: string
       }
       mature_tabungan_berjangka: { Args: never; Returns: number }
       mp_auto_release_escrow: {
