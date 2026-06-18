@@ -46,7 +46,7 @@ const tabjangkaSchema = z.object({
 });
 
 const DUMMY_ACCOUNTS = [
-  { bank: "CIMB Niaga", no: "7059 7764 0990", atas_nama: "Koperasi T-COOL Sejahtera" },
+  { bank: "CIMB Niaga", no: "7059 7764 0990", atas_nama: "Koperasi T-COOL" },
 ];
 
 function SimpananPage() {
