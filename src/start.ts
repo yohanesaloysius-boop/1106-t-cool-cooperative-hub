@@ -6,7 +6,13 @@ import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
 // Security headers diterapkan ke setiap response server (SSR + server fn).
 const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => {
-  setResponseHeader("X-Frame-Options", "SAMEORIGIN");
+  // Catatan: jangan pakai X-Frame-Options SAMEORIGIN karena memblokir preview
+  // di editor Lovable (origin berbeda). Pakai CSP frame-ancestors yang
+  // mengizinkan domain Lovable + self, tetap melindungi dari clickjacking.
+  setResponseHeader(
+    "Content-Security-Policy",
+    "frame-ancestors 'self' https://*.lovable.app https://*.lovable.dev https://lovable.dev",
+  );
   setResponseHeader("X-Content-Type-Options", "nosniff");
   setResponseHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   setResponseHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
