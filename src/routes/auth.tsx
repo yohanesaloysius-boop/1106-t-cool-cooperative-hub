@@ -168,6 +168,10 @@ function LoginForm() {
       }
       attemptsRef.current.count += 1;
       if (attemptsRef.current.count >= 5) attemptsRef.current.until = Date.now() + 30_000;
+      void (supabase.rpc as any)("log_security_event", {
+        _event_type: "login_failed",
+        _description: `Login gagal untuk: ${email}`,
+      });
       return toast.error("Email/Nomor HP atau password salah");
     }
 
