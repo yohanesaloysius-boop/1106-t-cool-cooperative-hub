@@ -63,6 +63,7 @@ import { Route as AuthenticatedAdminStatistikRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminSimpananRouteImport } from './routes/_authenticated/admin.simpanan'
 import { Route as AuthenticatedAdminShuRouteImport } from './routes/_authenticated/admin.shu'
 import { Route as AuthenticatedAdminSellerVerifyRouteImport } from './routes/_authenticated/admin.seller-verify'
+import { Route as AuthenticatedAdminSecurityRouteImport } from './routes/_authenticated/admin.security'
 import { Route as AuthenticatedAdminRoleRouteImport } from './routes/_authenticated/admin.role'
 import { Route as AuthenticatedAdminRekonsiliasiRouteImport } from './routes/_authenticated/admin.rekonsiliasi'
 import { Route as AuthenticatedAdminRapbRouteImport } from './routes/_authenticated/admin.rapb'
@@ -388,6 +389,12 @@ const AuthenticatedAdminSellerVerifyRoute =
     path: '/seller-verify',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSecurityRoute =
+  AuthenticatedAdminSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminRoleRoute = AuthenticatedAdminRoleRouteImport.update({
   id: '/role',
   path: '/role',
@@ -698,6 +705,7 @@ export interface FileRoutesByFullPath {
   '/admin/rapb': typeof AuthenticatedAdminRapbRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/role': typeof AuthenticatedAdminRoleRoute
+  '/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -792,6 +800,7 @@ export interface FileRoutesByTo {
   '/admin/rapb': typeof AuthenticatedAdminRapbRoute
   '/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/admin/role': typeof AuthenticatedAdminRoleRoute
+  '/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/admin/shu': typeof AuthenticatedAdminShuRoute
   '/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -890,6 +899,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/rapb': typeof AuthenticatedAdminRapbRoute
   '/_authenticated/admin/rekonsiliasi': typeof AuthenticatedAdminRekonsiliasiRoute
   '/_authenticated/admin/role': typeof AuthenticatedAdminRoleRoute
+  '/_authenticated/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/_authenticated/admin/seller-verify': typeof AuthenticatedAdminSellerVerifyRoute
   '/_authenticated/admin/shu': typeof AuthenticatedAdminShuRoute
   '/_authenticated/admin/simpanan': typeof AuthenticatedAdminSimpananRoute
@@ -988,6 +998,7 @@ export interface FileRouteTypes {
     | '/admin/rapb'
     | '/admin/rekonsiliasi'
     | '/admin/role'
+    | '/admin/security'
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
@@ -1082,6 +1093,7 @@ export interface FileRouteTypes {
     | '/admin/rapb'
     | '/admin/rekonsiliasi'
     | '/admin/role'
+    | '/admin/security'
     | '/admin/seller-verify'
     | '/admin/shu'
     | '/admin/simpanan'
@@ -1179,6 +1191,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/rapb'
     | '/_authenticated/admin/rekonsiliasi'
     | '/_authenticated/admin/role'
+    | '/_authenticated/admin/security'
     | '/_authenticated/admin/seller-verify'
     | '/_authenticated/admin/shu'
     | '/_authenticated/admin/simpanan'
@@ -1606,6 +1619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSellerVerifyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/security': {
+      id: '/_authenticated/admin/security'
+      path: '/security'
+      fullPath: '/admin/security'
+      preLoaderRoute: typeof AuthenticatedAdminSecurityRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/role': {
       id: '/_authenticated/admin/role'
       path: '/role'
@@ -1930,6 +1950,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminRapbRoute: typeof AuthenticatedAdminRapbRoute
   AuthenticatedAdminRekonsiliasiRoute: typeof AuthenticatedAdminRekonsiliasiRoute
   AuthenticatedAdminRoleRoute: typeof AuthenticatedAdminRoleRoute
+  AuthenticatedAdminSecurityRoute: typeof AuthenticatedAdminSecurityRoute
   AuthenticatedAdminSellerVerifyRoute: typeof AuthenticatedAdminSellerVerifyRoute
   AuthenticatedAdminShuRoute: typeof AuthenticatedAdminShuRoute
   AuthenticatedAdminSimpananRoute: typeof AuthenticatedAdminSimpananRoute
@@ -1979,6 +2000,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminRapbRoute: AuthenticatedAdminRapbRoute,
   AuthenticatedAdminRekonsiliasiRoute: AuthenticatedAdminRekonsiliasiRoute,
   AuthenticatedAdminRoleRoute: AuthenticatedAdminRoleRoute,
+  AuthenticatedAdminSecurityRoute: AuthenticatedAdminSecurityRoute,
   AuthenticatedAdminSellerVerifyRoute: AuthenticatedAdminSellerVerifyRoute,
   AuthenticatedAdminShuRoute: AuthenticatedAdminShuRoute,
   AuthenticatedAdminSimpananRoute: AuthenticatedAdminSimpananRoute,
