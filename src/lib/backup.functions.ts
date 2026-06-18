@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { supabaseAdmin as SupabaseAdmin } from "@/integrations/supabase/client.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+type AdminClient = SupabaseClient<Database>;
 
 // Tabel yang boleh diekspor untuk backup. Whitelist eksplisit demi keamanan.
 export const BACKUP_TABLES = [
@@ -32,7 +34,7 @@ export const BACKUP_TABLES = [
   "school_pr_payments", "school_pr_receipts", "school_pr_audit",
 ] as const;
 
-async function assertSuperAdmin(supabaseAdmin: typeof SupabaseAdmin, userId: string) {
+async function assertSuperAdmin(supabaseAdmin: AdminClient, userId: string) {
   const { data, error } = await supabaseAdmin
     .from("user_roles").select("role").eq("user_id", userId);
   if (error) throw new Error(error.message);

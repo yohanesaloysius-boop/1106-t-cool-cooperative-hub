@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { supabaseAdmin as SupabaseAdmin } from "@/integrations/supabase/client.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+type AdminClient = SupabaseClient<Database>;
 
 const DEMO_CREATOR = "00000000-0000-0000-0000-000000000001";
 
@@ -15,7 +17,7 @@ const inviteSchema = z.object({
   })).min(1).max(200),
 });
 
-async function assertPengurus(supabaseAdmin: typeof SupabaseAdmin, userId: string) {
+async function assertPengurus(supabaseAdmin: AdminClient, userId: string) {
   const { data, error } = await supabaseAdmin
     .from("user_roles").select("role").eq("user_id", userId);
   if (error) throw new Error(error.message);
