@@ -52,7 +52,7 @@ export async function getMarketplaceRekening(): Promise<{
   return {
     bank: v.bank ?? "CIMB Niaga",
     no_rek: v.no_rek ?? "7059 7764 0990",
-    atas_nama: v.atas_nama ?? "Koperasi T-COOL Sejahtera",
+    atas_nama: v.atas_nama ?? "Koperasi T-COOL",
   };
 }
 
