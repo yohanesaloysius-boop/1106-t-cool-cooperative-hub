@@ -91,6 +91,8 @@ export function rolesForAdminPath(pathname: string): AppRole[] {
 /** Apakah daftar role user boleh mengakses path admin. */
 export function canAccessAdminPath(roles: AppRole[], pathname: string): boolean {
   if (!roles.length) return false;
+  // Pimpinan (ketua / super_admin) memiliki AKSES PENUH ke seluruh area admin.
+  if (isLeaderRoles(roles)) return true;
   const allowed = rolesForAdminPath(pathname);
   return roles.some((r) => allowed.includes(r));
 }
